@@ -9,12 +9,14 @@ import FavoritePage from './pages/FavoritePage';
 import SearchPage from './pages/SearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
+import PreLoginPage from './pages/PreLoginPage';
 
 function App() {
   return (
     <Router>
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <Routes>
+        <Route path="/" element={<PreLoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recipe" element={<RecipePage />} />
