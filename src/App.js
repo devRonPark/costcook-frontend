@@ -1,24 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import GlobalStyle from './styles/GlobalStyle';
+import HomePage from './pages/HomePage';
+import RecipePage from './pages/RecipePage';
+import BudgetPage from './pages/BudgetPage';
+import MyPage from './pages/MyPage';
+import FavoritePage from './pages/FavoritePage';
+import SearchPage from './pages/SearchPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <GlobalStyle /> {/* 전역 스타일 적용 */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/recipe" element={<RecipePage />} />
+        <Route path="/budget" element={<BudgetPage />} />
+        <Route path="/favorite" element={<FavoritePage />} />
+        <Route path="/my" element={<MyPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
   );
 }
 
