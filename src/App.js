@@ -8,13 +8,15 @@ import MyPage from './pages/MyPage';
 import FavoritePage from './pages/FavoritePage';
 import SearchPage from './pages/SearchPage';
 import NotFoundPage from './pages/NotFoundPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
     <Router>
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/recipe" element={<RecipePage />} />
         <Route path="/budget" element={<BudgetPage />} />
         <Route path="/favorite" element={<FavoritePage />} />
