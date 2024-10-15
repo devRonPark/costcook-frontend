@@ -5,54 +5,84 @@ import CalculateIcon from '@mui/icons-material/Calculate'; // 계산기 아이�
 import StarIcon from '@mui/icons-material/Star'; // 별 아이콘
 import PersonIcon from '@mui/icons-material/Person'; // 사람 아이콘
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import LoginModal from '../common/LoginModal';
 
 const Footer = () => {
   const navigate = useNavigate(); // 페이지 전환을 위한 navigate 함수
   const location = useLocation(); // 현재 경로 정보를 가져옴
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
 
   // 경로를 변경하는 핸들러 함수
   const handleNavigate = (path) => {
-    navigate(path);
+    if (path === '/my') {
+      // 로그인 여부 체크 (예시)
+      const isLoggedIn = false; // 실제 로그인 상태에 맞게 수정
+
+      if (!isLoggedIn) {
+        setIsModalOpen(true); // 모달 열기
+      } else {
+        navigate(path); // 로그인 되어 있으면 이동
+      }
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // 모달 닫기
+  };
+
+  const handleConfirmLogin = () => {
+    navigate('/login'); // 로그인 페이지로 이동
   };
 
   return (
-    <FooterContainer>
-      <IconWrapper
-        isActive={location.pathname === '/'}
-        onClick={() => handleNavigate('/')}
-      >
-        <HomeIconStyled />
-        <Text>홈</Text>
-      </IconWrapper>
-      <IconWrapper
-        isActive={location.pathname === '/recipe'}
-        onClick={() => handleNavigate('/recipe')}
-      >
-        <BookIconStyled />
-        <Text>레시피</Text>
-      </IconWrapper>
-      <IconWrapper
-        isActive={location.pathname === '/budget'}
-        onClick={() => handleNavigate('/budget')}
-      >
-        <CalculateIconStyled />
-        <Text>예산관리</Text>
-      </IconWrapper>
-      <IconWrapper
-        isActive={location.pathname === '/favorite'}
-        onClick={() => handleNavigate('/favorite')}
-      >
-        <StarIconStyled />
-        <Text>즐겨찾기</Text>
-      </IconWrapper>
-      <IconWrapper
-        isActive={location.pathname === '/my'}
-        onClick={() => handleNavigate('/my')}
-      >
-        <PersonIconStyled />
-        <Text>마이</Text>
-      </IconWrapper>
-    </FooterContainer>
+    <>
+      <FooterContainer>
+        <IconWrapper
+          isActive={location.pathname === '/'}
+          onClick={() => handleNavigate('/')}
+        >
+          <HomeIconStyled />
+          <Text>홈</Text>
+        </IconWrapper>
+        <IconWrapper
+          isActive={location.pathname === '/recipe'}
+          onClick={() => handleNavigate('/recipe')}
+        >
+          <BookIconStyled />
+          <Text>레시피</Text>
+        </IconWrapper>
+        <IconWrapper
+          isActive={location.pathname === '/budget'}
+          onClick={() => handleNavigate('/budget')}
+        >
+          <CalculateIconStyled />
+          <Text>예산관리</Text>
+        </IconWrapper>
+        <IconWrapper
+          isActive={location.pathname === '/favorite'}
+          onClick={() => handleNavigate('/favorite')}
+        >
+          <StarIconStyled />
+          <Text>즐겨찾기</Text>
+        </IconWrapper>
+        <IconWrapper
+          isActive={location.pathname === '/my'}
+          onClick={() => handleNavigate('/my')}
+        >
+          <PersonIconStyled />
+          <Text>마이</Text>
+        </IconWrapper>
+      </FooterContainer>
+
+      <LoginModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmLogin}
+      />
+    </>
   );
 };
 
