@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
+import MaterialPage from './pages/admin/MaterialPage';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/my" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/admin/material" element={<MaterialPage/>} />
       </Routes>
     </Router>
   );

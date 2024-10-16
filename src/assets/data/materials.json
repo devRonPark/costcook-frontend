@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "간장", "unit_id": 1, "price": 48.6, "category_id": 10 },
+  { "id": 2, "name": "감자", "unit_id": 5, "price": 330, "category_id": 1 },
+  { "id": 3, "name": "계란", "unit_id": 5, "price": 133, "category_id": 12 },
+  { "id": 4, "name": "고추기름", "unit_id": 1, "price": 92.85, "category_id": 10 },
+  { "id": 5, "name": "고추장", "unit_id": 1, "price": 265.8, "category_id": 10 },
+  { "id": 6, "name": "국간장", "unit_id": 1, "price": 137.85, "category_id": 10 },
+  { "id": 7, "name": "꽈리고추", "unit_id": 3, "price": 13.2, "category_id": 1 },
+  { "id": 8, "name": "녹말가루", "unit_id": 1, "price": 64.5, "category_id": 4 },
+  { "id": 9, "name": "다진마늘", "unit_id": 1, "price": 138.45, "category_id": 10 },
+  { "id": 10, "name": "단호박", "unit_id": 3, "price": 7.75, "category_id": 1 }
+]
