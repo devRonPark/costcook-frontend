@@ -20,6 +20,7 @@ const Container = styled.div`
   align-items: center;
   min-height: 100vh;
   max-width: 600px;
+  width: 100%;
   margin: 0 auto;
   border: 1px solid rgb(224, 224, 224);
 `;
