@@ -82,8 +82,6 @@ const StyledInput = styled.input`
   height: 48px; /* 높이 고정 */
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: ${(props) =>
-    props.value.trim() ? '#fff' : '#e0e0e0'}; /* 유효한 입력일 때 흰색 */
   outline: none;
   font-size: 1rem;
 

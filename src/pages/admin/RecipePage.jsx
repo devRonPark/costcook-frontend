@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -12,6 +13,8 @@ const AdminRecipePage = () => {
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [servings, setServings] = useState(1); // 식사량
   const [ingredientList, setIngredientList] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 1번부터 3번까지의 재료를 기본적으로 1개씩 추가
@@ -35,7 +38,7 @@ const AdminRecipePage = () => {
   };
 
   const handleAddIngredient = () => {
-    alert("재료 추가 버튼 클릭됨");
+    navigate('/admin/recipeIngredient');
   };
 
   // "등록" 버튼 활성화 여부 결정
