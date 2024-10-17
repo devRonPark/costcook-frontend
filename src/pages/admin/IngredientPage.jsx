@@ -8,7 +8,9 @@ import DuplicateContainer from '../../components/admin/DuplicateContainer';
 import unitsData from '../../assets/data/units.json';
 import categoriesData from '../../assets/data/categories.json';
 import ingredientsData from '../../assets/data/ingredients.json';
-import { SelectedInfoContainer, MarqueeText, ContentContainer } from '../../components/admin/StyledComponents';
+import SelectedInfoContainer from '../../components/admin/SelectedInfoContainer';
+import MovingText from '../../components/admin/MovingText';
+import ContentContainer from '../../components/admin/ContentContainer';
 
 
 const AdminIngredientPage = () => {
@@ -86,11 +88,11 @@ const AdminIngredientPage = () => {
       onSubmit={onSubmit} // 등록 함수 전달
     >
       <SelectedInfoContainer>
-        <MarqueeText ref={textRef} shouldAnimate={shouldAnimate}>
+        <MovingText ref={textRef} shouldAnimate={shouldAnimate}>
           {[`[재료] ${selectedIngredient || '미입력'} / `,
           `[단위] ${selectedUnit !== null ? `${unitsData.find((unit) => unit.id === selectedUnit)?.name}` : '미선택'} / `,
           `[카테고리] ${selectedCategory !== null ? `${categoriesData.find((category) => category.id === selectedCategory)?.name}` : '미선택'}`].join('')}
-        </MarqueeText>
+        </MovingText>
       </SelectedInfoContainer>
 
       <ContentContainer>
