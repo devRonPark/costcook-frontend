@@ -1,8 +1,7 @@
-// src/components/admin/DuplicateContainer.js
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-const DuplicateContainer = ({ data, placeholder }) => {
+const DuplicateContainer = ({ data, placeholder, onCheckDuplicate }) => {
   const [inputValue, setInputValue] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 비활성화 상태
@@ -21,6 +20,11 @@ const DuplicateContainer = ({ data, placeholder }) => {
     if (trimmedValue) {
       const duplicate = data.some((item) => item.name === trimmedValue);
       setIsDuplicate(duplicate);
+
+      // 부모 컴포넌트로 중복 여부와 입력값 전달
+      if (onCheckDuplicate) {
+        onCheckDuplicate(trimmedValue, duplicate);
+      }
     }
   };
 
@@ -110,3 +114,4 @@ const ResultMessage = styled.div`
   color: ${(props) => (props.isDuplicate ? 'red' : 'green')};
   font-weight: bold;
 `;
+
