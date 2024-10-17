@@ -14,8 +14,9 @@ import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
+import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
-import RecommendPage from './pages/RecommendPage';
+// import RecommendPage from './pages/RecommendPage';
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recipe" element={<RecipePage />} />
-        <Route path="/recommend" element={<RecommendPage />} />
+        {/* <Route path="/recommend" element={<RecommendPage />} /> */}
         <Route path="/budget" element={<BudgetPage />} />
         <Route path="/favorite" element={<FavoritePage />} />
         <Route path="/my" element={<MyPage />} />
@@ -42,6 +43,7 @@ function App() {
         />
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/admin/ingredient" element={<AdminIngredientPage/>} />
+        <Route path="/admin/recipe" element={<AdminRecipePage/>} />
       </Routes>
     </Router>
   );
