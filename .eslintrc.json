@@ -33,6 +33,7 @@
     "react/function-component-definition": [
       2,
       { "namedComponents": ["arrow-function", "function-declaration"] }
-    ]
+    ],
+    "arrow-body-style": "off" // 화살표 함수 내부에서 중괄호와 return 사용 허용
   }
 }

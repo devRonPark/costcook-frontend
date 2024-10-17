@@ -4,32 +4,61 @@ import GoogleIcon from '@mui/icons-material/Google'; // 구글 아이콘
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import startScreenImage from '../assets/images/start_screen_img.png';
+import AuthApi from '../services/auth.api';
 
-const LoginPage = () => (
-  <LoginContainer>
-    <Image src={startScreenImage} alt="Welcome" />
-    <Title>CostCook</Title>
-    <ButtonContainer>
-      <LoginButton
-        variant="contained"
-        sx={{ backgroundColor: '#FEE500', color: '#222' }}
-        startIcon={<AccountCircleIcon />}
-      >
-        카카오로 로그인
-      </LoginButton>
-      <LoginButton
-        variant="contained"
-        color="secondary"
-        startIcon={<GoogleIcon />}
-      >
-        구글로 로그인
-      </LoginButton>
-      <SkipButton variant="text">
-        <Link to="/home">건너뛰기</Link>
-      </SkipButton>
-    </ButtonContainer>
-  </LoginContainer>
-);
+const LoginPage = () => {
+  const handleGoogleLogin = () => {
+    // 구글 로그인 버튼 클릭 시 이동하는 경로 지정
+    const params = new URLSearchParams({
+      scope: 'email profile',
+      response_type: 'code',
+      redirect_uri: process.env.REACT_APP_GOOGLE_REDIRECT_URI,
+      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    });
+    const GOOGLE_URL = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    window.location.href = GOOGLE_URL; // 구글 OAuth 로그인 페이지로 이동
+  };
+
+  const handleKakaoLogin = () => {
+    // 카카오 로그인 버튼 클릭 시 이동하는 경로 지정
+    const params = new URLSearchParams({
+      response_type: 'code',
+      redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URI,
+      client_id: process.env.REACT_APP_KAKAO_CLIENT_ID,
+    });
+    const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+
+    window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동
+  };
+
+  return (
+    <LoginContainer>
+      <Image src={startScreenImage} alt="Welcome" />
+      <Title>CostCook</Title>
+      <ButtonContainer>
+        <LoginButton
+          variant="contained"
+          sx={{ backgroundColor: '#FEE500', color: '#222' }}
+          startIcon={<AccountCircleIcon />}
+          onClick={handleKakaoLogin}
+        >
+          카카오로 로그인
+        </LoginButton>
+        <LoginButton
+          variant="contained"
+          color="secondary"
+          startIcon={<GoogleIcon />}
+          onClick={handleGoogleLogin}
+        >
+          구글로 로그인
+        </LoginButton>
+        <SkipButton variant="text">
+          <Link to="/home">건너뛰기</Link>
+        </SkipButton>
+      </ButtonContainer>
+    </LoginContainer>
+  );
+};
 
 export default LoginPage;
 
