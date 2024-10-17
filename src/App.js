@@ -15,6 +15,7 @@ import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import AdminIngredientPage from './pages/admin/IngredientPage';
+import RecommendPage from './pages/RecommendPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recipe" element={<RecipePage />} />
+        <Route path="/recommend" element={<RecommendPage />} />
         <Route path="/budget" element={<BudgetPage />} />
         <Route path="/favorite" element={<FavoritePage />} />
         <Route path="/my" element={<MyPage />} />

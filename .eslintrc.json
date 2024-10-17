@@ -5,10 +5,10 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended", // 기본 ESLint 권장 규칙
-    "airbnb", // Airbnb 스타일 가이드 확장
-    "plugin:react/recommended", // React 관련 권장 규칙
-    "prettier" // Prettier 규칙으로 덮어쓰기
+    "eslint:recommended",
+    "airbnb",
+    "plugin:react/recommended",
+    "prettier"
   ],
   "parserOptions": {
     "ecmaFeatures": {
@@ -17,23 +17,20 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react", // React 플러그인
-    "jsx-a11y", // 접근성 관련 플러그인
-    "import", // 모듈 임포트 관련 규칙
-    "prettier"
-  ],
+  "plugins": ["react", "jsx-a11y", "import", "prettier"],
   "rules": {
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], // JSX를 .js 파일에서도 허용
-    "react/prop-types": "off", // PropTypes 사용 안 함
-    "no-console": "warn", // console.log를 경고로 처리
-    "no-unused-vars": "warn", // 사용하지 않는 변수를 경고로 처리
-    "import/prefer-default-export": "off", // named export를 허용
-    "react/react-in-jsx-scope": "off", // React import 오류 해결
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/prop-types": "off",
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "import/prefer-default-export": "off",
+    "react/react-in-jsx-scope": "off",
     "react/function-component-definition": [
       2,
       { "namedComponents": ["arrow-function", "function-declaration"] }
     ],
-    "arrow-body-style": "off" // 화살표 함수 내부에서 중괄호와 return 사용 허용
+    "jsx-a11y/label-has-associated-control": "off", // label 오류 비활성화
+    "arrow-body-style": "off", // 화살표 함수의 블록 사용 허용
+    "no-return-assign": "off" // return 안에서의 할당 허용
   }
 }
