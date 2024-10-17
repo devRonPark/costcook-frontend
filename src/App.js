@@ -12,9 +12,9 @@ import SearchPage from './pages/SearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
-import MaterialPage from './pages/admin/MaterialPage';
 import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
+import AdminIngredientPage from './pages/admin/IngredientPage';
 
 function App() {
   return (
@@ -39,7 +39,7 @@ function App() {
           }
         />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/admin/material" element={<MaterialPage/>} />
+        <Route path="/admin/ingredient" element={<AdminIngredientPage/>} />
       </Routes>
     </Router>
   );

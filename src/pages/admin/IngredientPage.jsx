@@ -1,4 +1,3 @@
-// src/pages/admin/MaterialPage.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,10 +7,12 @@ import ButtonContainer from '../../components/admin/ButtonContainer';
 import DuplicateContainer from '../../components/admin/DuplicateContainer';
 import unitsData from '../../assets/data/units.json';
 import categoriesData from '../../assets/data/categories.json';
-import materialsData from '../../assets/data/materials.json';
+import ingredientsData from '../../assets/data/ingredients.json';
+import { SelectedInfoContainer, MarqueeText, ContentContainer } from '../../components/admin/StyledComponents';
 
-const MaterialPage = () => {
-  const [selectedMaterial, setSelectedMaterial] = useState('');
+
+const AdminIngredientPage = () => {
+  const [selectedIngredient, setSelectedIngredient] = useState('');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [shouldAnimate, setShouldAnimate] = useState(false);
@@ -24,14 +25,14 @@ const MaterialPage = () => {
       const textWidth = textRef.current.scrollWidth;
       setShouldAnimate(textWidth > containerWidth);
     }
-  }, [selectedMaterial, selectedUnit, selectedCategory]);
+  }, [selectedIngredient, selectedUnit, selectedCategory]);
 
-  const handleCheckDuplicate = (materialName, isDuplicate) => {
+  const handleCheckDuplicate = (ingredientName, isDuplicate) => {
     if (!isDuplicate) {
-      setSelectedMaterial(materialName);
+      setSelectedIngredient(ingredientName);
     } else {
       alert('이미 존재하는 재료입니다. 다른 이름을 선택해주세요.');
-      setSelectedMaterial('');
+      setSelectedIngredient('');
     }
   };
 
@@ -44,16 +45,16 @@ const MaterialPage = () => {
   };
 
   // "등록" 버튼 활성화 여부 결정
-  const isRegisterEnabled = Boolean(selectedMaterial) && selectedUnit !== null && selectedCategory !== null;
+  const isRegisterEnabled = Boolean(selectedIngredient) && selectedUnit !== null && selectedCategory !== null;
 
   // 하나 이상의 입력된 값이 있는지 여부 판단
-  const isModified = Boolean(selectedMaterial) || selectedUnit !== null || selectedCategory !== null;
+  const isModified = Boolean(selectedIngredient) || selectedUnit !== null || selectedCategory !== null;
 
   // 서버로 등록 요청
   const onSubmit = async () => {
     try {
       const requestData = {
-        material: selectedMaterial,
+        ingredient: selectedIngredient,
         unitId: selectedUnit,
         categoryId: selectedCategory,
       };
@@ -69,7 +70,7 @@ const MaterialPage = () => {
       console.error('서버 통신 에러:', error);
       // alert('서버와 통신 중 문제가 발생했습니다. 다시 시도해주세요.');
       alert(`API: /api/admin/ingredients\n\n데이터: ${JSON.stringify({
-        material: selectedMaterial,
+        ingredient: selectedIngredient,
         unitId: selectedUnit,
         categoryId: selectedCategory,
       }, null, 2)}`);
@@ -78,7 +79,7 @@ const MaterialPage = () => {
 
   return (
     <AdminLayout
-      title="재료 관리"
+      title="재료"
       rightLabel="등록"
       isRegisterEnabled={isRegisterEnabled}
       isModified={isModified} // 입력값 변경 여부 전달
@@ -86,7 +87,7 @@ const MaterialPage = () => {
     >
       <SelectedInfoContainer>
         <MarqueeText ref={textRef} shouldAnimate={shouldAnimate}>
-          {[`[재료] ${selectedMaterial || '미입력'} / `,
+          {[`[재료] ${selectedIngredient || '미입력'} / `,
           `[단위] ${selectedUnit !== null ? `${unitsData.find((unit) => unit.id === selectedUnit)?.name}` : '미선택'} / `,
           `[카테고리] ${selectedCategory !== null ? `${categoriesData.find((category) => category.id === selectedCategory)?.name}` : '미선택'}`].join('')}
         </MarqueeText>
@@ -96,7 +97,7 @@ const MaterialPage = () => {
         <Section>
           <SectionTitle>재료 이름</SectionTitle>
           <DuplicateContainer
-            data={materialsData}
+            data={ingredientsData}
             placeholder="재료 이름을 입력하세요"
             onCheckDuplicate={handleCheckDuplicate}
           />
@@ -122,52 +123,7 @@ const MaterialPage = () => {
   );
 };
 
-export default MaterialPage;
-
-// 스타일 컴포넌트 정의
-const SelectedInfoContainer = styled.div`
-  position: fixed; 
-  top: 64px; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  width: 100%;
-  max-width: 600px;
-  padding: 20px; 
-  background-color: #ffc107; 
-  color: white; 
-  text-align: center; 
-  font-weight: bold;
-  z-index: 1000; 
-  box-sizing: border-box;
-  border: 1px solid rgb(224, 224, 224);
-  border-top: none;
-`;
-
-const MarqueeText = styled.div`
-  display: inline-block;
-  white-space: nowrap; 
-  ${({ shouldAnimate }) =>
-    shouldAnimate
-      ? `animation: marquee 15s linear infinite;`
-      : 'transform: translateX(0); text-align: center;'}
-  
-  @keyframes marquee {
-    0% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
-  }
-`;
-
-const ContentContainer = styled.div`
-  padding: 16px;
-  width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
-  margin-top: 140px; 
-`;
+export default AdminIngredientPage;
 
 const Section = styled.div`
   margin-top: 24px; 
