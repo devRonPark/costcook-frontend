@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
 import ingredientData from '../../assets/data/ingredients.json';
-import IngredientTable from '../../components/admin/IngredientTable';  // 분리된 컴포넌트 가져오기
+import IngredientTable from '../../components/admin/IngredientTable'; 
+import ServingsWrapper from '../../components/admin/ServingsWrapper';
 
 const AdminRecipePage = () => {
   const [recipeName, setRecipeName] = useState('');
@@ -35,14 +35,13 @@ const AdminRecipePage = () => {
   };
 
   const handleAddIngredient = () => {
-    console.log("재료 추가 버튼 클릭됨");
-    // 여기서 모달을 표시하는 동작이 나중에 구현될 예정입니다.
+    alert("재료 추가 버튼 클릭됨");
   };
 
   // "등록" 버튼 활성화 여부 결정
   const isRegisterEnabled = Boolean(recipeName) && selectedMenu !== null;
 
-  // 하나 이상의 입력된 값이 있는지 여부 판단
+  // "나가기" 확인 모달 활성화 여부 결정
   const isModified = Boolean(recipeName) || selectedMenu !== null;
 
   // 서버로 등록 요청
@@ -65,11 +64,9 @@ const AdminRecipePage = () => {
       alert(`API: /api/admin/recipes\n\n데이터: ${JSON.stringify(
         {
           recipeName,
-          menuId: selectedMenu,
-        },
-        null,
-        2
-      )}`);
+          categoryId: selectedMenu,
+        }, null, 2 )}`
+      );
     }
   };
 
@@ -94,18 +91,7 @@ const AdminRecipePage = () => {
 
         <Section>
           <SectionTitle>레시피 식사량</SectionTitle>
-          <SelectWrapper>
-            <StyledSelect value={servings} onChange={handleServingsSelect}>
-              {[1, 2, 3, 4].map((num) => (
-                <option key={num} value={num}>
-                  {num}인분
-                </option>
-              ))}
-            </StyledSelect>
-            <ArrowIconWrapper>
-              <ArrowDropDownIcon fontSize="large" />
-            </ArrowIconWrapper>
-          </SelectWrapper>
+          <ServingsWrapper value={servings} onChange={handleServingsSelect} />
         </Section>
 
         <Section>
@@ -152,12 +138,6 @@ const AddButton = styled.button`
   }
 `;
 
-// StyledSelect와 ArrowIcon을 감싸는 Wrapper 추가
-const SelectWrapper = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
 const StyledInput = styled.input`
   width: 100%;
   height: 48px; /* 높이 고정 */
@@ -166,40 +146,8 @@ const StyledInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  cursor: pointer;
-  
+
   &::placeholder {
     color: #aaa;
   }
 `;
-
-const StyledSelect = styled.select`
-  width: 100%;
-  height: 48px; /* 높이 고정 */
-  padding: 12px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  appearance: none; /* 기본 화살표 아이콘 제거 */
-  cursor: pointer;
-
-  &:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-`;
-
-const ArrowIconWrapper = styled.div`
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-  pointer-events: none; /* 아이콘에 클릭 이벤트가 전달되지 않도록 함 */
-  color: #ccc;
-
-  svg {
-    font-size: 2rem; /* 아이콘 크기 설정 (기본값보다 더 크게 설정) */
-  }
-`;
-

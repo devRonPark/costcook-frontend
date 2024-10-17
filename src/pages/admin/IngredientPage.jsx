@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios'; // 서버에 데이터를 보내기 위해 추가
+import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ButtonContainer from '../../components/admin/ButtonContainer';
 import DuplicateContainer from '../../components/admin/DuplicateContainer';
