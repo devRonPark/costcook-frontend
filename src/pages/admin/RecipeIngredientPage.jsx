@@ -30,6 +30,11 @@ const RecipeIngredientPage = () => {
     }
   };
 
+  // `SearchContainer`에서 선택된 재료를 상위 컴포넌트로 전달받는 핸들러
+  const handleSelectIngredient = (ingredient) => {
+    setSelectedIngredient(ingredient.name);
+  };
+
   // "등록" 버튼 활성화 여부 결정
   const isRegisterEnabled = Boolean(selectedIngredient);
 
@@ -56,6 +61,7 @@ const RecipeIngredientPage = () => {
             data={ingredientsData}
             placeholder="재료 이름을 입력하세요"
             onCheckDuplicate={handleCheckDuplicate}
+            onSelectIngredient={handleSelectIngredient} 
           />
         </Section>
       </ContentContainer>
