@@ -3,7 +3,15 @@ import styled from 'styled-components';
 import Pagination from '@mui/material/Pagination';
 import { Link } from 'react-router-dom';
 
-const SearchContainer = ({ data, placeholder, onSelectIngredient }) => {
+const IngredientSearchContainer = ({ data, placeholder, onSelectIngredient, onSearch }) => {
+
+  /* RecipeIngredientPage로부터 전달되는 props
+
+    1. data: 더미 재료 데이터를 담고 있는 배열.
+    2. placeholder: 검색창에 보여줄 힌트 텍스트.
+    3. onSearch: 사용자가 검색을 수행했을 때 호출되는 함수.
+    4. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. */
+
   const [inputValue, setInputValue] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,6 +31,7 @@ const SearchContainer = ({ data, placeholder, onSelectIngredient }) => {
     // 입력값이 비어 있거나 공백일 경우 검색 결과가 없도록 설정
     if (trimmedInput === '') {
       setFilteredData([]);
+      onSearch(trimmedInput, []); 
       return;
     }
 
@@ -32,6 +41,9 @@ const SearchContainer = ({ data, placeholder, onSelectIngredient }) => {
     );
     setFilteredData(filtered);
     setCurrentPage(1); // 검색 후 첫 페이지로 이동
+
+    // 부모 컴포넌트에 검색 결과 전달
+    onSearch(trimmedInput, filtered);
   };
 
   const handleKeyPress = (e) => {
@@ -42,7 +54,6 @@ const SearchContainer = ({ data, placeholder, onSelectIngredient }) => {
 
   const handleSelectIngredient = (item) => {
     onSelectIngredient(item); // 선택한 재료를 상위 컴포넌트에 전달
-    alert(`선택된 재료 ID: ${item.id}`); // 선택된 재료의 ID를 alert로 표시
   };
 
   const handlePageChange = (event, value) => {
@@ -118,7 +129,7 @@ const SearchContainer = ({ data, placeholder, onSelectIngredient }) => {
   );
 };
 
-export default SearchContainer;
+export default IngredientSearchContainer;
 
 const Container = styled.div`
   width: 100%;

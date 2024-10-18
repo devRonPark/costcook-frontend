@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ButtonContainer from '../../components/admin/ButtonContainer';
-import DuplicateContainer from '../../components/admin/DuplicateContainer';
+import IngredientDuplicateContainer from '../../components/admin/IngredientDuplicateContainer';
 import unitsData from '../../assets/data/units.json';
 import categoriesData from '../../assets/data/categories.json';
 import ingredientsData from '../../assets/data/ingredients.json';
@@ -97,7 +97,7 @@ const AdminIngredientPage = () => {
       <ContentContainer>
         <Section>
           <SectionTitle>재료 이름</SectionTitle>
-          <DuplicateContainer
+          <IngredientDuplicateContainer
             data={ingredientsData}
             placeholder="재료 이름을 입력하세요"
             onCheckDuplicate={handleCheckDuplicate}
