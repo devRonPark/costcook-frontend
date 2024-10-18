@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { Button } from '@mui/material';
 import Layout from '../components/layout/Layout';
 
 const RecipePage = () => (
@@ -8,7 +10,11 @@ const RecipePage = () => (
     </FilterListContainer>
     <ListRowContainer>
       <List>
-        <ReceiptImage>이미지</ReceiptImage>
+        <ReceiptImage>
+          <Link to="../recipeDetail">
+            <Button>상세페이지</Button>
+          </Link>
+        </ReceiptImage>
         <TextBox>
           <TitleText>김치볶음밥</TitleText>
           <PriceText>4300원</PriceText>
