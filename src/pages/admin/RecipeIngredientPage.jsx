@@ -2,16 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import ingredientsData from '../../assets/data/ingredients.json';
 import unitsData from '../../assets/data/units.json';
-import SelectedInfoContainer from '../../components/admin/SelectedInfoContainer';
-import MovingText from '../../components/admin/MovingText';
-import ContentContainer from '../../components/admin/ContentContainer';
 import AdminLayout from '../../components/admin/AdminLayout';
+import InfoWrapper from '../../components/admin/InfoWrapper';
+import ContentWrapper from '../../components/admin/ContentWrapper';
+import MovingText from '../../components/admin/MovingText';
 import IngredientSearchContainer from '../../components/admin/IngredientSearchContainer';
 
 const RecipeIngredientPage = () => {
   const [selectedIngredient, setSelectedIngredient] = useState(null);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const textRef = useRef(null);
+
+  const isRegisterEnabled = Boolean(selectedIngredient);
+  const isModified = Boolean(selectedIngredient);
+
+  const unitName = selectedIngredient ? unitsData.find((unit) => unit.id === selectedIngredient.unit_id)?.name : '';
 
   useEffect(() => {
     if (textRef.current) {
@@ -29,12 +34,7 @@ const RecipeIngredientPage = () => {
     setSelectedIngredient(null);
   };
 
-  const isRegisterEnabled = Boolean(selectedIngredient);
-  const isModified = Boolean(selectedIngredient);
-
-  const unitName = selectedIngredient
-    ? unitsData.find((unit) => unit.id === selectedIngredient.unit_id)?.name
-    : '';
+  
 
   return (
     <AdminLayout
@@ -43,20 +43,20 @@ const RecipeIngredientPage = () => {
       isRegisterEnabled={isRegisterEnabled}
       isModified={isModified}
     >
-      <SelectedInfoContainer>
+      <InfoWrapper>
         <MovingText ref={textRef} shouldAnimate={shouldAnimate}>
           {[`[재료] ${selectedIngredient ? selectedIngredient.name : '미입력'} / `]}
         </MovingText>
-      </SelectedInfoContainer>
+      </InfoWrapper>
 
-      <ContentContainer>
+      <ContentWrapper>
         <Section>
           <SectionTitle>재료 이름</SectionTitle>
           <IngredientSearchContainer
             data={ingredientsData}
             placeholder="재료 이름을 입력하세요"
             onSelectIngredient={handleSelectIngredient}
-            onSearch={handleSearch}
+            onSearchIngredient={handleSearch}
           />
         </Section>
 
@@ -71,7 +71,7 @@ const RecipeIngredientPage = () => {
             </QuantityInputWrapper>
           </Section>
         )}
-      </ContentContainer>
+      </ContentWrapper>
     </AdminLayout>
   );
 };

@@ -3,77 +3,111 @@ import styled from 'styled-components';
 import Pagination from '@mui/material/Pagination';
 import { Link } from 'react-router-dom';
 
-const IngredientSearchContainer = ({ data, placeholder, onSelectIngredient, onSearch }) => {
+const IngredientSearchContainer = ({ data, placeholder, onSearchIngredient, onSelectIngredient }) => {
 
-  /* RecipeIngredientPage로부터 전달되는 props
-
+  /* 상위 컴포넌트(RecipeIngredientPage)로부터 전달되는 props
     1. data: 더미 재료 데이터를 담고 있는 배열.
     2. placeholder: 검색창에 보여줄 힌트 텍스트.
-    3. onSearch: 사용자가 검색을 수행했을 때 호출되는 함수.
-    4. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. */
+    3. onSearchIngredient: 사용자가 재료를 검색했을 때 호출되는 함수.
+    4. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. 
+  */
 
-  const [inputValue, setInputValue] = useState('');
+  // 상태 : 현재 입력된 키워드
+  const [inputValue, setInputValue] = useState('');  
+  
+  // 상태 : 방금 검색된 결과
   const [filteredData, setFilteredData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isSearchPerformed, setIsSearchPerformed] = useState(false);
-  const itemsPerPage = 5;
 
+  // 상태 : 현재 페이지 번호
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 상태 : 검색을 수행했는지?
+  const [isSearched, setIsSearched] = useState(false);
+
+
+  // 한 페이지에 보여줄 항목의 개수
+  const itemsPerPage = 5;  
+
+  // 현재 페이지에 보여줄 마지막 항목의 인덱스
+  const indexOfLastItem = currentPage * itemsPerPage;  
+
+  // 현재 페이지에 보여줄 첫 번째 항목의 인덱스 
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage; 
+
+  // 현재 페이지에 보여줄 데이터들
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);  
+
+  // 페이지네이션 밑의 텍스트
+  let linkText = '';
+
+  if(isSearched) {
+    linkText = filteredData.length > 0 ? '원하는 게 없어요.' : '검색 결과가 없어요.';
+    linkText += " 직접 추가할래요.";
+  }
+
+  
+  // 이벤트 핸들러 : 사용자가 입력창에 값을 입력할 때 실행되는 함수
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
+  // 이벤트 핸들러 : 사용자가 검색 버튼을 클릭했을 때 실행되는 함수
   const handleSearch = () => {
+    // 입력값의 앞뒤 공백을 제거함.
     const trimmedInput = inputValue.trim();
 
-    // 검색이 수행되었다는 상태를 설정
-    setIsSearchPerformed(true);
+    // 기존에 선택된 재료를 초기화함.
+    onSelectIngredient(null);
 
-    // 입력값이 비어 있거나 공백일 경우 검색 결과가 없도록 설정
+    // 검색이 수행되었음
+    setIsSearched(true);
+
+    // 입력값이 공백일 경우 검색되지 않음.
     if (trimmedInput === '') {
       setFilteredData([]);
-      onSearch(trimmedInput, []); 
       return;
     }
 
-    // 검색 버튼 클릭 시 데이터 필터링
-    const filtered = data.filter((item) =>
+    // 특정 키워드를 포함한 재료만 필터링함.
+    // 현재 더미 데이터를 이용하고 있음.
+    const result = data.filter((item) =>
       item.name.toLowerCase().includes(trimmedInput.toLowerCase())
     );
-    setFilteredData(filtered);
-    setCurrentPage(1); // 검색 후 첫 페이지로 이동
 
-    // 부모 컴포넌트에 검색 결과 전달
-    onSearch(trimmedInput, filtered);
+    // 검색 결과를 저장함.
+    setFilteredData(result);
+
+    // 현재 페이지를 첫 번째 페이지로 설정함.
+    setCurrentPage(1);
+
+    // 상위 컴포넌트에 검색 결과 전달
+    onSearchIngredient(trimmedInput, result);
   };
 
+  // 이벤트 핸들러 : 사용자가 "Enter" 키를 눌렀을 때 실행되는 함수
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSearch(); // 엔터 키로 검색 실행
+      handleSearch();
     }
   };
 
+  // 이벤트 핸들러 : 사용자가 특정 재료를 선택했을 때 실행되는 함수
   const handleSelectIngredient = (item) => {
-    onSelectIngredient(item); // 선택한 재료를 상위 컴포넌트에 전달
+    // 선택한 재료를 상위 컴포넌트에 전달함.
+    onSelectIngredient(item); 
   };
 
+  // 이벤트 핸들러 : 페이지네이션 번호를 클릭했을 때 실행되는 함수
   const handlePageChange = (event, value) => {
+    // 클릭한 페이지 번호로 업데이트함.
     setCurrentPage(value);
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-  let linkText = '';
-  if (isSearchPerformed) {
-    linkText =
-      filteredData.length > 0
-        ? '원하는 게 없어요. 직접 추가할래요.'
-        : '검색 결과가 없어요. 직접 추가할래요.';
-  }
-
+  
   return (
     <Container>
+
+      {/* 입력창 및 검색 버튼 */}
       <InputWrapper>
         <StyledInput
           type="text"
@@ -85,7 +119,8 @@ const IngredientSearchContainer = ({ data, placeholder, onSelectIngredient, onSe
         <SearchButton onClick={handleSearch}>검색</SearchButton>
       </InputWrapper>
 
-      {isSearchPerformed && filteredData.length > 0 && (
+      {/* 검색 결과가 있을 때만 테이블을 보여줌 */}
+      {isSearched && filteredData.length > 0 && (
         <>
           <SearchResultTable>
             <thead>
@@ -106,6 +141,7 @@ const IngredientSearchContainer = ({ data, placeholder, onSelectIngredient, onSe
             </tbody>
           </SearchResultTable>
 
+          {/* 검색 결과가 itemsPerPage보다 많으면 페이지네이션을 보여줌 */}
           {filteredData.length > itemsPerPage && (
             <PaginationWrapper>
               <Pagination
@@ -120,17 +156,18 @@ const IngredientSearchContainer = ({ data, placeholder, onSelectIngredient, onSe
         </>
       )}
 
-      {isSearchPerformed && (
-        <AddIngredientWrapper>
-          <StyledLink to="/admin/ingredient">{linkText}</StyledLink>
-        </AddIngredientWrapper>
-      )}
+      {/* 재료 추가 페이지로 이동하는 링크 */}
+      <AddIngredientLink to="/admin/ingredient">
+        {linkText}
+      </AddIngredientLink>
     </Container>
   );
 };
 
 export default IngredientSearchContainer;
 
+
+// 전체 영역
 const Container = styled.div`
   width: 100%;
   max-width: 600px;
@@ -140,6 +177,7 @@ const Container = styled.div`
   align-items: center;
 `;
 
+// 입력창과 검색 버튼을 담고 있는 영역
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -147,6 +185,7 @@ const InputWrapper = styled.div`
   width: 100%;
 `;
 
+// 입력창
 const StyledInput = styled.input`
   flex: 1;
   padding: 12px;
@@ -161,6 +200,7 @@ const StyledInput = styled.input`
   }
 `;
 
+// 검색 버튼
 const SearchButton = styled.button`
   height: 48px;
   padding: 0 12px;
@@ -174,10 +214,11 @@ const SearchButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #e0a800;
+    background-color: #e0a800;  // 배경 색상이 더 짙어짐
   }
 `;
 
+// 검색 결과를 보여줄 테이블
 const SearchResultTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -203,6 +244,7 @@ const SearchResultTable = styled.table`
   }
 `;
 
+// 재료 이름을 나타내는 칸
 const IngredientTd = styled.td`
   padding: 8px 16px;
   cursor: pointer;
@@ -214,19 +256,18 @@ const IngredientTd = styled.td`
   }
 `;
 
+// 페이지네이션 영역
 const PaginationWrapper = styled.div`
   margin-top: 16px;
   display: flex;
   justify-content: center;
 `;
 
-const AddIngredientWrapper = styled.div`
+// 재료 추가 페이지로 이동하는 링크
+const AddIngredientLink = styled(Link)`
   margin-top: 16px;
   display: flex;
   justify-content: center;
-`;
-
-const StyledLink = styled(Link)`
   font-size: 0.875rem;
   color: #1976d2;
   text-decoration: none;

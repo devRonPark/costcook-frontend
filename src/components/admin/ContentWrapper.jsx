@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const ContentContainer = styled.div`
+const ContentWrapper = styled.div`
   padding: 16px;
   width: 100%;
   max-width: 600px;
@@ -8,4 +8,4 @@ const ContentContainer = styled.div`
   margin-top: 140px; 
 `;
 
-export default ContentContainer;
+export default ContentWrapper;

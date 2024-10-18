@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const SelectedInfoContainer = styled.div`
+const InfoWrapper = styled.div`
   position: fixed; 
   top: 64px; 
   left: 50%; 
@@ -18,4 +18,4 @@ const SelectedInfoContainer = styled.div`
   border-top: none;
 `;
 
-export default SelectedInfoContainer;
+export default InfoWrapper;

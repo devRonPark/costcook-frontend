@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import ContentContainer from '../../components/admin/ContentContainer';
+import ContentWrapper from '../../components/admin/ContentWrapper';
 import ingredientData from '../../assets/data/ingredients.json';
 import IngredientTable from '../../components/admin/IngredientTable'; 
 import ServingsWrapper from '../../components/admin/ServingsWrapper';
@@ -81,7 +81,7 @@ const AdminRecipePage = () => {
       isModified={isModified} // 입력값 변경 여부 전달
       onSubmit={onSubmit} // 등록 함수 전달
     >
-      <ContentContainer>
+      <ContentWrapper>
         <Section>
           <SectionTitle>레시피 이름</SectionTitle>
           <StyledInput
@@ -105,7 +105,7 @@ const AdminRecipePage = () => {
           <IngredientTable ingredientList={ingredientList} />
         </Section>
         
-      </ContentContainer>
+      </ContentWrapper>
     </AdminLayout>
   );
 };
