@@ -7,9 +7,8 @@ import IngredientDuplicateContainer from '../../components/admin/IngredientDupli
 import unitsData from '../../assets/data/units.json';
 import categoriesData from '../../assets/data/categories.json';
 import ingredientsData from '../../assets/data/ingredients.json';
-import InfoWrapper from '../../components/admin/InfoWrapper';
-import MovingText from '../../components/admin/MovingText';
-import ContentWrapper from '../../components/admin/ContentWrapper';
+import InfoContainer from '../../components/admin/InfoContainer';
+import ContentContainer from '../../components/admin/ContentContainer';
 
 
 const AdminIngredientPage = () => {
@@ -86,15 +85,13 @@ const AdminIngredientPage = () => {
       isModified={isModified} // 입력값 변경 여부 전달
       onSubmit={onSubmit} // 등록 함수 전달
     >
-      <InfoWrapper>
-        <MovingText ref={textRef} shouldAnimate={shouldAnimate}>
+      <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
           {[`[재료] ${selectedIngredient || '미입력'} / `,
           `[단위] ${selectedUnit !== null ? `${unitsData.find((unit) => unit.id === selectedUnit)?.name}` : '미선택'} / `,
           `[카테고리] ${selectedCategory !== null ? `${categoriesData.find((category) => category.id === selectedCategory)?.name}` : '미선택'}`].join('')}
-        </MovingText>
-      </InfoWrapper>
+      </InfoContainer>
 
-      <ContentWrapper>
+      <ContentContainer>
         <Section>
           <SectionTitle>재료 이름</SectionTitle>
           <IngredientDuplicateContainer
@@ -119,7 +116,7 @@ const AdminIngredientPage = () => {
             onItemClick={handleCategorySelect}
           />
         </Section>
-      </ContentWrapper>
+      </ContentContainer>
     </AdminLayout>
   );
 };

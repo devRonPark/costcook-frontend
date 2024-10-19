@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Pagination from '@mui/material/Pagination';
 import { Link } from 'react-router-dom';
+import ingredientList from '../../assets/data/ingredients.json';
 
-const IngredientSearchContainer = ({ data, placeholder, onSearchIngredient, onSelectIngredient }) => {
+const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => {
 
   /* 상위 컴포넌트(RecipeIngredientPage)로부터 전달되는 props
-    1. data: 더미 재료 데이터를 담고 있는 배열.
-    2. placeholder: 검색창에 보여줄 힌트 텍스트.
-    3. onSearchIngredient: 사용자가 재료를 검색했을 때 호출되는 함수.
-    4. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. 
+    1. onSearchIngredient: 사용자가 재료를 검색했을 때 호출되는 함수.
+    2. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. 
   */
 
   // 상태 : 현재 입력된 키워드
@@ -70,7 +69,7 @@ const IngredientSearchContainer = ({ data, placeholder, onSearchIngredient, onSe
 
     // 특정 키워드를 포함한 재료만 필터링함.
     // 현재 더미 데이터를 이용하고 있음.
-    const result = data.filter((item) =>
+    const result = ingredientList.filter((item) =>
       item.name.toLowerCase().includes(trimmedInput.toLowerCase())
     );
 
@@ -105,13 +104,15 @@ const IngredientSearchContainer = ({ data, placeholder, onSearchIngredient, onSe
 
   
   return (
-    <Container>
+    <Section>
+      
+      <h2>재료 이름</h2>
 
       {/* 입력창 및 검색 버튼 */}
       <InputWrapper>
         <StyledInput
           type="text"
-          placeholder={placeholder}
+          placeholder="재료를 검색하세요"
           value={inputValue}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
@@ -160,21 +161,20 @@ const IngredientSearchContainer = ({ data, placeholder, onSearchIngredient, onSe
       <AddIngredientLink to="/admin/ingredient">
         {linkText}
       </AddIngredientLink>
-    </Container>
+    </Section>
   );
 };
 
-export default IngredientSearchContainer;
+export default IngredientSearchSection;
 
 
 // 전체 영역
-const Container = styled.div`
+const Section = styled.div`
   width: 100%;
   max-width: 600px;
-  margin: 20px auto;
+  margin: 30px auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
 `;
 
 // 입력창과 검색 버튼을 담고 있는 영역
@@ -183,6 +183,7 @@ const InputWrapper = styled.div`
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin-top: 20px;
 `;
 
 // 입력창

@@ -9,7 +9,7 @@ const FormHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmi
       <ArrowBackIconStyled />
     </IconWrapper>
     <Title>{title}</Title>
-    <RightContainer>
+    <RightWrapper>
       {rightLabel && (
         <RegisterLabel
           isEnabled={isRegisterEnabled}
@@ -18,7 +18,7 @@ const FormHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmi
           {rightLabel}
         </RegisterLabel>
       )}
-    </RightContainer>
+    </RightWrapper>
   </HeaderContainer>
 );
 
@@ -63,7 +63,7 @@ const Title = styled.h1`
   flex-grow: 1;
 `;
 
-const RightContainer = styled.div`
+const RightWrapper = styled.div`
   display: flex;
   align-items: center;
 `;

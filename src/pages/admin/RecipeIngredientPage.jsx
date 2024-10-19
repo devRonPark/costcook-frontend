@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import ingredientsData from '../../assets/data/ingredients.json';
 import unitsData from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
-import InfoWrapper from '../../components/admin/InfoWrapper';
-import ContentWrapper from '../../components/admin/ContentWrapper';
-import MovingText from '../../components/admin/MovingText';
-import IngredientSearchContainer from '../../components/admin/IngredientSearchContainer';
+import InfoContainer from '../../components/admin/InfoContainer';
+import ContentContainer from '../../components/admin/ContentContainer';
+import IngredientSearchSection from '../../components/admin/IngredientSearchSection';
 
 const RecipeIngredientPage = () => {
   const [selectedIngredient, setSelectedIngredient] = useState(null);
@@ -34,8 +32,6 @@ const RecipeIngredientPage = () => {
     setSelectedIngredient(null);
   };
 
-  
-
   return (
     <AdminLayout
       title="재료"
@@ -43,22 +39,15 @@ const RecipeIngredientPage = () => {
       isRegisterEnabled={isRegisterEnabled}
       isModified={isModified}
     >
-      <InfoWrapper>
-        <MovingText ref={textRef} shouldAnimate={shouldAnimate}>
-          {[`[재료] ${selectedIngredient ? selectedIngredient.name : '미입력'} / `]}
-        </MovingText>
-      </InfoWrapper>
+      <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
+        {[`[재료] ${selectedIngredient ? selectedIngredient.name : '미입력'} / `]}
+      </InfoContainer>
 
-      <ContentWrapper>
-        <Section>
-          <SectionTitle>재료 이름</SectionTitle>
-          <IngredientSearchContainer
-            data={ingredientsData}
-            placeholder="재료 이름을 입력하세요"
-            onSelectIngredient={handleSelectIngredient}
-            onSearchIngredient={handleSearch}
-          />
-        </Section>
+      <ContentContainer>
+        <IngredientSearchSection
+          onSelectIngredient={handleSelectIngredient}
+          onSearchIngredient={handleSearch}
+        />
 
         {selectedIngredient && (
           <Section>
@@ -71,7 +60,7 @@ const RecipeIngredientPage = () => {
             </QuantityInputWrapper>
           </Section>
         )}
-      </ContentWrapper>
+      </ContentContainer>
     </AdminLayout>
   );
 };
