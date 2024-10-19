@@ -56,8 +56,8 @@ const Footer = () => {
         </IconWrapper>
 
         <IconWrapper
-          isActive={location.pathname === '/'}
-          onClick={() => handleNavigate('/')}
+          isActive={location.pathname === '/home'}
+          onClick={() => handleNavigate('/home')}
         >
           <HomeIconStyled />
           <Text>메인</Text>
