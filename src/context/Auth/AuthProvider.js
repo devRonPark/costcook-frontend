@@ -22,6 +22,17 @@ const authReducer = (state, action) => {
         user: action.payload, // ableToLogin이 false인 경우의 사용자 데이터 저장
         isAuthenticated: false,
       };
+    case 'UPDATE_EMAIL':
+      return {
+        ...state,
+        user: {
+          ...state.user, // 기존 user 상태를 유지
+          data: {
+            ...state.user.data,
+            email: action.payload, // 새로운 이메일로 업데이트
+          },
+        },
+      };
     case 'LOGOUT':
       return {
         ...state,

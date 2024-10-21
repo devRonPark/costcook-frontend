@@ -13,6 +13,8 @@ const AuthApi = {
   },
   sendVerificationEmail: (data) =>
     apiClient.post('/auth/send-verification-code', data),
+  // 인증 코드 확인 요청
+  verifyCode: (data) => apiClient.post('/auth/verify-code', data),
 };
 
 export default AuthApi; // AuthApi 객체를 기본 내보내기
