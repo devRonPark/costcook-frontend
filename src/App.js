@@ -20,8 +20,10 @@ import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
+import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
 import PageTransition from './components/common/PageTransition';
+import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 // import RecommendPage from './pages/RecommendPage';
 
 function App() {
@@ -106,8 +108,13 @@ function App() {
               </AuthProvider>
             }
           />
-          <Route path="*" element={<NotFoundPage />} />
           <Route path="/admin/ingredient" element={<AdminIngredientPage />} />
+          <Route path="/admin/recipe" element={<AdminRecipePage />} />
+          <Route
+            path="/admin/recipeIngredient"
+            element={<RecipeIngredientPage />}
+          />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
     </>
