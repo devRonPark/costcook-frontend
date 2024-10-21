@@ -1,21 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import unitsData from '../../assets/data/units.json';
+import unitList from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 import IngredientSearchSection from '../../components/admin/IngredientSearchSection';
+import IngredientQuantitySection from '../../components/admin/IngredientQuantitySection';
 
 const RecipeIngredientPage = () => {
+  // 상태 : 선택된 재료
   const [selectedIngredient, setSelectedIngredient] = useState(null);
+
+  // 상태 : 재료의 수량
+  const [quantity, setQuantity] = useState('');
+
+  // 상태 : 재료 이름이 너무 길어져서 정보창에 한 줄로 표시되지 못해 왼쪽으로 이동할지?
   const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  // 정보창에 보여줄 정보
   const textRef = useRef(null);
 
-  const isRegisterEnabled = Boolean(selectedIngredient);
-  const isModified = Boolean(selectedIngredient);
+  // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
+  const isRegisterEnabled = Boolean(selectedIngredient && quantity > 0);
 
-  const unitName = selectedIngredient ? unitsData.find((unit) => unit.id === selectedIngredient.unit_id)?.name : '';
-
+  // 재료나 수량이 입력된 경우 Exit 모달 활성화
+  const isModified = Boolean(selectedIngredient) || Boolean(quantity); 
+  
+  // 선택된 재료에 표시되는 단위 (더미 데이터)
+  const unitName = selectedIngredient 
+  ? unitList.find((unit) => unit.id === selectedIngredient.unit_id)?.name 
+  : '';
+  
+  
   useEffect(() => {
     if (textRef.current) {
       const containerWidth = textRef.current.parentElement.offsetWidth;
@@ -24,41 +39,58 @@ const RecipeIngredientPage = () => {
     }
   }, [selectedIngredient]);
 
-  const handleSelectIngredient = (ingredient) => {
-    setSelectedIngredient(ingredient);
+
+  // 이벤트 핸들러 : 재료를 검색했을 때
+  const handleSearchIngredient = () => {
+    // 재료를 초기화
+    setSelectedIngredient(null);
+
+    // 수량을 초기화
+    setQuantity(''); 
   };
 
-  const handleSearch = (trimmedInput, filteredData) => {
-    setSelectedIngredient(null);
+  // 이벤트 핸들러 : 재료를 선택했을 때 
+  const handleSelectIngredient = (newIngredient) => {
+    // 재료를 업데이트함
+    setSelectedIngredient(newIngredient);
+    
+    // 수량을 초기화
+    setQuantity(''); 
   };
+
+  // 이벤트 핸들러 : 재료 수량을 입력하고 확인 버튼을 눌렀을 때
+  const handleQuantityConfirm = (newQuantity) => {
+    // 수량을 업데이트함
+    setQuantity(newQuantity);
+  };
+
+  
 
   return (
     <AdminLayout
       title="재료"
       rightLabel="등록"
-      isRegisterEnabled={isRegisterEnabled}
+      isRegisterEnabled={isRegisterEnabled}  // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
       isModified={isModified}
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
-        {[`[재료] ${selectedIngredient ? selectedIngredient.name : '미입력'} / `]}
+        {selectedIngredient
+          ? `${selectedIngredient.name} ${quantity ? `${quantity}${unitName}` : ''}`
+          : '선택된 재료가 없습니다.'}
       </InfoContainer>
 
       <ContentContainer>
         <IngredientSearchSection
           onSelectIngredient={handleSelectIngredient}
-          onSearchIngredient={handleSearch}
+          onSearchIngredient={handleSearchIngredient}
         />
 
         {selectedIngredient && (
-          <Section>
-            <SectionTitle>재료 수량</SectionTitle>
-            <QuantityInputWrapper>
-              <div style={{ fontSize: '1rem' }}>
-                몇 <span style={{ fontWeight: 'bold' }}>{unitName}</span> 넣으시겠습니까?
-              </div>
-              <QuantityInput type="number" min="1" />
-            </QuantityInputWrapper>
-          </Section>
+          <IngredientQuantitySection
+            unitName={unitName} 
+            onQuantityConfirm={handleQuantityConfirm}  // 확인 버튼을 눌렀을 때만 수량 업데이트
+            onResetIngredient={selectedIngredient} 
+          />
         )}
       </ContentContainer>
     </AdminLayout>
@@ -66,30 +98,3 @@ const RecipeIngredientPage = () => {
 };
 
 export default RecipeIngredientPage;
-
-// 스타일 컴포넌트 정의 영역
-
-const Section = styled.div`
-  margin-top: 24px; 
-`;
-
-const SectionTitle = styled.h2`
-  margin-bottom: 16px;
-`;
-
-const QuantityInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between; 
-  gap: 8px;
-  width: 100%;
-`;
-
-const QuantityInput = styled.input`
-  width: 80px; 
-  padding: 4px;
-  font-size: 1rem;
-  text-align: right;
-  border: 1px solid #ccc; 
-  border-radius: 4px;
-`;

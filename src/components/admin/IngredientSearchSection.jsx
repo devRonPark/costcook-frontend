@@ -23,7 +23,6 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
   // 상태 : 검색을 수행했는지?
   const [isSearched, setIsSearched] = useState(false);
 
-
   // 한 페이지에 보여줄 항목의 개수
   const itemsPerPage = 5;  
 
@@ -102,7 +101,7 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
     setCurrentPage(value);
   };
 
-  
+
   return (
     <Section>
       
@@ -204,7 +203,7 @@ const StyledInput = styled.input`
 // 검색 버튼
 const SearchButton = styled.button`
   height: 48px;
-  padding: 0 12px;
+  padding: 0 20px;
   background-color: #ffc107;
   color: white;
   border: none;
