@@ -3,16 +3,6 @@ import styled from 'styled-components';
 import { CheckCircleOutline, ErrorOutline } from '@mui/icons-material';
 import AuthApi from '../services/auth.api';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 0 20px;
-  background-color: #f9f9f9;
-`;
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -78,27 +68,24 @@ const EmailVerification = ({ onSend }) => {
   };
 
   return (
-    <Container>
-      <h2>이메일 인증</h2>
-      <Form onSubmit={handleSendVerification}>
-        <Input
-          type="email"
-          placeholder="이메일을 입력하세요"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? '전송 중...' : '인증 메일 발송'}
-        </Button>
-      </Form>
+    <Form onSubmit={handleSendVerification}>
+      <Input
+        type="email"
+        placeholder="이메일을 입력하세요"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? '전송 중...' : '인증 메일 발송'}
+      </Button>
       {message && (
         <Message error={isError}>
           {isError ? <ErrorOutline /> : <CheckCircleOutline />}
           {message}
         </Message>
       )}
-    </Container>
+    </Form>
   );
 };
 

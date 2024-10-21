@@ -5,8 +5,9 @@ import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
 import ingredientData from '../../assets/data/ingredients.json';
-import IngredientTable from '../../components/admin/IngredientTable'; 
+import IngredientTable from '../../components/admin/IngredientTable';
 import ServingsWrapper from '../../components/admin/ServingsWrapper';
+import ContentContainer from '../../components/admin/ContentContainer';
 
 const AdminRecipePage = () => {
 
@@ -90,11 +91,15 @@ const AdminRecipePage = () => {
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
-      alert(`API: /api/admin/recipes\n\n데이터: ${JSON.stringify(
-        {
-          recipeName,
-          categoryId: selectedMenu,
-        }, null, 2 )}`
+      alert(
+        `API: /api/admin/recipes\n\n데이터: ${JSON.stringify(
+          {
+            recipeName,
+            categoryId: selectedMenu,
+          },
+          null,
+          2
+        )}`
       );
     }
   };
@@ -130,7 +135,6 @@ const AdminRecipePage = () => {
           </SectionTitleWrapper>
           <IngredientTable ingredientList={ingredientList} />
         </Section>
-        
       </ContentContainer>
     </AdminLayout>
   );
@@ -140,7 +144,7 @@ export default AdminRecipePage;
 
 // 전체 영역
 const Section = styled.div`
-  margin-top: 24px; 
+  margin-top: 24px;
 `;
 
 const SectionTitleWrapper = styled.div`
