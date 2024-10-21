@@ -1,5 +1,11 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GlobalStyle from './styles/GlobalStyle';
@@ -16,34 +22,118 @@ import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
+import AdminRecipePage from './pages/admin/RecipePage';
+import AdminIngredientPage from './pages/admin/IngredientPage';
+import PageTransition from './components/common/PageTransition';
+import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 
 function App() {
+  const location = useLocation();
+
   return (
-    <Router>
+    <>
       <ToastContainer />
       <GlobalStyle /> {/* 전역 스타일 적용 */}
-      <Routes>
-        <Route path="/" element={<PreLoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/recipe" element={<RecipePage />} />
-        <Route path="/recipeDetail" element={<RecipeDetail />} />
-        <Route path="/recommend" element={<RecommendPage />} />
-        <Route path="/budget" element={<BudgetPage />} />
-        <Route path="/favorite" element={<FavoritePage />} />
-        <Route path="/my" element={<MyPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route
-          path="/oauth/:provider"
-          element={
-            <AuthProvider>
-              <OAuthVerification />
-            </AuthProvider>
-          }
-        />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Router>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                <PreLoginPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PageTransition>
+                <LoginPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <PageTransition>
+                <HomePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/recipe"
+            element={
+              <PageTransition>
+                <RecipePage />
+              </PageTransition>
+            }
+          />
+          <Route 
+            path="/recipeDetail" 
+            element={
+              <PageTransition>
+                <RecipeDetail />
+              <PageTransition>
+            } 
+          />
+          <Route 
+            path="/recommend" 
+            element={
+              <PageTransition>
+                <RecommendPage />
+              </PageTransition> 
+            }
+          />
+          <Route
+            path="/budget"
+            element={
+              <PageTransition>
+                <BudgetPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/favorite"
+            element={
+              <PageTransition>
+                <FavoritePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/my"
+            element={
+              <PageTransition>
+                <MyPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <PageTransition>
+                <SearchPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/oauth/:provider"
+            element={
+              <AuthProvider>
+                <OAuthVerification />
+              </AuthProvider>
+            }
+          />
+          <Route path="/admin/ingredient" element={<AdminIngredientPage />} />
+          <Route path="/admin/recipe" element={<AdminRecipePage />} />
+          <Route
+            path="/admin/recipeIngredient"
+            element={<RecipeIngredientPage />}
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 }
 
