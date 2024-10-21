@@ -1,17 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-// Styled Components
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 0 20px;
-  background-color: #f9f9f9;
-`;
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -106,24 +95,22 @@ const VerificationCodeInput = ({ onVerify }) => {
   };
 
   return (
-    <Container>
-      <Form onSubmit={handleVerification}>
-        <Title>인증 코드를 입력해주세요</Title>
-        <Input
-          type="text"
-          placeholder="인증 코드"
-          value={verificationCode}
-          onChange={(e) => setVerificationCode(e.target.value)}
-          required
-          disabled={isExpired} // 시간이 초과되면 입력 불가
-        />
-        <Button type="submit" disabled={isExpired}>
-          인증 코드 확인
-        </Button>
-        {message && <Message>{message}</Message>}
-        <TimerMessage>{formatTimeLeft(timeLeft)}</TimerMessage>
-      </Form>
-    </Container>
+    <Form onSubmit={handleVerification}>
+      <Title>인증 코드를 입력해주세요</Title>
+      <Input
+        type="text"
+        placeholder="인증 코드"
+        value={verificationCode}
+        onChange={(e) => setVerificationCode(e.target.value)}
+        required
+        disabled={isExpired} // 시간이 초과되면 입력 불가
+      />
+      <Button type="submit" disabled={isExpired}>
+        인증 코드 확인
+      </Button>
+      {message && <Message>{message}</Message>}
+      <TimerMessage>{formatTimeLeft(timeLeft)}</TimerMessage>
+    </Form>
   );
 };
 
