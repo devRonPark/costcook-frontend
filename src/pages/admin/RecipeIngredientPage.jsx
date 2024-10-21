@@ -13,7 +13,9 @@ const RecipeIngredientPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // 상태: 재료 리스트
+  // AdminRecipePage로부터 전달된 상태들
+  const [recipeName, setRecipeName] = useState(state?.recipeName || '');
+  const [servings, setServings] = useState(state?.servings || 1);
   const [ingredientList, setIngredientList] = useState(state?.ingredientList || []);
 
   // 상태 : 선택된 재료
@@ -38,8 +40,7 @@ const RecipeIngredientPage = () => {
   const unitName = selectedIngredient 
   ? unitList.find((unit) => unit.id === selectedIngredient.unit_id)?.name 
   : '';
-  
-  
+    
   useEffect(() => {
     if (textRef.current) {
       const containerWidth = textRef.current.parentElement.offsetWidth;
@@ -89,7 +90,9 @@ const RecipeIngredientPage = () => {
       // AdminRecipePage로 돌아가면서 재료 리스트를 전달
       navigate('/admin/recipe', {
         state: {
-          ingredientList: updatedIngredientList
+          ingredientList: updatedIngredientList,
+          recipeName,
+          servings
         },
       });
     } else {

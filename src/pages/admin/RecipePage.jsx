@@ -7,10 +7,8 @@ import ContentContainer from '../../components/admin/ContentContainer';
 import ingredientData from '../../assets/data/ingredients.json';
 import IngredientTable from '../../components/admin/IngredientTable';
 import ServingsWrapper from '../../components/admin/ServingsWrapper';
-import ContentContainer from '../../components/admin/ContentContainer';
 
 const AdminRecipePage = () => {
-
   const navigate = useNavigate();
   const { state } = useLocation(); 
 
@@ -23,33 +21,65 @@ const AdminRecipePage = () => {
   // 상태 : 식사량 (기본값 1인분)
   const [servings, setServings] = useState(1);
 
-  // 상태 : 재료 리스트
-  // 다른 페이지에서 전달된 재료 리스트가 있으면 그 리스트를 사용하고, 없으면 빈 리스트로 초기화
-  const [ingredientList, setIngredientList] = useState(state?.ingredientList || []);
+  // 상태 : 재료 리스트 (state에서 재료 리스트를 사용하되, 없으면 기본값 사용)
+  const [ingredientList, setIngredientList] = useState(
+    state?.ingredientList || 
+    ingredientData.slice(0, 3).map((ingredient) => ({
+      ...ingredient,
+      quantity: 1,
+    }))
+  );
 
-  // 전달된 state에 재료 리스트가 있는 경우 이를 ingredientList로 설정함
+  // 등록 버튼 활성화 조건
+  const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
+
+  // 페이지 변경 경고 활성화 조건
+  const isModified = Boolean(recipeName) || ingredientList.length > 0;
+
+  
+  // 페이지 이탈 시 사용자에게 경고 모달을 표시하는 로직
   useEffect(() => {
-    if (state?.ingredientList) {
-      setIngredientList(state.ingredientList);
-    }
-  }, [state]);
+    const handleBeforeUnload = (event) => {
+      if (isModified) {
+        event.preventDefault(); 
+      }
+    };
 
-  // 재료 리스트가 비어 있을 경우 기본 재료(간장, 감자, 계란)를 3개 추가함 
-  // 각각 1인분
+    // 브라우저에서 페이지 나가기 전 경고 이벤트 추가
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isModified]);
+
+
+  // 새로고침 감지 후 리프레시 페이지로 리다이렉트하는 로직
   useEffect(() => {
-    if (ingredientList.length === 0) {
-      const defaultIngredientList = ingredientData.slice(0, 3).map((ingredient) => ({
-        ...ingredient, quantity: 1, 
-      }));
-      setIngredientList(defaultIngredientList);
-    }
-  }, []);
+    const handleReload = (event) => {
+      if (event.type === 'beforeunload') {
+        // 새로고침 시 /admin/refresh로 리다이렉트하며 현재 페이지 정보를 전달
+        navigate('/admin/refresh', {
+          state: { fromPage: '/admin/recipe' },
+        });
+      }
+    };
 
-  // 이벤트 헨들러 : 재료 추가 버튼을 클릭할 때
+    // 새로고침 감지 이벤트 추가
+    window.addEventListener('beforeunload', handleReload);
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+      window.removeEventListener('beforeunload', handleReload);
+    };
+  }, [navigate]);
+
+
+  // 이벤트 핸들러 : 재료 추가 버튼을 클릭할 때
   const handleAddIngredient = () => {
-    // 재료 추가 페이지에 기존 재료 리스트를 전달함
     navigate('/admin/recipeIngredient', {
-      state: { ingredientList }
+      state: { ingredientList, recipeName, servings },
     });
   };
 
@@ -68,11 +98,10 @@ const AdminRecipePage = () => {
     setServings(Number(e.target.value));
   };
 
-  // 등록 버튼을 활성화해야 하는지
-  const isRegisterEnabled = Boolean(recipeName) && selectedMenu !== null && ingredientList.length > 0;;
-
-  // Exit 모달을 활성화해야 하는지
-  const isModified = Boolean(recipeName) || selectedMenu !== null || ingredientList.length > 0;;
+  // 이벤트 핸들러 : 체크된 재료들을 리스트에서 지울 때
+  const handleDeleteIngredient = (ingredientId) => {
+    setIngredientList((prevList) => prevList.filter((ingredient) => ingredient.id !== ingredientId));
+  };
 
   // 서버로 등록 요청
   const handleSubmit = async () => {
@@ -133,7 +162,10 @@ const AdminRecipePage = () => {
             <SectionTitle>레시피 재료</SectionTitle>
             <AddButton onClick={handleAddIngredient}>추가</AddButton>
           </SectionTitleWrapper>
-          <IngredientTable ingredientList={ingredientList} />
+          <IngredientTable
+            ingredientList={ingredientList}
+            onDeleteIngredient={handleDeleteIngredient}
+          />
         </Section>
       </ContentContainer>
     </AdminLayout>
@@ -159,7 +191,7 @@ const SectionTitle = styled.h2`
 
 // 재료 추가 버튼
 const AddButton = styled.button`
-  background-color: #17c3b2; /* 민트색 */
+  background-color: #17c3b2;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -168,14 +200,14 @@ const AddButton = styled.button`
   border-radius: 4px;
 
   &:hover {
-    background-color: #14a699; /* 약간 어두운 민트색 */
+    background-color: #14a699;
   }
 `;
 
 // 레시피 이름 입력창
 const StyledInput = styled.input`
   width: 100%;
-  height: 48px; /* 높이 고정 */
+  height: 48px;
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ccc;

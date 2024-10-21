@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import MoreVertIcon from '@mui/icons-material/MoreVert'; // 추가된 MUI 아이콘
+import DeleteIcon from '@mui/icons-material/Delete'; // 휴지통 아이콘으로 변경
 import unitData from '../../assets/data/units.json';
 
-const IngredientTable = ({ ingredientList }) => {
+const IngredientTable = ({ ingredientList, onDeleteIngredient }) => {
   // 총 가격 합계 계산
   const grandTotal = ingredientList.reduce(
     (acc, ingredient) => acc + ingredient.price * ingredient.quantity,
@@ -30,9 +30,9 @@ const IngredientTable = ({ ingredientList }) => {
               <td>{`${ingredient.quantity}${unitName}`}</td>
               <PriceCell>
                 {`${totalPrice % 1 === 0 ? totalPrice.toFixed(0) : totalPrice}원`}
-                <MoreIconWrapper onClick={() => alert(`재료 ID: ${ingredient.id}`)}>
-                  <MoreVertIcon />
-                </MoreIconWrapper>
+                <DeleteIconWrapper onClick={() => onDeleteIngredient(ingredient.id)}>
+                  <DeleteIcon />
+                </DeleteIconWrapper>
               </PriceCell>
             </TableRow>
           );
@@ -90,21 +90,21 @@ const PriceCell = styled.td`
   text-align: left; /* 가격 텍스트를 왼쪽으로 정렬 */
 `;
 
-const MoreIconWrapper = styled.div`
+// 휴지통 아이콘 스타일
+const DeleteIconWrapper = styled.div`
   position: absolute;
   right: 4px;
-  top: 55%;
+  top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #666;
+  color: #e74c3c; /* 빨간색으로 변경하여 삭제 의미 명확화 */
 
   &:hover {
-    color: #000; /* 마우스를 올렸을 때 색 변경 */
+    color: #c0392b; /* 마우스를 올렸을 때 조금 더 어두운 빨간색으로 변경 */
   }
 `;
 
 const TableRow = styled.tr`
   position: relative;
 `;
-
 
