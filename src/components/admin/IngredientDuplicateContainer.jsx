@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-const DuplicateContainer = ({ data, placeholder, onCheckDuplicate }) => {
+const IngredientDuplicateContainer = ({ data, placeholder, onCheckDuplicate }) => {
   const [inputValue, setInputValue] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 비활성화 상태
@@ -60,7 +60,7 @@ const DuplicateContainer = ({ data, placeholder, onCheckDuplicate }) => {
   );
 };
 
-export default DuplicateContainer;
+export default IngredientDuplicateContainer;
 
 const Container = styled.div`
   width: 100%;
@@ -82,8 +82,6 @@ const StyledInput = styled.input`
   height: 48px; /* 높이 고정 */
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: ${(props) =>
-    props.value.trim() ? '#fff' : '#e0e0e0'}; /* 유효한 입력일 때 흰색 */
   outline: none;
   font-size: 1rem;
 
