@@ -68,20 +68,20 @@ function App() {
               </PageTransition>
             }
           />
-          <Route 
-            path="/recipeDetail" 
+          <Route
+            path="/recipeDetail"
             element={
               <PageTransition>
                 <RecipeDetail />
-              <PageTransition>
-            } 
+              </PageTransition>
+            }
           />
-          <Route 
-            path="/recommend" 
+          <Route
+            path="/recommend"
             element={
               <PageTransition>
                 <RecommendPage />
-              </PageTransition> 
+              </PageTransition>
             }
           />
           <Route

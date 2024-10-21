@@ -1,10 +1,11 @@
+import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
 import EmailVerification from '../components/EmailVerification';
 import VerificationCodeInput from '../components/VerificationCodeInput ';
+import Layout from '../components/layout/Layout';
 
 const OAuthVerification = () => {
   const { provider } = useParams();
@@ -88,24 +89,22 @@ const OAuthVerification = () => {
 
   // 로딩 중인 경우
   if (loading) {
-    return (
-      <h1>
-        {provider}
-        {provider} 로그인 진행 중...
-      </h1>
-    );
+    return <h1>{provider} 로그인 진행 중...</h1>;
   }
 
   // 이메일 인증이 필요한 경우 이메일 인증 폼을 렌더링
   if (state.user && !state.user.ableToLogin) {
+    const onBackHandler = () => {
+      window.history.back();
+    };
     return (
-      <div>
+      <Layout isBackBtnExist pageName="이메일 인증">
         {!emailSent ? (
           <EmailVerification onSend={handleSendVerificationEmail} />
         ) : (
           <VerificationCodeInput onVerify={handleVerifyCode} />
         )}
-      </div>
+      </Layout>
     );
   }
 

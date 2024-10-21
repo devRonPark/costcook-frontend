@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import ContentWrapper from '../../components/admin/ContentWrapper';
 import ingredientData from '../../assets/data/ingredients.json';
-import IngredientTable from '../../components/admin/IngredientTable'; 
+import IngredientTable from '../../components/admin/IngredientTable';
 import ServingsWrapper from '../../components/admin/ServingsWrapper';
+import ContentContainer from '../../components/admin/ContentContainer';
 
 const AdminRecipePage = () => {
   const [recipeName, setRecipeName] = useState('');
@@ -18,10 +18,12 @@ const AdminRecipePage = () => {
 
   useEffect(() => {
     // 1번부터 3번까지의 재료를 기본적으로 1개씩 추가
-    const defaultIngredientList = ingredientData.slice(0, 3).map((ingredient) => ({
-      ...ingredient,
-      quantity: 1, // 기본 수량 1개로 설정
-    }));
+    const defaultIngredientList = ingredientData
+      .slice(0, 3)
+      .map((ingredient) => ({
+        ...ingredient,
+        quantity: 1, // 기본 수량 1개로 설정
+      }));
     setIngredientList(defaultIngredientList);
   }, []);
 
@@ -64,11 +66,15 @@ const AdminRecipePage = () => {
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
-      alert(`API: /api/admin/recipes\n\n데이터: ${JSON.stringify(
-        {
-          recipeName,
-          categoryId: selectedMenu,
-        }, null, 2 )}`
+      alert(
+        `API: /api/admin/recipes\n\n데이터: ${JSON.stringify(
+          {
+            recipeName,
+            categoryId: selectedMenu,
+          },
+          null,
+          2
+        )}`
       );
     }
   };
@@ -81,7 +87,7 @@ const AdminRecipePage = () => {
       isModified={isModified} // 입력값 변경 여부 전달
       onSubmit={onSubmit} // 등록 함수 전달
     >
-      <ContentWrapper>
+      <ContentContainer>
         <Section>
           <SectionTitle>레시피 이름</SectionTitle>
           <StyledInput
@@ -104,8 +110,7 @@ const AdminRecipePage = () => {
           </SectionTitleWrapper>
           <IngredientTable ingredientList={ingredientList} />
         </Section>
-        
-      </ContentWrapper>
+      </ContentContainer>
     </AdminLayout>
   );
 };
@@ -114,7 +119,7 @@ export default AdminRecipePage;
 
 // 스타일 컴포넌트 정의
 const Section = styled.div`
-  margin-top: 24px; 
+  margin-top: 24px;
 `;
 
 const SectionTitleWrapper = styled.div`
