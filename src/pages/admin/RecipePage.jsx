@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -9,46 +9,72 @@ import IngredientTable from '../../components/admin/IngredientTable';
 import ServingsWrapper from '../../components/admin/ServingsWrapper';
 
 const AdminRecipePage = () => {
-  const [recipeName, setRecipeName] = useState('');
-  const [selectedMenu, setSelectedMenu] = useState(null);
-  const [servings, setServings] = useState(1); // 식사량
-  const [ingredientList, setIngredientList] = useState([]);
 
   const navigate = useNavigate();
+  const { state } = useLocation(); 
 
+  // 상태 : 레시피 이름
+  const [recipeName, setRecipeName] = useState('');
+
+  // 상태 : 선택된 메뉴
+  const [selectedMenu, setSelectedMenu] = useState(null);
+
+  // 상태 : 식사량 (기본값 1인분)
+  const [servings, setServings] = useState(1);
+
+  // 상태 : 재료 리스트
+  // 다른 페이지에서 전달된 재료 리스트가 있으면 그 리스트를 사용하고, 없으면 빈 리스트로 초기화
+  const [ingredientList, setIngredientList] = useState(state?.ingredientList || []);
+
+  // 전달된 state에 재료 리스트가 있는 경우 이를 ingredientList로 설정함
   useEffect(() => {
-    // 1번부터 3번까지의 재료를 기본적으로 1개씩 추가
-    const defaultIngredientList = ingredientData.slice(0, 3).map((ingredient) => ({
-      ...ingredient,
-      quantity: 1, // 기본 수량 1개로 설정
-    }));
-    setIngredientList(defaultIngredientList);
+    if (state?.ingredientList) {
+      setIngredientList(state.ingredientList);
+    }
+  }, [state]);
+
+  // 재료 리스트가 비어 있을 경우 기본 재료(간장, 감자, 계란)를 3개 추가함 
+  // 각각 1인분
+  useEffect(() => {
+    if (ingredientList.length === 0) {
+      const defaultIngredientList = ingredientData.slice(0, 3).map((ingredient) => ({
+        ...ingredient, quantity: 1, 
+      }));
+      setIngredientList(defaultIngredientList);
+    }
   }, []);
 
+  // 이벤트 헨들러 : 재료 추가 버튼을 클릭할 때
+  const handleAddIngredient = () => {
+    // 재료 추가 페이지에 기존 재료 리스트를 전달함
+    navigate('/admin/recipeIngredient', {
+      state: { ingredientList }
+    });
+  };
+
+  // 이벤트 핸들러 : 레시피 이름이 변경될 때마다
   const handleNameChange = (e) => {
     setRecipeName(e.target.value);
   };
 
+  // 이벤트 핸들러 : 메뉴를 선택할 때마다
   const handleMenuSelect = (menu) => {
     setSelectedMenu(selectedMenu === menu.id ? null : menu.id);
   };
 
+  // 이벤트 핸들러 : 식사량을 선택할 때마다
   const handleServingsSelect = (e) => {
     setServings(Number(e.target.value));
   };
 
-  const handleAddIngredient = () => {
-    navigate('/admin/recipeIngredient');
-  };
+  // 등록 버튼을 활성화해야 하는지
+  const isRegisterEnabled = Boolean(recipeName) && selectedMenu !== null && ingredientList.length > 0;;
 
-  // "등록" 버튼 활성화 여부 결정
-  const isRegisterEnabled = Boolean(recipeName) && selectedMenu !== null;
-
-  // "나가기" 확인 모달 활성화 여부 결정
-  const isModified = Boolean(recipeName) || selectedMenu !== null;
+  // Exit 모달을 활성화해야 하는지
+  const isModified = Boolean(recipeName) || selectedMenu !== null || ingredientList.length > 0;;
 
   // 서버로 등록 요청
-  const onSubmit = async () => {
+  const handleSubmit = async () => {
     try {
       const requestData = {
         recipeName,
@@ -78,8 +104,8 @@ const AdminRecipePage = () => {
       title="레시피"
       rightLabel="등록"
       isRegisterEnabled={isRegisterEnabled}
-      isModified={isModified} // 입력값 변경 여부 전달
-      onSubmit={onSubmit} // 등록 함수 전달
+      isModified={isModified}
+      onSubmit={handleSubmit}
     >
       <ContentContainer>
         <Section>
@@ -112,7 +138,7 @@ const AdminRecipePage = () => {
 
 export default AdminRecipePage;
 
-// 스타일 컴포넌트 정의
+// 전체 영역
 const Section = styled.div`
   margin-top: 24px; 
 `;
@@ -127,6 +153,7 @@ const SectionTitle = styled.h2`
   margin-bottom: 16px;
 `;
 
+// 재료 추가 버튼
 const AddButton = styled.button`
   background-color: #17c3b2; /* 민트색 */
   color: white;
@@ -141,6 +168,7 @@ const AddButton = styled.button`
   }
 `;
 
+// 레시피 이름 입력창
 const StyledInput = styled.input`
   width: 100%;
   height: 48px; /* 높이 고정 */

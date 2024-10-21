@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import unitList from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import InfoContainer from '../../components/admin/InfoContainer';
@@ -6,7 +7,15 @@ import ContentContainer from '../../components/admin/ContentContainer';
 import IngredientSearchSection from '../../components/admin/IngredientSearchSection';
 import IngredientQuantitySection from '../../components/admin/IngredientQuantitySection';
 
+
 const RecipeIngredientPage = () => {
+
+  const navigate = useNavigate();
+  const { state } = useLocation();
+
+  // 상태: 재료 리스트
+  const [ingredientList, setIngredientList] = useState(state?.ingredientList || []);
+
   // 상태 : 선택된 재료
   const [selectedIngredient, setSelectedIngredient] = useState(null);
 
@@ -64,14 +73,37 @@ const RecipeIngredientPage = () => {
     setQuantity(newQuantity);
   };
 
+  // 이벤트 핸들러 : "등록" 버튼을 클릭했을 때
+  const handleSubmit = () => {
+    if (selectedIngredient && quantity) {
+      const newIngredient = {...selectedIngredient, quantity};
   
-
+      // 재료 리스트에 새 재료 추가
+      let updatedIngredientList = [...ingredientList, newIngredient];
+  
+      // 재료 리스트를 가나다 순으로 정렬
+      updatedIngredientList = updatedIngredientList.sort((a, b) =>
+        a.name.localeCompare(b.name, 'ko', { sensitivity: 'base' })
+      );
+  
+      // AdminRecipePage로 돌아가면서 재료 리스트를 전달
+      navigate('/admin/recipe', {
+        state: {
+          ingredientList: updatedIngredientList
+        },
+      });
+    } else {
+      alert('재료와 수량을 입력해 주세요.');
+    }
+  };
+  
   return (
     <AdminLayout
       title="재료"
       rightLabel="등록"
       isRegisterEnabled={isRegisterEnabled}  // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
       isModified={isModified}
+      onSubmit={handleSubmit}
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
         {selectedIngredient
@@ -83,6 +115,7 @@ const RecipeIngredientPage = () => {
         <IngredientSearchSection
           onSelectIngredient={handleSelectIngredient}
           onSearchIngredient={handleSearchIngredient}
+          existingIngredients={ingredientList}
         />
 
         {selectedIngredient && (

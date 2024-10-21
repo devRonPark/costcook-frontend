@@ -95,7 +95,6 @@ const StyledInput = styled.input`
   border-radius: 4px;
   outline: none;
   font-size: 1rem;
-  padding-right: 50px;
 
   &::placeholder {
     color: #aaa;
@@ -105,7 +104,7 @@ const StyledInput = styled.input`
 // 입력 필드의 오른쪽 내부에 단위 표시
 const UnitLabel = styled.span`
   position: absolute;
-  right: 96px; 
+  right: min(96px, 30%); 
   font-size: 1rem;
   color: #666;
   top: 50%;
@@ -120,12 +119,12 @@ const ConfirmButton = styled.button`
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #e0a800; /* 배경 색상이 더 짙어짐 */
+    background-color: #e0a800;  // 배경 색상이 더 짙어짐
   }
 `;

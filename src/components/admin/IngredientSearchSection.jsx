@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Tooltip } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import { Link } from 'react-router-dom';
+import WarningIcon from '@mui/icons-material/Warning';
 import ingredientList from '../../assets/data/ingredients.json';
 
-const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => {
+const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, existingIngredients }) => {
 
   /* 상위 컴포넌트(RecipeIngredientPage)로부터 전달되는 props
     1. onSearchIngredient: 사용자가 재료를 검색했을 때 호출되는 함수.
-    2. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수. 
+    2. onSelectIngredient: 사용자가 재료를 선택했을 때 호출되는 함수.
+    3. existingIngredients: 이미 선택된 재료 리스트 (중복 방지를 위해 사용)
   */
 
   // 상태 : 현재 입력된 키워드
-  const [inputValue, setInputValue] = useState('');  
-  
+  const [inputValue, setInputValue] = useState('');
+
   // 상태 : 방금 검색된 결과
   const [filteredData, setFilteredData] = useState([]);
 
@@ -24,26 +27,25 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
   const [isSearched, setIsSearched] = useState(false);
 
   // 한 페이지에 보여줄 항목의 개수
-  const itemsPerPage = 5;  
+  const itemsPerPage = 5;
 
   // 현재 페이지에 보여줄 마지막 항목의 인덱스
-  const indexOfLastItem = currentPage * itemsPerPage;  
+  const indexOfLastItem = currentPage * itemsPerPage;
 
-  // 현재 페이지에 보여줄 첫 번째 항목의 인덱스 
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage; 
+  // 현재 페이지에 보여줄 첫 번째 항목의 인덱스
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // 현재 페이지에 보여줄 데이터들
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);  
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   // 페이지네이션 밑의 텍스트
   let linkText = '';
 
-  if(isSearched) {
+  if (isSearched) {
     linkText = filteredData.length > 0 ? '원하는 게 없어요.' : '검색 결과가 없어요.';
     linkText += " 직접 추가할래요.";
   }
 
-  
   // 이벤트 핸들러 : 사용자가 입력창에 값을 입력할 때 실행되는 함수
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -92,7 +94,7 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
   // 이벤트 핸들러 : 사용자가 특정 재료를 선택했을 때 실행되는 함수
   const handleSelectIngredient = (item) => {
     // 선택한 재료를 상위 컴포넌트에 전달함.
-    onSelectIngredient(item); 
+    onSelectIngredient(item);
   };
 
   // 이벤트 핸들러 : 페이지네이션 번호를 클릭했을 때 실행되는 함수
@@ -101,10 +103,8 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
     setCurrentPage(value);
   };
 
-
   return (
     <Section>
-      
       <h2>재료 이름</h2>
 
       {/* 입력창 및 검색 버튼 */}
@@ -130,15 +130,33 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient }) => 
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item, index) => (
+            {currentData.map((item, index) => {
+              // 이미 리스트에 있는 재료는 비활성화하며, 툴팁과 경고 아이콘을 추가한다.
+              const isDuplicate = existingIngredients.some(
+                (existingItem) => existingItem.id === item.id
+              );
+
+              return (
                 <tr key={item.id}>
-                  <td>{indexOfFirstItem + index + 1}</td>
-                  <IngredientTd onClick={() => handleSelectIngredient(item)}>
+                  <IndexTd isDuplicate={isDuplicate}>
+                    {indexOfFirstItem + index + 1}
+                  </IndexTd>
+                  <IngredientTd
+                    isDuplicate={isDuplicate}
+                    onClick={() => !isDuplicate && handleSelectIngredient(item)}
+                  >
                     {item.name}
+                    {isDuplicate && (
+                      <Tooltip title="이미 리스트에 있는 재료입니다.">
+                        <WarningIconStyled />
+                      </Tooltip>
+                    )}
                   </IngredientTd>
                 </tr>
-              ))}
-            </tbody>
+              );
+            })}
+          </tbody>
+
           </SearchResultTable>
 
           {/* 검색 결과가 itemsPerPage보다 많으면 페이지네이션을 보여줌 */}
@@ -247,13 +265,37 @@ const SearchResultTable = styled.table`
 // 재료 이름을 나타내는 칸
 const IngredientTd = styled.td`
   padding: 8px 16px;
-  cursor: pointer;
+  cursor: ${(props) => (props.isDuplicate ? 'not-allowed' : 'pointer')};
   transition: background-color 0.2s;
   height: 48px;
+  color: ${(props) => (props.isDuplicate ? '#ccc' : 'inherit')};
+  text-align: left;
+  position: relative; 
+  vertical-align: middle;
 
   &:hover {
-    background-color: rgba(0, 123, 255, 0.1);
+    background-color: ${(props) =>
+      props.isDuplicate ? 'transparent' : 'rgba(0, 123, 255, 0.1)'};
   }
+`;
+
+// 번호를 나타내는 칸 
+const IndexTd = styled.td`
+  padding: 8px 16px;
+  text-align: center;
+  height: 48px;
+  color: ${(props) => (props.isDuplicate ? '#ccc' : 'inherit')};
+`;
+
+// 경고 아이콘
+const WarningIconStyled = styled(WarningIcon)`
+  font-size: 1.2rem;
+  margin-left: 8px;
+  color: #f39c12; // 주황색
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); 
+  right: 16px; 
 `;
 
 // 페이지네이션 영역
