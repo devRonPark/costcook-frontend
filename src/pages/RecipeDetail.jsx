@@ -12,6 +12,9 @@ const RecipeDetail = () => {
     'recipeEvaluation',
     'review',
   ]); // 초기값은 전부다 열려있는 상태
+  const [recipe, setRecipe] = useState({
+    name: '레시피 이름',
+  });
 
   const reviewRef = useRef(null); // 리뷰 컨테이너의 ref 생성
 
@@ -31,7 +34,7 @@ const RecipeDetail = () => {
   };
 
   return (
-    <Layout>
+    <Layout isBackBtnExist pageName={recipe.name} isRecipeDetailPage>
       <ReceiptImage>이미지</ReceiptImage>
       <RatingContainer>
         <RatingSubContainer>★★★★★</RatingSubContainer>
