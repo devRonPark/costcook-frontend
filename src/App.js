@@ -20,11 +20,12 @@ import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
+import RecommendPage from './pages/RecommendPage';
+import RecipeDetail from './pages/RecipeDetail';
 import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
 import PageTransition from './components/common/PageTransition';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
-// import RecommendPage from './pages/RecommendPage';
 
 function App() {
   const location = useLocation();
@@ -67,7 +68,22 @@ function App() {
               </PageTransition>
             }
           />
-          {/* <Route path="/recommend" element={<RecommendPage />} /> */}
+          <Route 
+            path="/recipeDetail" 
+            element={
+              <PageTransition>
+                <RecipeDetail />
+              <PageTransition>
+            } 
+          />
+          <Route 
+            path="/recommend" 
+            element={
+              <PageTransition>
+                <RecommendPage />
+              </PageTransition> 
+            }
+          />
           <Route
             path="/budget"
             element={

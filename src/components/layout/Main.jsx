@@ -15,21 +15,22 @@ const MainContainer = styled.main`
   flex-direction: column;
   row-gap: 20px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* 조정: 중앙 정렬이 아닌 시작점 정렬 */
   background-color: #fff;
+  overflow-y: scroll; /* 세로 스크롤을 추가 */
+
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none; /* 웹킷 기반 브라우저에서 스크롤바 숨김 */
+  }
 `;
 
 const SubContainer = styled.div`
   flex: 1;
   display: flex;
   width: 85%;
-  margin-top: 20px;
+  margin: 20px;
   flex-direction: column;
-  /* justify-content: space-between; */
   align-items: center;
   border: 1px solid black;
-`;
-
-const LeftText = styled.h2`
-  text-align: left;
 `;
