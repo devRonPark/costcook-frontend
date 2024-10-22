@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
   (response) => {
     // const refreshToken = getCookie('refreshToken');
     // console.log(refreshToken);
-    return response.data; // 응답의 데이터를 반환
+    return response; // 응답의 데이터를 반환
   },
   (error) => {
     // 응답 에러 처리
