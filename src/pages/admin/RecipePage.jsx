@@ -3,15 +3,17 @@ import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
+import menuData from '../../assets/data/menus.json';
 import ingredientData from '../../assets/data/ingredients.json';
 import IngredientTable from '../../components/admin/IngredientTable';
-import ServingsWrapper from '../../components/admin/ServingsWrapper';
 import RecipeIngredientPage from './RecipeIngredientPage';
+import SelectWrapper from '../../components/admin/SelectWrapper';
 
 const AdminRecipePage = () => {
   // 상태 : 레시피 이름, 식사량, 재료 리스트
   const [recipeName, setRecipeName] = useState('');
   const [servings, setServings] = useState(1);
+  const [selectedMenu, setSelectedMenu] = useState(1);
   const [ingredientList, setIngredientList] = useState(
     ingredientData.slice(0, 3).map((ingredient) => ({
       ...ingredient,
@@ -75,10 +77,28 @@ const AdminRecipePage = () => {
           />
         </Section>
 
+        {/* 레시피 카테고리 설정 섹션 */}
+        <Section>
+          <SectionTitle>레시피 카테고리</SectionTitle>
+          <SelectWrapper value={selectedMenu} onChange={(e) => setSelectedMenu(e.target.value)}>
+            {menuData.map((menu) => (
+              <option key={menu.id} value={menu.name}>
+                {menu.name}
+              </option>
+            ))}
+          </SelectWrapper>
+        </Section>
+
         {/* 레시피 식사량 설정 섹션 */}
         <Section>
           <SectionTitle>레시피 식사량</SectionTitle>
-          <ServingsWrapper value={servings} onChange={(e) => setServings(Number(e.target.value))} />
+          <SelectWrapper value={servings} onChange={(e) => setServings(Number(e.target.value))}>
+            {[1, 2, 3, 4].map((num) => (
+              <option key={num} value={num}>
+                {num}인분
+              </option>
+            ))}
+          </SelectWrapper>
         </Section>
 
         {/* 레시피 재료 관리 섹션 */}
