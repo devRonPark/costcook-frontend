@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -21,11 +21,17 @@ const AdminRecipePage = () => {
     }))
   );
 
+  // 편집 상태 추가
+  const [isEditing, setIsEditing] = useState(false);
+
   // 모달이 열렸는지?
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 모달 열기
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    setIsModalOpen(true);
+    setIsEditing(false); // 모달을 열 때 편집 상태를 해제
+  };
 
   // 모달 닫기
   const closeModal = () => setIsModalOpen(false);
@@ -56,6 +62,18 @@ const AdminRecipePage = () => {
       console.error('서버 통신 에러:', error);
     }
   };
+
+  // 재료 수량 업데이트 함수
+  const handleUpdateIngredient = (ingredientId, newQuantity) => {
+    setIngredientList((prevList) =>
+      prevList.map((ingredient) =>
+        ingredient.id === ingredientId ? { ...ingredient, quantity: newQuantity } : ingredient
+      )
+    );
+  };
+
+  // 편집 모드 변경 핸들러
+  const toggleEditMode = () => setIsEditing((prev) => !prev);
 
   return (
     <AdminLayout
@@ -105,15 +123,22 @@ const AdminRecipePage = () => {
         <Section>
           <SectionTitleWrapper>
             <SectionTitle>레시피 재료</SectionTitle>
-            <AddButton onClick={openModal}>추가</AddButton>
+            <ButtonGroup>
+              <AddButton onClick={openModal}>추가</AddButton>
+              <EditButton onClick={toggleEditMode}>
+                {isEditing ? '편집 완료' : '편집'}
+              </EditButton>
+            </ButtonGroup>
           </SectionTitleWrapper>
           <IngredientTable
             ingredientList={ingredientList}
+            isEditing={isEditing} // 편집 상태 전달
             onDeleteIngredient={(ingredientId) => {
               setIngredientList((prevList) =>
                 prevList.filter((ingredient) => ingredient.id !== ingredientId)
               );
             }}
+            onUpdateIngredient={handleUpdateIngredient} // 재료 수량 업데이트 함수 전달
           />
         </Section>
 
@@ -134,7 +159,6 @@ const AdminRecipePage = () => {
 
 export default AdminRecipePage;
 
-
 // 스타일링 컴포넌트
 
 const Section = styled.div`
@@ -145,6 +169,11 @@ const SectionTitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
 const SectionTitle = styled.h2`
@@ -162,6 +191,20 @@ const AddButton = styled.button`
 
   &:hover {
     background-color: #14a699;
+  }
+`;
+
+const EditButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #0056b3;
   }
 `;
 
