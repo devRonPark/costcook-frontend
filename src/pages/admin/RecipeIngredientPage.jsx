@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import unitList from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import InfoContainer from '../../components/admin/InfoContainer';
@@ -7,23 +6,11 @@ import ContentContainer from '../../components/admin/ContentContainer';
 import IngredientSearchSection from '../../components/admin/IngredientSearchSection';
 import IngredientQuantitySection from '../../components/admin/IngredientQuantitySection';
 
-
-const RecipeIngredientPage = () => {
-
-  const navigate = useNavigate();
-  const { state } = useLocation();
-
-  // AdminRecipePage로부터 전달된 상태들
-  const [recipeName, setRecipeName] = useState(state?.recipeName || '');
-  const [servings, setServings] = useState(state?.servings || 1);
-  const [ingredientList, setIngredientList] = useState(state?.ingredientList || []);
-
+const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) => {
   // 상태 : 선택된 재료
   const [selectedIngredient, setSelectedIngredient] = useState(null);
-
   // 상태 : 재료의 수량
   const [quantity, setQuantity] = useState('');
-
   // 상태 : 재료 이름이 너무 길어져서 정보창에 한 줄로 표시되지 못해 왼쪽으로 이동할지?
   const [shouldAnimate, setShouldAnimate] = useState(false);
 
@@ -32,81 +19,81 @@ const RecipeIngredientPage = () => {
 
   // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
   const isRegisterEnabled = Boolean(selectedIngredient && quantity > 0);
+  // 페이지 변경 경고 활성화 조건 (선택된 재료나 수량이 변경된 경우)
+  const isModified = Boolean(selectedIngredient) || Boolean(quantity);
 
-  // 재료나 수량이 입력된 경우 Exit 모달 활성화
-  const isModified = Boolean(selectedIngredient) || Boolean(quantity); 
-  
-  // 선택된 재료에 표시되는 단위 (더미 데이터)
-  const unitName = selectedIngredient 
-  ? unitList.find((unit) => unit.id === selectedIngredient.unit_id)?.name 
-  : '';
-    
-  useEffect(() => {
+  // 선택된 재료에 표시되는 단위
+  const unitName = selectedIngredient
+    ? unitList.find((unit) => unit.id === selectedIngredient.unit_id)?.name
+    : '';
+
+  // 애니메이션 체크 로직을 별도의 함수로 분리
+  const checkShouldAnimate = () => {
     if (textRef.current) {
       const containerWidth = textRef.current.parentElement.offsetWidth;
       const textWidth = textRef.current.scrollWidth;
       setShouldAnimate(textWidth > containerWidth);
     }
-  }, [selectedIngredient]);
+  };
 
+  useEffect(() => {
+    checkShouldAnimate();
+  }, [selectedIngredient]);
 
   // 이벤트 핸들러 : 재료를 검색했을 때
   const handleSearchIngredient = () => {
-    // 재료를 초기화
     setSelectedIngredient(null);
-
-    // 수량을 초기화
-    setQuantity(''); 
+    setQuantity('');
   };
 
-  // 이벤트 핸들러 : 재료를 선택했을 때 
+  // 이벤트 핸들러 : 재료를 선택했을 때
   const handleSelectIngredient = (newIngredient) => {
-    // 재료를 업데이트함
     setSelectedIngredient(newIngredient);
-    
-    // 수량을 초기화
-    setQuantity(''); 
+    setQuantity('');
   };
 
   // 이벤트 핸들러 : 재료 수량을 입력하고 확인 버튼을 눌렀을 때
   const handleQuantityConfirm = (newQuantity) => {
-    // 수량을 업데이트함
     setQuantity(newQuantity);
   };
 
   // 이벤트 핸들러 : "등록" 버튼을 클릭했을 때
   const handleSubmit = () => {
     if (selectedIngredient && quantity) {
-      const newIngredient = {...selectedIngredient, quantity};
-  
+      const newIngredient = { ...selectedIngredient, quantity };
+
       // 재료 리스트에 새 재료 추가
       let updatedIngredientList = [...ingredientList, newIngredient];
-  
+
       // 재료 리스트를 가나다 순으로 정렬
       updatedIngredientList = updatedIngredientList.sort((a, b) =>
         a.name.localeCompare(b.name, 'ko', { sensitivity: 'base' })
       );
-  
-      // AdminRecipePage로 돌아가면서 재료 리스트를 전달
-      navigate('/admin/recipe', {
-        state: {
-          ingredientList: updatedIngredientList,
-          recipeName,
-          servings
-        },
-      });
+
+      // 부모 컴포넌트의 재료 리스트 업데이트 함수 호출
+      setIngredientList(updatedIngredientList);
+
+      // 등록이 완료되면 부모 컴포넌트로 돌아가기 (모달을 닫는 방식)
+      onClose();
     } else {
       alert('재료와 수량을 입력해 주세요.');
     }
   };
-  
+
+  // 이벤트 핸들러 : 뒤로가기 버튼을 클릭했을 때
+  const handleBack = () => {
+    // 재료 리스트는 변경하지 않고 모달을 닫음
+    onClose();
+  };
+
   return (
     <AdminLayout
       title="재료"
       rightLabel="등록"
-      isRegisterEnabled={isRegisterEnabled}  // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
-      isModified={isModified}
-      onSubmit={handleSubmit}
+      isRegisterEnabled={isRegisterEnabled} // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
+      isModified={isModified} // 페이지 변경 경고 활성화 여부
+      onSubmit={handleSubmit} // 등록 버튼 클릭 시 동작
+      onBack={handleBack} // 뒤로가기 버튼 클릭 시 동작
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
         {selectedIngredient
@@ -123,9 +110,9 @@ const RecipeIngredientPage = () => {
 
         {selectedIngredient && (
           <IngredientQuantitySection
-            unitName={unitName} 
-            onQuantityConfirm={handleQuantityConfirm}  // 확인 버튼을 눌렀을 때만 수량 업데이트
-            onResetIngredient={selectedIngredient} 
+            unitName={unitName}
+            onQuantityConfirm={handleQuantityConfirm} // 확인 버튼을 눌렀을 때만 수량 업데이트
+            onResetIngredient={selectedIngredient}
           />
         )}
       </ContentContainer>

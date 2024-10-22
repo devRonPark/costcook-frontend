@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import DeleteIcon from '@mui/icons-material/Delete'; // 휴지통 아이콘으로 변경
+import DeleteIcon from '@mui/icons-material/Delete';
 import unitData from '../../assets/data/units.json';
 
 const IngredientTable = ({ ingredientList, onDeleteIngredient }) => {
@@ -73,7 +73,7 @@ const StyledTable = styled.table`
 
   tbody td:nth-child(3) {
     width: 35%;
-    position: relative; /* 아이콘 위치를 셀 내부에 고정하기 위해 설정 */
+    position: relative; 
   }
 
   tfoot td {
@@ -87,7 +87,7 @@ const StyledTable = styled.table`
 
 const PriceCell = styled.td`
   position: relative;
-  text-align: left; /* 가격 텍스트를 왼쪽으로 정렬 */
+  text-align: left; 
 `;
 
 // 휴지통 아이콘 스타일
@@ -97,10 +97,10 @@ const DeleteIconWrapper = styled.div`
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #e74c3c; /* 빨간색으로 변경하여 삭제 의미 명확화 */
+  color: #e74c3c; 
 
   &:hover {
-    color: #c0392b; /* 마우스를 올렸을 때 조금 더 어두운 빨간색으로 변경 */
+    color: #c0392b; /* 조금 더 어두운 빨간색으로 변경 */
   }
 `;
 

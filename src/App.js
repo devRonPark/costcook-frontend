@@ -25,8 +25,6 @@ import RecipeDetail from './pages/RecipeDetail';
 import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
 import PageTransition from './components/common/PageTransition';
-import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
-import RefreshPage from './pages/admin/RefreshPage';
 
 function App() {
   const location = useLocation();
@@ -132,14 +130,6 @@ function App() {
           <Route 
             path="/admin/recipe" 
             element={<AdminRecipePage />} 
-          />
-          <Route
-            path="/admin/recipeIngredient"
-            element={<RecipeIngredientPage />}
-          />
-          <Route 
-            path="/admin/refresh" 
-            element={<RefreshPage/>} 
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
