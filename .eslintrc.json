@@ -31,6 +31,7 @@
     ],
     "jsx-a11y/label-has-associated-control": "off", // label 오류 비활성화
     "arrow-body-style": "off", // 화살표 함수의 블록 사용 허용
-    "no-return-assign": "off" // return 안에서의 할당 허용
+    "no-return-assign": "off", // return 안에서의 할당 허용
+    "no-underscore-dangle": "off"
   }
 }
