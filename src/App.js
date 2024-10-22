@@ -29,6 +29,8 @@ import PageTransition from './components/common/PageTransition';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
+import ItemList from './pages/ItemList';
+import Activities from './pages/Activities';
 
 function App() {
   const location = useLocation();
@@ -120,7 +122,30 @@ function App() {
               </PageTransition>
             }
           />
-          <Route path="/oauth/:provider" element={<OAuthVerification />} />
+          <Route
+            path="/list"
+            element={
+              <PageTransition>
+                <ItemList />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <PageTransition>
+                <Activities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/oauth/:provider"
+            element={
+              <AuthProvider>
+                <OAuthVerification />
+              </AuthProvider>
+            }
+          />
           <Route path="/admin/ingredient" element={<AdminIngredientPage />} />
           <Route path="/admin/recipe" element={<AdminRecipePage />} />
           <Route
