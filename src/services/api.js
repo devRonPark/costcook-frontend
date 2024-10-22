@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getCookie } from '../utils/cookieUtil';
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
@@ -9,12 +10,20 @@ const apiClient = axios.create({
 // 요청 인터셉터 설정 (선택적)
 apiClient.interceptors.request.use(
   (config) => {
-    // 요청 전 처리가 필요한 경우
-    const token = localStorage.getItem('token'); // 예시로 토큰을 localStorage에서 가져옴
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
+    const refreshToken = getCookie('refreshToken');
+    const accessToken = getCookie('accessToken'); // accessToken 쿠키에서 가져오기
+    console.log(refreshToken, accessToken);
+
+    // 새로운 config 객체 생성
+    const newConfig = {
+      ...config, // 기존 config 속성을 복사
+      headers: {
+        ...config.headers, // 기존 headers 속성을 복사
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), // accessToken이 있으면 Authorization 헤더 추가
+      },
+    };
+
+    return newConfig; // 수정된 config 반환
   },
   (error) => {
     // 요청 에러 처리
@@ -25,14 +34,30 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터 설정 (선택적)
 apiClient.interceptors.response.use(
   (response) => {
-    // const refreshToken = getCookie('refreshToken');
-    // console.log(refreshToken);
     return response; // 응답의 데이터를 반환
   },
-  (error) => {
-    // 응답 에러 처리
-    console.error('응답 에러:', error);
-    return Promise.reject(error);
+  async (err) => {
+    const originalReq = err.config;
+    if (err.response && err.response.status === 403 && !originalReq._retry) {
+      originalReq._retry = true;
+      try {
+        // 액세스 토큰 재발급 요청
+        const refreshResponse = await axios.post(
+          'http://localhost:8080/api/auth/token/refresh',
+          {},
+          { withCredentials: true }
+        );
+        if (refreshResponse.status === 200) {
+          console.log(getCookie('accessToken'));
+          originalReq.headers.Authorization = `Bearer ${getCookie('accessToken')}`;
+          return apiClient.request(originalReq);
+        }
+      } catch (refreshError) {
+        console.error('액세스 토큰 재발급 실패:', refreshError);
+        // 액세스 토큰 쿠키 삭제 처리
+      }
+    }
+    return Promise.reject(err); // 기타 에러 처리
   }
 );
 
