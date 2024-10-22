@@ -31,6 +31,7 @@ import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
+import Review from './pages/Review';
 
 function App() {
   const location = useLocation();
@@ -135,6 +136,14 @@ function App() {
             element={
               <PageTransition>
                 <Activities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/review"
+            element={
+              <PageTransition>
+                <Review />
               </PageTransition>
             }
           />

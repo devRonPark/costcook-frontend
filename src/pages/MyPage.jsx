@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 
 const MyPage = () => (
@@ -18,7 +19,9 @@ const MyPage = () => (
     <SettingContainer>
       <h4>좋아하는 재료를 추가하거나 수정 할 수 있습니다</h4>
       <SettingButtonContainer>
-        <Button>선호 재료 관리</Button>
+        <Link to="../list">
+          <Button>선호 재료 관리</Button>
+        </Link>
       </SettingButtonContainer>
     </SettingContainer>
     <SettingContainer>
@@ -29,14 +32,20 @@ const MyPage = () => (
     </SettingContainer>
     <ButtonLayoutContainer>
       <ButtonContainer>
-        <Button>내 활동</Button>
+        <Link to="../activities">
+          <Button>내 활동</Button>
+        </Link>
       </ButtonContainer>
       <ButtonContainer>
         <ButtonSplitBox>
-          <Button>예산 관리</Button>
+          <Link to="../budget">
+            <Button>예산 관리</Button>
+          </Link>
         </ButtonSplitBox>
         <ButtonSplitBox>
-          <Button>리뷰 관리</Button>
+          <Link to="../review">
+            <Button>리뷰 관리</Button>
+          </Link>
         </ButtonSplitBox>
       </ButtonContainer>
     </ButtonLayoutContainer>
