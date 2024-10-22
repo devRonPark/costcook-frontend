@@ -3,6 +3,63 @@ import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 import Layout from '../components/layout/Layout';
 
+const items = [
+  {
+    receiptImage: '이미지', // 실제 이미지 경로를 넣어도 됩니다.
+    title: '김치볶음밥',
+    price: 4300,
+    rating: '★★★★☆ 4.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '비빔밥',
+    price: 5000,
+    rating: '★★★★★ 5.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+  {
+    receiptImage: '이미지',
+    title: '라면',
+    price: 3500,
+    rating: '★★★☆☆ 3.0',
+  },
+];
+
 const RecipePage = () => (
   <Layout
     isBackBtnExist
@@ -14,86 +71,20 @@ const RecipePage = () => (
       <h4>필터 리스트 구현쪽</h4>
     </FilterListContainer>
     <ListRowContainer>
-      <List>
-        <ReceiptImage>
-          <Link to="../recipeDetail">
-            <Button>상세페이지</Button>
-          </Link>
-        </ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-    </ListRowContainer>
-    <ListRowContainer>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-    </ListRowContainer>
-    <ListRowContainer>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
-      <List>
-        <ReceiptImage>이미지</ReceiptImage>
-        <TextBox>
-          <TitleText>김치볶음밥</TitleText>
-          <PriceText>4300원</PriceText>
-          <StarText>★★★★☆ 4.0</StarText>
-        </TextBox>
-      </List>
+      {items.map((item, index) => (
+        <Link to="../recipeDetail">
+          <Button>
+            <List key={index}>
+              <ReceiptImage>{item.receiptImage}</ReceiptImage>
+              <TextBox>
+                <TitleText>{item.title}</TitleText>
+                <PriceText>{item.price}원</PriceText>
+                <StarText>{item.rating}</StarText>
+              </TextBox>
+            </List>
+          </Button>
+        </Link>
+      ))}
     </ListRowContainer>
   </Layout>
 );
