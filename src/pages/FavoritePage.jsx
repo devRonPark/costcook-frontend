@@ -11,7 +11,12 @@ const FavoritePage = () => {
     setIsDeleteStatus((prev) => !prev); // 삭제 상태 토글
   };
   return (
-    <Layout>
+    <Layout
+      isBackBtnExist
+      pageName="저장된 레시피"
+      isFavoritePage
+      onDeleteClick={() => alert('삭제')}
+    >
       <Button onClick={toggleDeleteStatus}>
         {isDeleteStatus ? '취소' : '삭제하기'}
       </Button>

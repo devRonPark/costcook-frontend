@@ -3,18 +3,6 @@ import Header from './Header/Header';
 import Main from './Main';
 import Footer from './Footer';
 
-const Layout = ({ children }) => (
-  <Container>
-    <Header />
-    <Content>
-      <Main>{children}</Main>
-    </Content>
-    <Footer />
-  </Container>
-);
-
-export default Layout;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -35,3 +23,38 @@ const Content = styled.div`
   width: 100%;
   overflow-y: auto; /* 세로 스크롤 추가 */
 `;
+
+const Layout = ({
+  children,
+  isBackBtnExist = false,
+  isSearchBtnExist = false,
+  pageName = '',
+  onFilterClick = () => {},
+  onShareClick = () => {},
+  onLikeClick = () => {},
+  onDeleteClick = () => {},
+  isRecipeListPage = false,
+  isRecipeDetailPage = false,
+  isFavoritePage = false,
+}) => (
+  <Container>
+    <Header
+      isBackBtnExist={isBackBtnExist}
+      isSearchBtnExist={isSearchBtnExist}
+      pageName={pageName}
+      onFilterClick={onFilterClick}
+      onShareClick={onShareClick}
+      onLikeClick={onLikeClick}
+      onDeleteClick={onDeleteClick}
+      isRecipeListPage={isRecipeListPage}
+      isRecipeDetailPage={isRecipeDetailPage}
+      isFavoritePage={isFavoritePage}
+    />
+    <Content>
+      <Main>{children}</Main>
+    </Content>
+    <Footer />
+  </Container>
+);
+
+export default Layout;

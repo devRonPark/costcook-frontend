@@ -11,7 +11,7 @@ const HomePage = () => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <Layout>
+    <Layout isSearchBtnExist>
       <SettingContainer>
         <h3>추천 설정</h3>
         <MoneyContainerWrapper>

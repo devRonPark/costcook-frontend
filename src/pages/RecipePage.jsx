@@ -61,7 +61,12 @@ const items = [
 ];
 
 const RecipePage = () => (
-  <Layout>
+  <Layout
+    isBackBtnExist
+    pageName="레시피 전체 목록"
+    onFilterClick={() => alert('필터 클릭')}
+    isRecipeListPage
+  >
     <FilterListContainer>
       <h4>필터 리스트 구현쪽</h4>
     </FilterListContainer>

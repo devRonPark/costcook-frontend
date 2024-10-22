@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 import { Button } from '@mui/material';
 import Layout from '../components/layout/Layout';
-import SearchButton from '../components/common/Button/SearchButton';
 
 const SearchPage = () => (
-  <Layout>
+  <Layout isBackBtnExist>
     <SearchInputContainer>
       <SearchInput type="text" placeholder="검색어를 입력하세요" />
-      <SearchButton />
+      {/* <SearchButton /> */}
     </SearchInputContainer>
     <OutputContainer>
       <h2>최근 검색어</h2>
