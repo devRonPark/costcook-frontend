@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -25,13 +26,20 @@ import RecipeDetail from './pages/RecipeDetail';
 import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
 import PageTransition from './components/common/PageTransition';
+import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
+import { useAuth } from './context/Auth/AuthContext';
+import UserInfo from './pages/UserInfo';
+import ItemList from './pages/ItemList';
+import Activities from './pages/Activities';
+
 
 function App() {
   const location = useLocation();
-
   return (
-    <>
-      <ToastContainer />
+    <AuthProvider>
+      <ToastContainer
+        position="bottom-center" // 위치 설정
+      />
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -116,6 +124,22 @@ function App() {
             }
           />
           <Route
+            path="/list"
+            element={
+              <PageTransition>
+                <ItemList />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <PageTransition>
+                <Activities />
+              </PageTransition>
+            }
+          />
+          <Route
             path="/oauth/:provider"
             element={
               <AuthProvider>
@@ -131,10 +155,11 @@ function App() {
             path="/admin/recipe" 
             element={<AdminRecipePage />} 
           />
+          <Route path="/users/me" element={<UserInfo />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
-    </>
+    </AuthProvider>
   );
 }
 
