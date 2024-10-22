@@ -26,6 +26,8 @@ import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
 import PageTransition from './components/common/PageTransition';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
+import ItemList from './pages/ItemList';
+import Activities from './pages/Activities';
 
 function App() {
   const location = useLocation();
@@ -113,6 +115,22 @@ function App() {
             element={
               <PageTransition>
                 <SearchPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/list"
+            element={
+              <PageTransition>
+                <ItemList />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <PageTransition>
+                <Activities />
               </PageTransition>
             }
           />
