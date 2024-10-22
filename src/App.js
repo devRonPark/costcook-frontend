@@ -28,6 +28,7 @@ import PageTransition from './components/common/PageTransition';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
+import Review from './pages/Review';
 
 function App() {
   const location = useLocation();
@@ -131,6 +132,14 @@ function App() {
             element={
               <PageTransition>
                 <Activities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/review"
+            element={
+              <PageTransition>
+                <Review />
               </PageTransition>
             }
           />
