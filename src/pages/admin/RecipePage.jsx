@@ -8,9 +8,10 @@ import ingredientData from '../../assets/data/ingredients.json';
 import IngredientTable from '../../components/admin/IngredientTable';
 import RecipeIngredientPage from './RecipeIngredientPage';
 import SelectWrapper from '../../components/admin/SelectWrapper';
+import ThumbnailUploader from '../../components/ThumbnailUploader';
 
 const AdminRecipePage = () => {
-  // 상태 : 레시피 이름, 식사량, 재료 리스트
+  // 상태 : 레시피 이름, 식사량, 재료 리스트, 썸네일
   const [recipeName, setRecipeName] = useState('');
   const [servings, setServings] = useState(1);
   const [selectedMenu, setSelectedMenu] = useState(1);
@@ -20,6 +21,8 @@ const AdminRecipePage = () => {
       quantity: 1,
     }))
   );
+
+  const [thumbnailFile, setThumbnailFile] = useState(null);
 
   // 편집 상태 추가
   const [isEditing, setIsEditing] = useState(false);
@@ -70,6 +73,12 @@ const AdminRecipePage = () => {
         ingredient.id === ingredientId ? { ...ingredient, quantity: newQuantity } : ingredient
       )
     );
+  };
+
+  const handleImageUpload = (file) => {
+    setThumbnailFile(file);
+    // 파일을 서버로 보내거나 다른 작업을 수행할 수 있음
+    console.log('Uploaded file:', file);
   };
 
   // 편집 모드 변경 핸들러
@@ -125,9 +134,11 @@ const AdminRecipePage = () => {
             <SectionTitle>레시피 재료</SectionTitle>
             <ButtonGroup>
               <AddButton onClick={openModal}>추가</AddButton>
-              <EditButton onClick={toggleEditMode}>
-                {isEditing ? '편집 완료' : '편집'}
-              </EditButton>
+                {ingredientList.length > 0 && (
+                  <EditButton onClick={toggleEditMode}>
+                    {isEditing ? '편집 완료' : '편집'}
+                  </EditButton>
+                )}
             </ButtonGroup>
           </SectionTitleWrapper>
           <IngredientTable
@@ -140,6 +151,12 @@ const AdminRecipePage = () => {
             }}
             onUpdateIngredient={handleUpdateIngredient} // 재료 수량 업데이트 함수 전달
           />
+        </Section>
+
+        <Section>
+          <h2>레시피 썸네일</h2>
+          <ThumbnailUploader onImageUpload={handleImageUpload} />
+          {/* 추가적인 레시피 입력 폼 */}
         </Section>
 
         {/* RecipeIngredientPage 컴포넌트를 렌더링 */}
