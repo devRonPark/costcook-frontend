@@ -102,6 +102,7 @@ const OAuthVerification = () => {
     }
   };
 
+  // 사용자 정보 추출 -> 로그인 가능하면 로그인 즉시 처리
   const confirmUserLogin = async () => {
     try {
       // 1. Provider 로부터 사용자 정보({key, email, name, provider}) 추출한다.
@@ -126,9 +127,8 @@ const OAuthVerification = () => {
 
         navigate('/home');
         // 로그인 중 메시지 표시 후 500ms 대기 (필요에 따라 조정 가능)
-        setTimeout(() => {
-          // window.location.href = '/home';
-        }, 500); // 500ms 대기 후 홈으로 이동
+        // setTimeout(() => {
+        // }, 500); // 500ms 대기 후 홈으로 이동
 
         // 로그인 성공 후 홈으로 리다이렉트
         // window.location.href = '/home';
@@ -143,6 +143,7 @@ const OAuthVerification = () => {
       }
     } catch (error) {
       console.error(error);
+      // TODO: 에러 발생 시 어느 페이지로 이동 시킬 지 결정 후 구현.
     }
   };
 
@@ -159,24 +160,18 @@ const OAuthVerification = () => {
       />
     );
   }
-
-  // 이메일 인증이 필요한 경우 이메일 인증 폼을 렌더링
-  if (state.user && !state.user.data.ableToLogin) {
-    return (
-      <Layout isBackBtnExist pageName="이메일 인증">
-        {!emailSent ? (
-          <EmailVerification onSend={handleSendVerificationEmail} />
-        ) : (
-          <VerificationCodeInput
-            onVerify={handleVerifyCode}
-            onResend={handleSendVerificationEmail}
-          />
-        )}
-      </Layout>
-    );
-  }
-
-  return null;
+  return (
+    <Layout isBackBtnExist pageName="이메일 인증">
+      {!emailSent ? (
+        <EmailVerification onSend={handleSendVerificationEmail} />
+      ) : (
+        <VerificationCodeInput
+          onVerify={handleVerifyCode}
+          onResend={handleSendVerificationEmail}
+        />
+      )}
+    </Layout>
+  );
 };
 
 export default OAuthVerification;
