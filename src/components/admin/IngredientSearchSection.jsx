@@ -4,7 +4,7 @@ import { Tooltip } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import { Link } from 'react-router-dom';
 import WarningIcon from '@mui/icons-material/Warning';
-import ingredientList from '../../assets/data/ingredients.json';
+import apiClient from '../../services/api';
 
 const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, existingIngredients }) => {
 
@@ -48,40 +48,43 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, exist
 
   // 이벤트 핸들러 : 사용자가 입력창에 값을 입력할 때 실행되는 함수
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    setInputValue(e.target.value.trim());
   };
 
   // 이벤트 핸들러 : 사용자가 검색 버튼을 클릭했을 때 실행되는 함수
-  const handleSearch = () => {
-    // 입력값의 앞뒤 공백을 제거함.
-    const trimmedInput = inputValue.trim();
-
+  const handleSearch = async () => {
     // 기존에 선택된 재료를 초기화함.
     onSelectIngredient(null);
-
+  
     // 검색이 수행되었음
     setIsSearched(true);
-
-    // 입력값이 공백일 경우 검색되지 않음.
-    if (trimmedInput === '') {
+  
+    // 입력값이 공백일 경우 검색하지 않음.
+    if (inputValue === '') {
       setFilteredData([]);
       return;
     }
+  
+    try {
+      // 백엔드 서버에 검색어를 전송하고 결과를 받아옴
+      const response = await apiClient.get('/admin/ingredients', {
+        params: {
+          keyword: inputValue, 
+        },
+      });
 
-    // 특정 키워드를 포함한 재료만 필터링함.
-    // 현재 더미 데이터를 이용하고 있음.
-    const result = ingredientList.filter((item) =>
-      item.name.toLowerCase().includes(trimmedInput.toLowerCase())
-    );
-
-    // 검색 결과를 저장함.
-    setFilteredData(result);
-
-    // 현재 페이지를 첫 번째 페이지로 설정함.
-    setCurrentPage(1);
-
-    // 상위 컴포넌트에 검색 결과 전달
-    onSearchIngredient(trimmedInput, result);
+      // 서버에서 받아온 검색 결과 저장
+      setFilteredData(response.data);
+  
+      // 현재 페이지를 첫 번째 페이지로 설정함.
+      setCurrentPage(1);
+  
+      // 상위 컴포넌트에 검색 결과 전달
+      onSearchIngredient(inputValue, response.data);
+    } catch (error) {
+      console.error(error);
+      setFilteredData([]); // 오류가 발생한 경우 빈 결과로 설정
+    }
   };
 
   // 이벤트 핸들러 : 사용자가 "Enter" 키를 눌렀을 때 실행되는 함수
