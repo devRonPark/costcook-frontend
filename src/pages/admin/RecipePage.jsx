@@ -43,10 +43,11 @@ const AdminRecipePage = () => {
   const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
 
   // 페이지 변경 경고 활성화 조건
-  const isModified = Boolean(recipeName) || ingredientList.length > 0;
+  const isModified = Boolean(recipeName) || ingredientList.length > 0 || Boolean(thumbnailFile);
 
   // 서버로 등록 요청
   const handleSubmit = async () => {
+    // DB 등록시 가격을 식사량으로 나눠야 함. 1인분 기준
     try {
       const requestData = {
         recipeName,
@@ -107,9 +108,9 @@ const AdminRecipePage = () => {
         {/* 레시피 카테고리 설정 섹션 */}
         <Section>
           <SectionTitle>레시피 카테고리</SectionTitle>
-          <SelectWrapper value={selectedMenu} onChange={(e) => setSelectedMenu(e.target.value)}>
+          <SelectWrapper value={selectedMenu} onChange={(e) => setSelectedMenu(Number(e.target.value))}>
             {menuData.map((menu) => (
-              <option key={menu.id} value={menu.name}>
+              <option key={menu.id} value={menu.id}>
                 {menu.name}
               </option>
             ))}

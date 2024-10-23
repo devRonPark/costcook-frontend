@@ -22,7 +22,7 @@ const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpda
       </thead>
       <tbody>
         {ingredientList.map((ingredient) => {
-          const unitName = unitData.find((unit) => unit.id === ingredient.unit_id)?.name || '';
+          const unitName = unitData.find((unit) => unit.id === ingredient.unitId)?.name || '';
           const ingredientCost = parseFloat((ingredient.price * ingredient.quantity).toFixed(2));
           return (
             <TableRow key={ingredient.id}>

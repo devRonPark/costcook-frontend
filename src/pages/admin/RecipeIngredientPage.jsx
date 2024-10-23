@@ -24,7 +24,7 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
 
   // 선택된 재료에 표시되는 단위
   const unitName = selectedIngredient
-    ? unitList.find((unit) => unit.id === selectedIngredient.unit_id)?.name
+    ? unitList.find((unit) => unit.id === selectedIngredient.unitId)?.name
     : '';
 
   // 애니메이션 체크 로직을 별도의 함수로 분리
