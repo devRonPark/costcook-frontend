@@ -4,14 +4,17 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import WeeklyCalendar from './WeeklyCalendar';
 import Layout from '../components/layout/Layout';
+import ProgressBar from '../components/common/ProgressBar';
+import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 
 const getWeekAndFirstSundayDate = (date) => {
-  const currentDay = date.getDate();
-  const currentMonth = date.getMonth();
-  const currentYear = date.getFullYear();
+  // 오늘 날짜 : date
+  const currentYear = date.getFullYear(); // 년
+  const currentMonth = date.getMonth(); // 월
+  const currentDay = date.getDate(); // 일
+  const dayOfWeek = date.getDay(); // 요일 0: 일요일, 1: 월요일, ..., 6: 토요일
 
   // 해당 날짜의 주의 일요일을 찾는다
-  const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
   const sundayDate = new Date(date);
   sundayDate.setDate(currentDay - dayOfWeek); // 주의 첫 날인 일요일로 이동
 
@@ -30,7 +33,42 @@ const getWeekAndFirstSundayDate = (date) => {
   return { week: weekOffset + 1, firstSundayDate: sundayDate };
 };
 
+// progressBar 부분
+
+const budgetData = [
+  {
+    id: 1,
+    useAmount: 88000,
+    budgetAmount: 100000,
+    date: '2024-10-23',
+  },
+  {
+    id: 2,
+    useAmount: 50000,
+    budgetAmount: 80000,
+    date: '2024-10-30',
+  },
+];
+
 const BudgetPage = () => {
+  const [useAmount, setUseAmount] = useState(0);
+  const [budgetAmount, setBudgetAmount] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // 구조 분해 할당 시 다른 변수 이름 사용
+    const { useAmount: initialUse, budgetAmount: initialBudget } =
+      budgetData[0];
+    setUseAmount(initialUse);
+    setBudgetAmount(initialBudget);
+  }, []);
+
+  // useAmount와 budgetAmount에 따른 진행률 계산
+  useEffect(() => {
+    const newProgress = (useAmount / budgetAmount) * 100;
+    setProgress(newProgress);
+  }, [useAmount, budgetAmount]);
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(0);
   const [firstSundayDateString, setFirstSundayDateString] = useState('');
@@ -62,17 +100,18 @@ const BudgetPage = () => {
   const handleDecreaseWeek = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() - 7); // 1주일 빼기
-    setCurrentDate(newDate);
+    const sundayDate = new Date(newDate);
+    sundayDate.setDate(newDate.getDate() - newDate.getDay());
+    setCurrentDate(sundayDate);
   };
 
   const handleIncreaseWeek = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + 7); // 1주일 더하기
-    setCurrentDate(newDate);
+    const sundayDate = new Date(newDate);
+    sundayDate.setDate(newDate.getDate() - newDate.getDay());
+    setCurrentDate(sundayDate);
   };
-
-  const adjustedDate = new Date(currentDate);
-  adjustedDate.setDate(currentDate.getDate() - 7); // 7일 빼기
 
   return (
     <Layout>
@@ -90,11 +129,35 @@ const BudgetPage = () => {
         </SplitData>
       </DateContainer>
       <BudgetContainer>
-        <BudgetSettingContainer>셋팅</BudgetSettingContainer>
-        프로세스바
+        <BudgetSettingContainer>
+          <BudgetTextContainer>
+            <BudgetText>사용금액</BudgetText>
+            <BudgetText>예산</BudgetText>
+          </BudgetTextContainer>
+          <BudgetNumberContainer>
+            <BudgetAmountSetting
+              id="useAmount"
+              amount={budgetData[0].useAmount}
+            />
+            <BudgetAmountSetting
+              id="budgetAmount"
+              amount={budgetData[0].budgetAmount}
+            />
+          </BudgetNumberContainer>
+        </BudgetSettingContainer>
+        <ProgressContainer>
+          <ProgressBar useAmount={useAmount} budgetAmount={budgetAmount} />
+          <ProgressBarTextBox>
+            <ProgressBarText>0</ProgressBarText>
+            <ProgressBarText>{budgetData[0].budgetAmount}</ProgressBarText>
+          </ProgressBarTextBox>
+        </ProgressContainer>
+
         <BudgetSettingContainer>셋팅</BudgetSettingContainer>
       </BudgetContainer>
-      <CalendarContainer>달력</CalendarContainer>
+      <CalendarContainer>
+        <WeeklyCalendar currentDate={currentDate}>달력</WeeklyCalendar>
+      </CalendarContainer>
     </Layout>
   );
 };
@@ -138,6 +201,32 @@ const BudgetSettingContainer = styled.div`
   flex-direction: column;
   align-items: center;
 `;
+const BudgetTextContainer = styled.div`
+  height: 30px;
+  width: 100%;
+  border: 1px black solid;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+`;
+const BudgetText = styled.div`
+  height: 30px;
+  width: 50%;
+  border: 1px black solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const BudgetNumberContainer = styled.div`
+  height: 50px;
+  width: 100%;
+  border: 1px black solid;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+`;
 
 const CalendarContainer = styled.div`
   height: 392px;
@@ -151,4 +240,22 @@ const CalendarContainer = styled.div`
 
 const ArrowButton = styled.div`
   cursor: pointer;
+`;
+
+const ProgressContainer = styled.div`
+  width: 100%;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+`;
+
+const ProgressBarTextBox = styled.div`
+  height: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const ProgressBarText = styled.div`
+  height: 10px;
 `;
