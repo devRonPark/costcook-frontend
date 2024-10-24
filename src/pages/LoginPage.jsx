@@ -12,8 +12,8 @@ const LoginPage = () => {
     const params = new URLSearchParams({
       scope: 'email profile',
       response_type: 'code',
-      redirect_uri: process.env.REACT_APP_GOOGLE_REDIRECT_URI,
-      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
     });
     const GOOGLE_URL = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
     window.location.href = GOOGLE_URL; // 구글 OAuth 로그인 페이지로 이동
@@ -23,12 +23,13 @@ const LoginPage = () => {
     // 카카오 로그인 버튼 클릭 시 이동하는 경로 지정
     const params = new URLSearchParams({
       response_type: 'code',
-      redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URI,
-      client_id: process.env.REACT_APP_KAKAO_CLIENT_ID,
+      redirect_uri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
+      client_id: import.meta.env.VITE_KAKAO_CLIENT_ID,
     });
-    const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+    console.log(import.meta.env.VITE_KAKAO_REDIRECT_URI);
+    // const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
 
-    window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동
+    // window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동
   };
 
   return (
