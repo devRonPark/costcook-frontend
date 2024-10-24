@@ -74,8 +74,6 @@ const OAuthVerification = () => {
           // 로그인 요청
           const loginRes = await AuthApi.signUpOrLogin(loginData);
 
-          console.log(loginRes.data);
-
           // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
           dispatch({
             type: 'LOGIN',
@@ -84,11 +82,14 @@ const OAuthVerification = () => {
 
           toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
-          // navigate('/home');
-          // 로그인 중 메시지 표시 후 500ms 대기 (필요에 따라 조정 가능)
-          setTimeout(() => {
-            // window.location.href = '/home';
-          }, 500); // 500ms 대기 후 홈으로 이동
+          // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
+          if (loginRes.data.userProfileUpdated) {
+            // 홈 화면 이동
+            navigate('/home');
+          } else {
+            // 프로필 업데이트 페이지로 이동
+            navigate('/profile/update');
+          }
         } else {
           // 인증 코드가 일치하지 않는 경우
           toast.error('인증 코드가 올바르지 않습니다. 다시 시도해 주세요.'); // 오류 메시지
@@ -112,12 +113,13 @@ const OAuthVerification = () => {
       const res = await AuthApi.getProviderInfo(provider, code);
 
       // res.data.ableToLogin 이 true 이면, 이메일 인증 과정을 거치지 않고 자동 회원가입 처리 및 로그인 요청을 보낸다.
-      console.log(res.data);
       if (res.data.ableToLogin) {
         const loginRes = await AuthApi.signUpOrLogin({
           ...res.data,
           provider: res.data.provider.toLowerCase(),
         });
+
+        toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
         // 로그인 성공하면 전역 상태에 로그인된 사용자 정보를 저장
         dispatch({
@@ -125,15 +127,14 @@ const OAuthVerification = () => {
           payload: loginRes.data,
         });
 
-        toast.info('로그인 중입니다...'); // 로그인 중 메시지
-
-        navigate('/home');
-        // 로그인 중 메시지 표시 후 500ms 대기 (필요에 따라 조정 가능)
-        // setTimeout(() => {
-        // }, 500); // 500ms 대기 후 홈으로 이동
-
-        // 로그인 성공 후 홈으로 리다이렉트
-        // window.location.href = '/home';
+        // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
+        if (loginRes.data.userProfileUpdated) {
+          // 홈 화면 이동
+          navigate('/home');
+        } else {
+          // 프로필 업데이트 페이지로 이동
+          navigate('/profile/update');
+        }
       } else {
         // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
         dispatch({
@@ -146,6 +147,7 @@ const OAuthVerification = () => {
     } catch (error) {
       console.error(error);
       // TODO: 에러 발생 시 어느 페이지로 이동 시킬 지 결정 후 구현.
+      // 에러 상태 코드, 그에 대한 메세지는 일괄적으로 설정. 홈으로 가기 > 로그아웃 처리 및 홈 화면 이동
     }
   };
 
