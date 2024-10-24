@@ -31,7 +31,9 @@ import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
+import ProfileUpdate from './pages/ProfileUpdate';
 import Review from './pages/Review';
+import SignUpComplete from './pages/SignUpComplete';
 
 
 function App() {
@@ -44,22 +46,7 @@ function App() {
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route
-            path="/"
-            element={
-              <PageTransition>
-                <PreLoginPage />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PageTransition>
-                <LoginPage />
-              </PageTransition>
-            }
-          />
+          {/* 비회원, 로그인한 회원 모두 접근 가능 */}
           <Route
             path="/home"
             element={
@@ -85,34 +72,10 @@ function App() {
             }
           />
           <Route
-            path="/recommend"
-            element={
-              <PageTransition>
-                <RecommendPage />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/budget"
-            element={
-              <PageTransition>
-                <BudgetPage />
-              </PageTransition>
-            }
-          />
-          <Route
             path="/favorite"
             element={
               <PageTransition>
                 <FavoritePage />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/my"
-            element={
-              <PageTransition>
-                <MyPage />
               </PageTransition>
             }
           />
@@ -124,27 +87,21 @@ function App() {
               </PageTransition>
             }
           />
+
+          {/* 비회원만 접근 가능 */}
           <Route
-            path="/list"
+            path="/"
             element={
               <PageTransition>
-                <ItemList />
+                <PreLoginPage />
               </PageTransition>
             }
           />
           <Route
-            path="/activities"
+            path="/login"
             element={
               <PageTransition>
-                <Activities />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/review"
-            element={
-              <PageTransition>
-                <Review />
+                <LoginPage />
               </PageTransition>
             }
           />
@@ -156,6 +113,44 @@ function App() {
               </AuthProvider>
             }
           />
+          {/* 로그인한 회원만 접근 가능 */}
+          <Route path="/profile/update" element={<ProfileUpdate />} />
+          <Route path="/signup/complete" element={<SignUpComplete />} />
+          <Route
+            path="/budget"
+            element={
+              <PageTransition>
+                <BudgetPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/my"
+            element={
+              <PageTransition>
+                <MyPage />
+              </PageTransition>
+            }
+          />
+          <Route path="/my/profile" element={<UserInfo />} />
+          <Route
+            path="/recommend"
+            element={
+              <PageTransition>
+                <RecommendPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <PageTransition>
+                <Activities />
+              </PageTransition>
+            }
+          />
+
+          {/* 관리자만 접근 가능 */}
           <Route 
             path="/admin/ingredient" 
             element={<AdminIngredientPage />} 
@@ -168,11 +163,32 @@ function App() {
             path="/admin/recipe-form/:recipeId" 
             element={<AdminRecipeForm />} 
           />
+          <Route
+            path="/admin/recipe-ingredient"
+            element={<RecipeIngredientPage />}
+          />
           <Route 
             path="/admin/recipe-list" 
             element={<AdminRecipeList />} 
           />
-          <Route path="/users/me" element={<UserInfo />} />
+          {/* 아직 명확하지 않은 페이지 */}
+          <Route
+            path="/list"
+            element={
+              <PageTransition>
+                <ItemList />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/review"
+            element={
+              <PageTransition>
+                <Review />
+              </PageTransition>
+            }
+          />
+          {/* 에러 페이지 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>

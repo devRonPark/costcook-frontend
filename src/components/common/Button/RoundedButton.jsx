@@ -4,9 +4,14 @@ const RoundedButton = ({
   text = '버튼', // 기본값: "버튼"
   onClick = () => (window.location.href = '#'), // 기본값: 페이지 이동 없음
   backgroundColor = 'white', // 기본값: 흰색 배경
+  hoverBackgroundColor = '#e0a44b', // 기본값: hover 시 배경색
 }) => {
   return (
-    <MainContainer onClick={onClick} backgroundColor={backgroundColor}>
+    <MainContainer
+      onClick={onClick}
+      backgroundColor={backgroundColor}
+      hoverBackgroundColor={hoverBackgroundColor}
+    >
       {text}
     </MainContainer>
   );
@@ -25,6 +30,7 @@ const MainContainer = styled.button`
   cursor: pointer;
 
   &:hover {
-    opacity: 0.8;
+    background-color: ${(props) =>
+      props.hoverBackgroundColor}; // hover 시 배경색 설정
   }
 `;
