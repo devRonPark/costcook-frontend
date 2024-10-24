@@ -31,6 +31,7 @@ import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
+import ProfileUpdate from './pages/ProfileUpdate';
 import Review from './pages/Review';
 
 function App() {
@@ -162,6 +163,7 @@ function App() {
             element={<RecipeIngredientPage />}
           />
           <Route path="/users/me" element={<UserInfo />} />
+          <Route path="/users/profile" element={<ProfileUpdate />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
