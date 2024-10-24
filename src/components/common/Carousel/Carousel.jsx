@@ -8,14 +8,46 @@ import CarouselCard from './CarouselCard';
 
 const Carousel = () => {
   const arr = [
-    { id: 1, title: 'https://swiperjs.com/demos/images/nature-1.jpg' },
-    { id: 2, title: 'https://swiperjs.com/demos/images/nature-2.jpg' },
-    { id: 3, title: 'https://swiperjs.com/demos/images/nature-3.jpg' },
-    { id: 4, title: 'https://swiperjs.com/demos/images/nature-4.jpg' },
-    { id: 5, title: 'https://swiperjs.com/demos/images/nature-1.jpg' },
-    { id: 6, title: 'https://swiperjs.com/demos/images/nature-2.jpg' },
-    { id: 7, title: 'https://swiperjs.com/demos/images/nature-3.jpg' },
-    { id: 8, title: 'https://swiperjs.com/demos/images/nature-4.jpg' },
+    {
+      id: 1,
+      title: 'https://swiperjs.com/demos/images/nature-1.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 2,
+      title: 'https://swiperjs.com/demos/images/nature-2.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 3,
+      title: 'https://swiperjs.com/demos/images/nature-3.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 4,
+      title: 'https://swiperjs.com/demos/images/nature-4.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 5,
+      title: 'https://swiperjs.com/demos/images/nature-1.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 6,
+      title: 'https://swiperjs.com/demos/images/nature-2.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 7,
+      title: 'https://swiperjs.com/demos/images/nature-3.jpg',
+      alt: '이미지',
+    },
+    {
+      id: 8,
+      title: 'https://swiperjs.com/demos/images/nature-4.jpg',
+      alt: '이미지',
+    },
   ];
 
   return (
