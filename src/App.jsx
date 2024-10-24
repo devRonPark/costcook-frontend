@@ -34,6 +34,7 @@ import Activities from './pages/Activities';
 import ProfileUpdate from './pages/ProfileUpdate';
 import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
+import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 
 
 function App() {
