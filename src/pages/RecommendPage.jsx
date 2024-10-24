@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Layout from '../components/layout/Layout';
+import Carousel from '../components/common/Carousel/Carousel';
 
 const RecommendPage = () => {
   return (
@@ -16,11 +17,7 @@ const RecommendPage = () => {
       <RecommendContainer>
         <h3>50%이내 가격의 레시피들</h3>
         <RecommendListContainer>
-          <RecommendList>1</RecommendList>
-          <RecommendList>2</RecommendList>
-          <RecommendList>3</RecommendList>
-          <RecommendList>4</RecommendList>
-          <RecommendList>5</RecommendList>
+          <Carousel />
         </RecommendListContainer>
       </RecommendContainer>
 
@@ -84,7 +81,9 @@ const RecommendListContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  overflow: hidden;
   align-items: center;
+  justify-content: center;
   border: 1px solid black;
 `;
 
@@ -114,3 +113,4 @@ const ShowContainer = styled.div`
   margin-top: auto;
   border: 1px black solid;
 `;
+
