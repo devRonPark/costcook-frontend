@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import WeeklyCalendar from './WeeklyCalendar';
 import Layout from '../components/layout/Layout';
 
 const getWeekAndFirstSundayDate = (date) => {

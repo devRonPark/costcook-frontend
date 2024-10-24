@@ -4,8 +4,9 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Layout from '../components/layout/Layout';
 
+// const RecipeDetail = ({ recipeDetail }) => {
 const RecipeDetail = () => {
-  // 활성 탭 상태 관리
+    // 활성 탭 상태 관리
   const [activeTabs, setActiveTabs] = useState([
     'ingredients',
     'cookingMethod',
