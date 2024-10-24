@@ -10,6 +10,7 @@ import RoundedButton from '../components/common/Button/RoundedButton';
 import UserConsentModal from '../components/UserConsentModal';
 import apiClient from '../services/api';
 import AuthApi from '../services/auth.api';
+import { useNavigate } from 'react-router-dom';
 
 const ButtonContainer = styled.div`
   margin-top: 60px;
@@ -84,6 +85,7 @@ const ProfileUpdate = () => {
   const [profileFile, setProfileFile] = useState(null); // 전송할 파일 객체 정보 관리
   const [personalInfoAgreement, setPersonalInfoAgreement] = useState(false); // 개인정보 수집 및 이용 동의 여부
   const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // 선택한 파일 가져오기
@@ -133,10 +135,11 @@ const ProfileUpdate = () => {
       console.log('사용자 정보 업데이트 서버로 요청');
       const response = await AuthApi.updateMyInfo(formData);
 
-      if (response.status === 204) {
+      if (response.status === 200) {
         toast.info('회원 정보가 성공적으로 업데이트되었습니다!');
 
         // 회원가입 완료 페이지로 이동.
+        navigate('/signup/complete');
       }
     } catch (error) {
       console.error('사용자 정보 업데이트 실패:', error);
