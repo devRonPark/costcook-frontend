@@ -74,6 +74,8 @@ const OAuthVerification = () => {
           // 로그인 요청
           const loginRes = await AuthApi.signUpOrLogin(loginData);
 
+          console.log(loginRes.data);
+
           // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
           dispatch({
             type: 'LOGIN',
@@ -82,7 +84,7 @@ const OAuthVerification = () => {
 
           toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
-          navigate('/home');
+          // navigate('/home');
           // 로그인 중 메시지 표시 후 500ms 대기 (필요에 따라 조정 가능)
           setTimeout(() => {
             // window.location.href = '/home';
@@ -160,6 +162,13 @@ const OAuthVerification = () => {
       />
     );
   }
+
+  // 신규 회원가입한 회원이면,
+  if (state.user && state.user.newUser && state.isAuthenticated) {
+    navigate('/profile/update');
+    return;
+  }
+
   return (
     <Layout isBackBtnExist pageName="이메일 인증">
       {!emailSent ? (
