@@ -30,6 +30,12 @@ const AuthApi = {
     apiClient.get('/users/me', {
       withCredentials: true, // 쿠키 포함 설정
     }),
+  updateMyInfo: (data) =>
+    apiClient.patch('/users/me', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
 };
 
 export default AuthApi; // AuthApi 객체를 기본 내보내기

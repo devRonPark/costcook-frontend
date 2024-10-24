@@ -15,20 +15,16 @@ const RecommendPage = () => {
       </SelectedContainer>
 
       <RecommendContainer>
-        <h3>50%이내 가격의 레시피들</h3>
+        <h4>50%이내 가격의 레시피들</h4>
         <RecommendListContainer>
           <Carousel />
         </RecommendListContainer>
       </RecommendContainer>
 
       <RecommendContainer>
-        <h3>30%이내 가격의 레시피들</h3>
+        <h4>30%이내 가격의 레시피들</h4>
         <RecommendListContainer>
-          <RecommendList>1</RecommendList>
-          <RecommendList>2</RecommendList>
-          <RecommendList>3</RecommendList>
-          <RecommendList>4</RecommendList>
-          <RecommendList>5</RecommendList>
+          <Carousel />
         </RecommendListContainer>
       </RecommendContainer>
       <ShowBasicContainer>
@@ -50,7 +46,6 @@ const SelectedContainer = styled.div`
 `;
 
 const SelectedListContainer = styled.div`
-  padding: 10px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -69,15 +64,15 @@ const SelectedList = styled.div`
 `;
 
 const RecommendContainer = styled.div`
+  padding-top: 5px;
   width: 100%;
   border: 1px solid black;
-  margin-top: 20px;
   text-align: left;
   display: flex;
   flex-direction: column;
 `;
 const RecommendListContainer = styled.div`
-  padding: 10px;
+  padding-top: 5px;
   width: 100%;
   display: flex;
   justify-content: space-between;

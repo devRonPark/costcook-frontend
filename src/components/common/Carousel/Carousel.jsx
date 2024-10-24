@@ -23,7 +23,7 @@ const Carousel = () => {
       loop
       slidesPerView={5}
       centeredSlides={true}
-      spaceBetween={40}
+      spaceBetween={70}
       navigation={true}
       modules={[Navigation]}
       className="mySwiper"
