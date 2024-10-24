@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import CarouselData from './CarouselData';
 
 const CardContainer = styled.div`
   min-width: 10rem;
@@ -22,31 +23,25 @@ const Image = styled.img`
 `;
 
 const CarouselCard = ({ isActive, isPrev, isNext, data }) => {
+  // isActive, isPrev, isNext 상태에 따라 CSS scale 값을 반환
   const getScale = () => {
     if (isActive) return 'scale(1)'; // scale-100
     if (isPrev || isNext) return 'scale(0.9)'; // scale-90
     return 'scale(0.8)'; // scale-75
   };
 
+  // scr = data.title, alt = data.alt , 음식이름 = name , 음식가격 = price, 북마크 = likes , 별점 = rating
   return (
     <CardContainer scale={getScale()}>
-      <Image src={data.title} alt="이미지" />
-      <TextField>
-        <h3>음식이름</h3>
-        <div>
-          <a>8000원</a>
-        </div>
-        <a style={{ color: 'red' }}>♥</a>
-        <a> 2K</a>
-        <a style={{ color: '#FF9400' }}> ★</a>
-        <a> 4.5</a>
-      </TextField>
+      <Image src={data.title} alt={data.alt} />
+      <CarouselData
+        name="음식이름"
+        price={8000}
+        likes={2}
+        rating={4.5}
+      ></CarouselData>
     </CardContainer>
   );
 };
 
 export default CarouselCard;
-
-const TextField = styled.div`
-  padding-left: 10px;
-`;
