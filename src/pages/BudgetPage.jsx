@@ -5,6 +5,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Layout from '../components/layout/Layout';
 import ProgressBar from '../components/common/ProgressBar';
 import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
+import WeeklyCalendar from './WeeklyCalendar';
 
 const getWeekAndFirstSundayDate = (date) => {
   // 오늘 날짜 : date
@@ -39,6 +40,9 @@ const budgetData = [
     id: 1,
     useAmount: 88000,
     budgetAmount: 100000,
+    cheapRecipe: 5000,
+    recipeAvg: 18000,
+    expensiveRecipe: 20000,
     date: '2024-10-23',
   },
   {
@@ -152,7 +156,27 @@ const BudgetPage = () => {
           </ProgressBarTextBox>
         </ProgressContainer>
 
-        <BudgetSettingContainer>셋팅</BudgetSettingContainer>
+        <BudgetSettingContainer>
+          <BudgetTextContainer>
+            <BudgetText>가장 저렴한 레시피</BudgetText>
+            <BudgetText>레시피 평균 가격</BudgetText>
+            <BudgetText>가장 비싼 레시피</BudgetText>
+          </BudgetTextContainer>
+          <BudgetNumberContainer>
+            <BudgetAmountSetting
+              id="cheapRecipe"
+              amount={budgetData[0].cheapRecipe}
+            ></BudgetAmountSetting>
+            <BudgetAmountSetting
+              id="recipeAvg"
+              amount={budgetData[0].recipeAvg}
+            ></BudgetAmountSetting>
+            <BudgetAmountSetting
+              id="expensiveRecipe"
+              amount={budgetData[0].expensiveRecipe}
+            ></BudgetAmountSetting>
+          </BudgetNumberContainer>
+        </BudgetSettingContainer>
       </BudgetContainer>
       <CalendarContainer>
         <WeeklyCalendar currentDate={currentDate}>달력</WeeklyCalendar>
