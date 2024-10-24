@@ -18,73 +18,57 @@ const ButtonContainer = styled.div`
 `;
 
 // 기본 이미지 경로 설정
-const defaultImagePath = `${process.env.PUBLIC_URL}/default_user_profile.png`;
-
-// [
-//   { "id": 9, "name": "가공식품류", "parentId": 14 },
-//   { "id": 5, "name": "건어물류", "parentId": 14 },
-//   { "id": 7, "name": "곡류", "parentId": 14 },
-//   { "id": 13, "name": "과일류", "parentId": 14 },
-//   { "id": 10, "name": "기타", "parentId": 14 },
-//   { "id": 12, "name": "달걀/유제품", "parentId": 14 },
-//   { "id": 3, "name": "닭고기", "parentId": 14 },
-//   { "id": 11, "name": "돼지고기", "parentId": 14 },
-//   { "id": 4, "name": "밀가루", "parentId": 14 },
-//   { "id": 29, "name": "버섯류", "parentId": 14 },
-//   { "id": 28, "name": "소고기", "parentId": 14 },
-//   { "id": 2, "name": "쌀", "parentId": 14 },
-//   { "id": 1, "name": "채소류", "parentId": 14 },
-//   { "id": 6, "name": "콩/견과류", "parentId": 14 },
-//   { "id": 8, "name": "해물류", "parentId": 14 }
-// ]
+const defaultImagePath = `${
+  import.meta.env.VITE_PUBLIC_URL
+}/default_user_profile.png`;
 
 // 화면에 렌더링되는 재료 정보
 const ingredients = [
   {
     id: 28,
     name: '소고기',
-    imageUrl: `${process.env.PUBLIC_URL}/category_beef.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_beef.png`,
   },
   {
     id: 11,
     name: '돼지고기',
-    imageUrl: `${process.env.PUBLIC_URL}/category_pork.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_pork.png`,
   },
   {
     id: 3,
     name: '닭고기',
-    imageUrl: `${process.env.PUBLIC_URL}/category_chicken.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_chicken.png`,
   },
   {
     id: 5,
     name: '건어물류',
-    imageUrl: `${process.env.PUBLIC_URL}/category_dried_fish.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_dried_fish.png`,
   },
   {
     id: 13,
     name: '과일류',
-    imageUrl: `${process.env.PUBLIC_URL}/category_fruit.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_fruit.png`,
   },
   {
     id: 29,
     name: '버섯류',
-    imageUrl: `${process.env.PUBLIC_URL}/category_mushroom.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_mushroom.png`,
   },
   {
     id: 7,
     name: '곡류',
-    imageUrl: `${process.env.PUBLIC_URL}/category_rice.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_rice.png`,
   },
   {
     id: 12,
     name: '달걀/유제품',
-    imageUrl: `${process.env.PUBLIC_URL}/category_dairy.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_dairy.png`,
   },
 
   {
     id: 4,
     name: '밀가루',
-    imageUrl: `${process.env.PUBLIC_URL}/category_flour.png`,
+    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_flour.png`,
   },
 ];
 
@@ -149,8 +133,10 @@ const ProfileUpdate = () => {
       console.log('사용자 정보 업데이트 서버로 요청');
       const response = await AuthApi.updateMyInfo(formData);
 
-      if (response.status === 200) {
+      if (response.status === 204) {
         toast.info('회원 정보가 성공적으로 업데이트되었습니다!');
+
+        // 회원가입 완료 페이지로 이동.
       }
     } catch (error) {
       console.error('사용자 정보 업데이트 실패:', error);
