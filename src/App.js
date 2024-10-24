@@ -23,10 +23,10 @@ import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
-import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
+import AdminRecipeForm from './pages/admin/RecipeForm';
+import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
-import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
@@ -161,8 +161,16 @@ function App() {
             element={<AdminIngredientPage />} 
           />
           <Route 
-            path="/admin/recipe" 
-            element={<AdminRecipePage />} 
+            path="/admin/recipe-form" 
+            element={<AdminRecipeForm />} 
+          />
+          <Route 
+            path="/admin/recipe-form/:recipeId" 
+            element={<AdminRecipeForm />} 
+          />
+          <Route 
+            path="/admin/recipe-list" 
+            element={<AdminRecipeList />} 
           />
           <Route path="/users/me" element={<UserInfo />} />
           <Route path="*" element={<NotFoundPage />} />

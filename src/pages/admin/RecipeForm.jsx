@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -10,7 +11,10 @@ import RecipeIngredientPage from './RecipeIngredientPage';
 import SelectWrapper from '../../components/admin/SelectWrapper';
 import ThumbnailUploader from '../../components/ThumbnailUploader';
 
-const AdminRecipePage = () => {
+const AdminRecipeForm = () => {
+  // 라우터에서 recipeId 파라미터 가져오기
+  const { recipeId } = useParams();
+
   // 상태 : 레시피 이름, 식사량, 재료 리스트, 썸네일
   const [recipeName, setRecipeName] = useState('');
   const [servings, setServings] = useState(1);
@@ -29,6 +33,15 @@ const AdminRecipePage = () => {
 
   // 모달이 열렸는지?
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 편집 모드일 때만 alert로 recipeId 표시
+  useEffect(() => {
+    if (recipeId) {
+      alert(`편집 중인 레시피 ID: ${recipeId}`);
+      setIsEditing(true); // 편집 모드 설정
+      // 여기서 서버에서 해당 레시피 데이터를 불러와 상태에 설정할 수 있습니다.
+    }
+  }, [recipeId]);
 
   // 모달 열기
   const openModal = () => {
@@ -55,15 +68,26 @@ const AdminRecipePage = () => {
         ingredients: ingredientList,
       };
 
-      const response = await axios.post('/api/admin/recipes', requestData);
-
-      if (response.status === 200) {
-        alert('레시피가 성공적으로 등록되었습니다!');
+      if (isEditing && recipeId) {
+        // 편집 모드일 때
+        const response = await axios.put(`/api/admin/recipes/${recipeId}`, requestData);
+        if (response.status === 200) {
+          alert('레시피가 성공적으로 수정되었습니다!');
+        } else {
+          alert('수정에 실패했습니다. 다시 시도해주세요.');
+        }
       } else {
-        alert('등록에 실패했습니다. 다시 시도해주세요.');
+        // 추가 모드일 때
+        const response = await axios.post('/api/admin/recipes', requestData);
+        if (response.status === 200) {
+          alert('레시피가 성공적으로 등록되었습니다!');
+        } else {
+          alert('등록에 실패했습니다. 다시 시도해주세요.');
+        }
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
+      alert('서버 통신 중 오류가 발생했습니다.');
     }
   };
 
@@ -135,11 +159,11 @@ const AdminRecipePage = () => {
             <SectionTitle>레시피 재료</SectionTitle>
             <ButtonGroup>
               <AddButton onClick={openModal}>추가</AddButton>
-                {ingredientList.length > 0 && (
-                  <EditButton onClick={toggleEditMode}>
-                    {isEditing ? '편집 완료' : '편집'}
-                  </EditButton>
-                )}
+              {ingredientList.length > 0 && (
+                <EditButton onClick={toggleEditMode}>
+                  {isEditing ? '편집 완료' : '편집'}
+                </EditButton>
+              )}
             </ButtonGroup>
           </SectionTitleWrapper>
           <IngredientTable
@@ -175,7 +199,7 @@ const AdminRecipePage = () => {
   );
 };
 
-export default AdminRecipePage;
+export default AdminRecipeForm;
 
 // 스타일링 컴포넌트
 

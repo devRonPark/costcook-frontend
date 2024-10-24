@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import unitList from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
@@ -23,9 +22,7 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
   const isModified = Boolean(selectedIngredient) || Boolean(quantity);
 
   // 선택된 재료에 표시되는 단위
-  const unitName = selectedIngredient
-    ? unitList.find((unit) => unit.id === selectedIngredient.unitId)?.name
-    : '';
+  const unitName = selectedIngredient ? selectedIngredient.unitName : '';
 
   // 애니메이션 체크 로직을 별도의 함수로 분리
   const checkShouldAnimate = () => {
