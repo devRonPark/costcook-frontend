@@ -109,7 +109,7 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
           <IngredientQuantitySection
             unitName={unitName}
             onQuantityConfirm={handleQuantityConfirm} // 확인 버튼을 눌렀을 때만 수량 업데이트
-            onResetIngredient={selectedIngredient}
+            selectedIngredient={selectedIngredient}
           />
         )}
       </ContentContainer>

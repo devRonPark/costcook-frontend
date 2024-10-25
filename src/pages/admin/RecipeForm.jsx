@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
-import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
-import menuData from '../../assets/data/menus.json';
-import ingredientData from '../../assets/data/ingredients.json';
+import menuData from '../../assets/data/menus.json'; 
 import IngredientTable from '../../components/admin/IngredientTable';
 import RecipeIngredientPage from './RecipeIngredientPage';
 import SelectWrapper from '../../components/admin/SelectWrapper';
 import ThumbnailUploader from '../../components/ThumbnailUploader';
+import styled from 'styled-components';
+import apiClient from '../../services/api';
 
 const AdminRecipeForm = () => {
   // 라우터에서 recipeId 파라미터 가져오기
   const { recipeId } = useParams();
 
-  // 상태 : 레시피 이름, 식사량, 재료 리스트, 썸네일
+  // 상태 : 레시피 이름, 식사량, 재료 리스트, 썸네일, 총합
   const [recipeName, setRecipeName] = useState('');
   const [servings, setServings] = useState(1);
-  const [selectedMenu, setSelectedMenu] = useState(1);
-  const [ingredientList, setIngredientList] = useState(
-    ingredientData.slice(0, 3).map((ingredient) => ({
-      ...ingredient,
-      quantity: 1,
-    }))
-  );
-
+  const [selectedCategory, setSelectedCategory] = useState(1); 
+  const [ingredientList, setIngredientList] = useState([]);
   const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [totalCost, setTotalCost] = useState(0);
 
   // 편집 상태 추가
   const [isEditing, setIsEditing] = useState(false);
@@ -62,28 +56,39 @@ const AdminRecipeForm = () => {
   const handleSubmit = async () => {
     // DB 등록시 가격을 식사량으로 나눠야 함. 1인분 기준
     try {
-      const requestData = {
-        recipeName,
-        servings,
-        ingredients: ingredientList,
-      };
+      // FormData 생성
+      const formData = new FormData();
 
-      if (isEditing && recipeId) {
-        // 편집 모드일 때
-        const response = await axios.put(`/api/admin/recipes/${recipeId}`, requestData);
-        if (response.status === 200) {
-          alert('레시피가 성공적으로 수정되었습니다!');
-        } else {
-          alert('수정에 실패했습니다. 다시 시도해주세요.');
-        }
+      // 레시피 정보 JSON 데이터 추가 (Blob으로 변환)
+      const recipeData = {
+        title: recipeName,
+        categoryId: selectedCategory,
+        servings: servings,
+        description: '설명',
+        ingredients: ingredientList.map(ingredient => ({
+          ingredientId: ingredient.id,
+          quantity: ingredient.quantity,
+        })),
+        price: totalCost,
+      };
+      formData.append('recipe', new Blob([JSON.stringify(recipeData)], { type: 'application/json' }));
+
+      // 썸네일 파일 추가
+      if (thumbnailFile) {
+        formData.append('thumbnail', thumbnailFile);
+      }
+
+      // 서버로 요청 전송
+      const response = await apiClient.post('/admin/recipes', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === 200) {
+        alert(response.data);
       } else {
-        // 추가 모드일 때
-        const response = await axios.post('/api/admin/recipes', requestData);
-        if (response.status === 200) {
-          alert('레시피가 성공적으로 등록되었습니다!');
-        } else {
-          alert('등록에 실패했습니다. 다시 시도해주세요.');
-        }
+        alert(response.data);
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
@@ -132,8 +137,8 @@ const AdminRecipeForm = () => {
         {/* 레시피 카테고리 설정 섹션 */}
         <Section>
           <SectionTitle>레시피 카테고리</SectionTitle>
-          <SelectWrapper value={selectedMenu} onChange={(e) => setSelectedMenu(Number(e.target.value))}>
-            {menuData.map((menu) => (
+          <SelectWrapper value={selectedCategory} onChange={(e) => setSelectedCategory(Number(e.target.value))}>
+            {menuData.map((menu) => ( // menuData는 그대로 사용
               <option key={menu.id} value={menu.id}>
                 {menu.name}
               </option>
@@ -175,6 +180,7 @@ const AdminRecipeForm = () => {
               );
             }}
             onUpdateIngredient={handleUpdateIngredient} // 재료 수량 업데이트 함수 전달
+            onTotalCostChange={setTotalCost}
           />
         </Section>
 
@@ -200,8 +206,6 @@ const AdminRecipeForm = () => {
 };
 
 export default AdminRecipeForm;
-
-// 스타일링 컴포넌트
 
 const Section = styled.div`
   margin-top: 24px;

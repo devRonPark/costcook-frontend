@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const IngredientQuantitySection = ({ unitName, onQuantityConfirm, onResetIngredient }) => {
+const IngredientQuantitySection = ({ unitName, onQuantityConfirm, selectedIngredient }) => {
   
   /* 상위 컴포넌트(RecipeIngredientPage)로부터 전달되는 props
     1. unitName : 해당 재료의 단위명
     2. onQuantityConfirm: 사용자가 수량을 입력하고 확인 버튼을 눌렀을 때 호출되는 함수
-    3. onResetIngredient: 사용자가 재료를 재선택할 때 호출되는 함수
+    3. selectedIngredient: 사용자가 선택한 재료
   */
   
   // 상태 : 해당 재료의 수량
@@ -14,7 +14,7 @@ const IngredientQuantitySection = ({ unitName, onQuantityConfirm, onResetIngredi
 
   useEffect(() => {
     setQuantity(''); // 재료가 변경되면 수량을 비움
-  }, [onResetIngredient]);
+  }, [selectedIngredient]);
 
 
   // 이벤트 핸들러 : 사용자가 입력 창에서 수량을 입력(변경)할 때 

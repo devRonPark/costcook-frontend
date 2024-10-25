@@ -73,6 +73,8 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, exist
         },
       });
 
+      console.log(response.data);
+
       // 서버에서 받아온 검색 결과 저장
       setFilteredData(response.data);
   

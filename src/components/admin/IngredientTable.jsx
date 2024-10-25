@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
 import unitData from '../../assets/data/units.json';
 
-const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpdateIngredient }) => {
+const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpdateIngredient, onTotalCostChange }) => {
   // 레시피 전체의 총 비용 계산
   const totalCost = ingredientList.reduce(
-    (acc, ingredient) => acc + ingredient.price * ingredient.quantity,
+    (acc, ingredient) => acc + ingredient.pricePerUnit * ingredient.quantity,
     0
   );
   const formattedTotalCost = parseFloat(totalCost.toFixed(2));
+
+  // totalCost 변경 시 상위 컴포넌트에 전달
+  useEffect(() => {
+    onTotalCostChange(totalCost);
+  }, [totalCost]);
 
   return (
     <StyledTable>
@@ -22,8 +27,8 @@ const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpda
       </thead>
       <tbody>
         {ingredientList.map((ingredient) => {
-          const unitName = unitData.find((unit) => unit.id === ingredient.unitId)?.name || '';
-          const ingredientCost = parseFloat((ingredient.price * ingredient.quantity).toFixed(2));
+          const unitName = ingredient.unitName;
+          const ingredientCost = parseFloat((ingredient.pricePerUnit * ingredient.quantity).toFixed(2));
           return (
             <TableRow key={ingredient.id}>
               <td>{ingredient.name}</td>
