@@ -1,56 +1,97 @@
 import styled from 'styled-components';
 import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
+import { useAuth } from '../context/Auth/AuthContext';
+import { useEffect } from 'react';
+import ImageDisplay from '../components/display/ImageDisplay';
+import RoundedButton from '../components/common/Button/RoundedButton';
+import AuthApi from '../services/auth.api';
+import { toast } from 'react-toastify';
+import { removeCookie } from '../utils/cookieUtil';
 
-const MyPage = () => (
-  <Layout>
-    <DateContainer>
-      <ProfileContainer>
-        <ProfileImageContainer>프로필 이미지</ProfileImageContainer>
-        <ProfileNameContainer>요리하는 잉규형</ProfileNameContainer>
-      </ProfileContainer>
-      <DateButtonContainer>
-        <DateButton>사진 변경</DateButton>
-        <DateButton>닉네임 변경</DateButton>
-        <DateButton>로그아웃</DateButton>
-      </DateButtonContainer>
-    </DateContainer>
-    <SettingContainer>
-      <h4>좋아하는 재료를 추가하거나 수정 할 수 있습니다</h4>
-      <SettingButtonContainer>
-        <Link to="../list">
-          <Button>선호 재료 관리</Button>
-        </Link>
-      </SettingButtonContainer>
-    </SettingContainer>
-    <SettingContainer>
-      <h4>싫어하는 재료를 추가하거나 수정 할 수 있습니다</h4>
-      <SettingButtonContainer>
-        <Button>비선호 재료 관리</Button>
-      </SettingButtonContainer>
-    </SettingContainer>
-    <ButtonLayoutContainer>
-      <ButtonContainer>
-        <Link to="../activities">
-          <Button>내 활동</Button>
-        </Link>
-      </ButtonContainer>
-      <ButtonContainer>
-        <ButtonSplitBox>
-          <Link to="../budget">
-            <Button>예산 관리</Button>
+const MyPage = () => {
+  const { state, dispatch } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const res = await AuthApi.logout(); // 로그아웃 API 호출
+      if (res.status === 200) {
+        dispatch({
+          type: 'LOGOUT', // 사용자 state 제거
+        });
+
+        // accessToken 쿠키 제거
+        removeCookie('accessToken');
+
+        toast.info('로그아웃되었습니다.'); // 로그아웃 성공 메시지
+
+        navigate('/home'); // 홈 화면으로 이동
+      }
+    } catch (error) {
+      toast.error('잠시 후 다시 시도해주세요.'); // 에러 발생 시 오류 메시지 표시
+    }
+  };
+
+  return (
+    <Layout pageName="마이페이지">
+      <DateContainer>
+        <ProfileContainer>
+          <ImageDisplay
+            width="200px"
+            height="200px"
+            src={state?.user?.profileUrl ?? null}
+            alt={`${state?.user?.id ?? ''} 번 회원 프로필 이미지`}
+            margin="20px 0"
+          />
+          <ProfileNameContainer>요리하는 잉규형</ProfileNameContainer>
+        </ProfileContainer>
+        <DateButtonContainer>
+          <RoundedButton
+            text="프로필 변경"
+            onClick={() => alert('프로필 변경 컴포넌트 렌더링')}
+            width="100%"
+          />
+          <RoundedButton text="로그아웃" onClick={handleLogout} width="100%" />
+        </DateButtonContainer>
+      </DateContainer>
+      <SettingContainer>
+        <h4>좋아하는 재료를 추가하거나 수정 할 수 있습니다</h4>
+        <SettingButtonContainer>
+          <Link to="../list">
+            <Button>선호 재료 관리</Button>
           </Link>
-        </ButtonSplitBox>
-        <ButtonSplitBox>
-          <Link to="../review">
-            <Button>리뷰 관리</Button>
+        </SettingButtonContainer>
+      </SettingContainer>
+      <SettingContainer>
+        <h4>싫어하는 재료를 추가하거나 수정 할 수 있습니다</h4>
+        <SettingButtonContainer>
+          <Button>비선호 재료 관리</Button>
+        </SettingButtonContainer>
+      </SettingContainer>
+      <ButtonLayoutContainer>
+        <ButtonContainer>
+          <Link to="../activities">
+            <Button>내 활동</Button>
           </Link>
-        </ButtonSplitBox>
-      </ButtonContainer>
-    </ButtonLayoutContainer>
-  </Layout>
-);
+        </ButtonContainer>
+        <ButtonContainer>
+          <ButtonSplitBox>
+            <Link to="../budget">
+              <Button>예산 관리</Button>
+            </Link>
+          </ButtonSplitBox>
+          <ButtonSplitBox>
+            <Link to="../review">
+              <Button>리뷰 관리</Button>
+            </Link>
+          </ButtonSplitBox>
+        </ButtonContainer>
+      </ButtonLayoutContainer>
+    </Layout>
+  );
+};
 
 export default MyPage;
 
