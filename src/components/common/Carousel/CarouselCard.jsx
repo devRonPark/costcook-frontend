@@ -1,7 +1,8 @@
 import styled from 'styled-components';
+import CarouselData from './CarouselData';
 
 const CardContainer = styled.div`
-  min-width: 12rem;
+  min-width: 10rem;
   background-color: white; /* bg-white */
   border: 1px solid #e5e7eb; /* border-gray-200 */
   border-radius: 0.5rem; /* rounded-lg */
@@ -22,15 +23,23 @@ const Image = styled.img`
 `;
 
 const CarouselCard = ({ isActive, isPrev, isNext, data }) => {
+  // isActive, isPrev, isNext 상태에 따라 CSS scale 값을 반환
   const getScale = () => {
     if (isActive) return 'scale(1)'; // scale-100
     if (isPrev || isNext) return 'scale(0.9)'; // scale-90
-    return 'scale(0.75)'; // scale-75
+    return 'scale(0.8)'; // scale-75
   };
 
+  // scr = data.title, alt = data.alt , 음식이름 = name , 음식가격 = price, 북마크 = likes , 별점 = rating
   return (
     <CardContainer scale={getScale()}>
-      <Image src={data.title} alt="이미지" />
+      <Image src={data.title} alt={data.alt} />
+      <CarouselData
+        name="음식이름"
+        price={8000}
+        likes={2}
+        rating={4.5}
+      ></CarouselData>
     </CardContainer>
   );
 };
