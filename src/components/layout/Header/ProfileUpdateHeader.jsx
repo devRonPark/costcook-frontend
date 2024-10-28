@@ -20,17 +20,10 @@ const HeaderTitle = styled.h1`
   margin: 0 auto;
 `;
 
-const ProfileUpdateHeader = ({ step, setStep }) => {
-  // step이 2 또는 3일 때만 뒤로 가기 버튼을 보여주고 클릭 시 step을 감소시킴
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
+const ProfileUpdateHeader = ({ step, handleBack }) => {
   return (
     <HeaderContainer>
-      {step > 1 && <BackButton onClick={handleBack} />}
+      {(step > 1 || step === undefined) && <BackButton onClick={handleBack} />}
       <HeaderTitle>프로필 업데이트</HeaderTitle>
     </HeaderContainer>
   );
