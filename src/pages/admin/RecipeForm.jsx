@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
 import menuData from '../../assets/data/menus.json'; 
@@ -11,40 +11,66 @@ import styled from 'styled-components';
 import apiClient from '../../services/api';
 
 const AdminRecipeForm = () => {
-  // 라우터에서 recipeId 파라미터 가져오기
-  const { recipeId } = useParams();
 
-  // 상태 : 레시피 이름, 식사량, 재료 리스트, 썸네일, 총합
-  const [recipeName, setRecipeName] = useState('');
-  const [servings, setServings] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(1); 
-  const [ingredientList, setIngredientList] = useState([]);
-  const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [totalCost, setTotalCost] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // 편집 상태 추가
-  const [isEditing, setIsEditing] = useState(false);
+  // 현재 편집 중인 레시피 정보를 location에서 가져옴
+  const editingRecipe = location.state?.recipe; 
 
-  // 모달이 열렸는지?
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 상태 초기화
+  const initializeState = () => ({
+    recipeName: editingRecipe?.title || '', // 편집 중인 레시피의 제목, 없으면 빈 문자열
+    servings: editingRecipe?.servings || 1, // 편집 중인 레시피의 인분 수, 없으면 1
+    selectedCategory: editingRecipe?.category?.id || 1, // 편집 중인 카테고리 ID, 없으면 1
+    ingredientList: [], // 초기 재료 목록
+    thumbnailFile: null, // 썸네일 파일 상태
+    thumbnailUrl: editingRecipe?.thumbnailUrl || null, // 편집 중인 썸네일 URL, 없으면 null
+    totalCost: editingRecipe?.price || 0, // 편집 중인 가격, 없으면 0
+  });
 
-  // 편집 모드일 때만 alert로 recipeId 표시
-  useEffect(() => {
-    if (recipeId) {
-      alert(`편집 중인 레시피 ID: ${recipeId}`);
-      setIsEditing(true); // 편집 모드 설정
-      // 여기서 서버에서 해당 레시피 데이터를 불러와 상태에 설정할 수 있습니다.
-    }
-  }, [recipeId]);
+  const [state, setState] = useState(initializeState); // 상태 초기화
+  const [isEditingRecipe, setIsEditingRecipe] = useState(!!editingRecipe); // 레시피 편집 모드 여부
+  const [isEditingIngredients, setIsEditingIngredients] = useState(false); // 재료 테이블 편집 모드 여부
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
 
   // 모달 열기
   const openModal = () => {
     setIsModalOpen(true);
-    setIsEditing(false); // 모달을 열 때 편집 상태를 해제
+    setIsEditingIngredients(false); // 모달을 열 때 재료 테이블 편집 상태를 해제
   };
 
   // 모달 닫기
   const closeModal = () => setIsModalOpen(false);
+
+  // 재료 테이블 편집 모드 변경 핸들러
+  const toggleIngredientEditMode = () => setIsEditingIngredients((prev) => !prev);
+
+  const { recipeName, servings, selectedCategory, ingredientList, thumbnailFile, thumbnailUrl, totalCost } = state;
+
+  // 편집 화면으로 들어오는 재료 리스트 가져오기
+  const fetchIngredients = async () => {
+    try {
+      const response = await apiClient.get(`/admin/recipes/${editingRecipe.id}/ingredients`);
+      if (response.status === 200) {
+        const formattedIngredients = response.data.map((ingredient) => ({
+          ...ingredient,
+          id: ingredient.ingredientId, // ingredientId를 id로 매핑
+        }));
+        setState((prevState) => ({
+          ...prevState,
+          ingredientList: formattedIngredients, // 서버에서 가져온 재료 리스트로 업데이트
+        }));
+      }
+    } catch (error) {
+      console.error('재료 리스트 가져오기 실패 : ', error);
+    }
+  };
+
+  useEffect(() => {
+    if(isEditingRecipe) fetchIngredients();
+  }, []);
+
 
   // 등록 버튼 활성화 조건
   const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
@@ -94,16 +120,43 @@ const AdminRecipeForm = () => {
       console.error('서버 통신 에러:', error);
       alert('서버 통신 중 오류가 발생했습니다.');
     }
+
+    navigate("/admin/recipe-list");
   };
 
   // 재료 수량 업데이트 함수
-  const handleUpdateIngredient = (ingredientId, newQuantity) => {
-    setIngredientList((prevList) =>
-      prevList.map((ingredient) =>
-        ingredient.id === ingredientId ? { ...ingredient, quantity: newQuantity } : ingredient
-      )
-    );
+  const updateIngredientList = (updatedList) => {
+    setState((prevState) => ({
+      ...prevState,
+      ingredientList: updatedList,
+    }));
   };
+  
+  const updateTotalCost = (newTotalCost) => {
+    setState((prevState) => ({
+      ...prevState,
+      totalCost: newTotalCost,
+    }));
+  };
+  
+  // onDeleteIngredient, onUpdateIngredient 함수를 가독성 있게 분리
+  const handleDeleteIngredient = (ingredientId) => {
+    const updatedList = state.ingredientList.filter(
+      (ingredient) => ingredient.id !== ingredientId
+    );
+    updateIngredientList(updatedList);
+  };
+  
+  const handleUpdateIngredient = (ingredientId, newQuantity) => {
+    console.log("재료 : " + ingredientId);
+    const updatedList = state.ingredientList.map((ingredient) =>
+      ingredient.id === ingredientId
+        ? { ...ingredient, quantity: newQuantity }
+        : ingredient
+    );
+    updateIngredientList(updatedList);
+  };
+
 
   const handleImageUpload = (file) => {
     setThumbnailFile(file);
@@ -117,7 +170,7 @@ const AdminRecipeForm = () => {
   return (
     <AdminLayout
       title="레시피"
-      rightLabel="등록"
+      rightLabel={isEditingRecipe ? '수정' : '등록'}
       isRegisterEnabled={isRegisterEnabled} // 등록 버튼 활성화 여부
       isModified={isModified}  // 페이지 변경 감지 여부 (경고 모달용)
       onSubmit={handleSubmit}  // 등록 버튼 클릭 시 호출될 함수
@@ -165,22 +218,18 @@ const AdminRecipeForm = () => {
             <ButtonGroup>
               <AddButton onClick={openModal}>추가</AddButton>
               {ingredientList.length > 0 && (
-                <EditButton onClick={toggleEditMode}>
-                  {isEditing ? '편집 완료' : '편집'}
+                <EditButton onClick={toggleIngredientEditMode}>
+                  {isEditingIngredients ? '편집 완료' : '편집'}
                 </EditButton>
               )}
             </ButtonGroup>
           </SectionTitleWrapper>
           <IngredientTable
-            ingredientList={ingredientList}
-            isEditing={isEditing} // 편집 상태 전달
-            onDeleteIngredient={(ingredientId) => {
-              setIngredientList((prevList) =>
-                prevList.filter((ingredient) => ingredient.id !== ingredientId)
-              );
-            }}
-            onUpdateIngredient={handleUpdateIngredient} // 재료 수량 업데이트 함수 전달
-            onTotalCostChange={setTotalCost}
+            ingredientList={state.ingredientList}
+            isEditing={isEditingIngredients}
+            onDeleteIngredient={handleDeleteIngredient}
+            onUpdateIngredient={handleUpdateIngredient}
+            onTotalCostChange={updateTotalCost}
           />
         </Section>
 
@@ -193,11 +242,16 @@ const AdminRecipeForm = () => {
         {/* RecipeIngredientPage 컴포넌트를 렌더링 */}
         {isModalOpen && (
           <ModalWrapper>
-            <RecipeIngredientPage
-              ingredientList={ingredientList}
-              setIngredientList={setIngredientList}
-              onClose={closeModal}
-            />
+           <RecipeIngredientPage
+            ingredientList={state.ingredientList} // state에서 ingredientList를 가져옴
+            setIngredientList={(newIngredientList) => {
+              setState({
+                ...state,
+                ingredientList: newIngredientList, // 새로운 재료 목록으로 업데이트
+              });
+            }}
+            onClose={closeModal}
+          />
           </ModalWrapper>
         )}
       </ContentContainer>

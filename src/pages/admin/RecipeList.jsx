@@ -1,81 +1,127 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, FavoriteBorder, Comment, Edit, Delete } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
-import recipes from '../../assets/data/recipes.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
+import apiClient from '../../services/api';
 
 const AdminRecipeList = () => {
-  const [recipeList, setRecipeList] = useState(recipes);
+ 
+  const navigate = useNavigate();
 
+  // API 호출을 위한 useEffect
+  const [recipeList, setRecipeList] = useState([]);
+  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const navigate = useNavigate();
+  const fetchRecipes = useCallback(async () => {
+    try {
+      const response = await apiClient.get('/recipes', {
+        params: {
+          page: currentPage - 1, // 서버에서 페이지는 0부터 시작
+          size: itemsPerPage,
+          sort: 'createdAt',
+          order: 'desc',
+        },
+      });
+      setRecipeList(response.data.recipes);
+      setTotalPages(response.data.totalPages);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentRecipes = recipeList.slice(indexOfFirstItem, indexOfLastItem);
+      console.log('레시피 데이터:', response.data.recipes);
+      console.log('썸네일 경로 확인:');
+      response.data.recipes.forEach((recipe) => {
+        console.log(`레시피 제목: ${recipe.title}, 썸네일 URL: ${recipe.thumbnailUrl}`);
+      });
+    } catch (error) {
+      console.error('레시피 목록을 불러오는 중 오류 발생:', error);
+    }
+  }, [currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    fetchRecipes();
+  }, [fetchRecipes]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const handleAddRecipe = () => {
+    // navigate to the recipe form page
     navigate('/admin/recipe-form');
   };
 
   const handleEditRecipe = (recipeId) => {
-    navigate(`/admin/recipe-form/${recipeId}`);
+    const editingRecipe = recipeList.find(recipe => recipe.id === recipeId);
+    navigate(`/admin/recipe-form/${recipeId}`, { state: { recipe: editingRecipe } });
   };
 
   return (
     <AdminLayout
       title="레시피"
       rightLabel="추가"
-      onRightButtonClick={handleAddRecipe}
+      isRegisterEnabled={true} // 등록 버튼 활성화 조건을 항상 true로 설정
+      onSubmit={handleAddRecipe} // 추가 버튼을 눌렀을 때 handleAddRecipe 호출
     >
       <ContentContainer>
-        <RecipeListWrapper>
-          {currentRecipes.map((recipe) => (
-            <RecipeCard key={recipe.id}>
-              <Thumbnail src="https://via.placeholder.com/50" alt="썸네일 이미지" />
-              <RecipeInfo>
-                <RecipeName>{recipe.title}</RecipeName>
-                <RecipeMetrics>
-                  <Metric><Visibility style={{ fontSize: '16px', color: '#999' }} /> <MetricText>{recipe.view_count}</MetricText></Metric>
-                  <Metric><FavoriteBorder style={{ fontSize: '16px', color: '#999' }} /> <MetricText>{recipe.bookmark_count}</MetricText></Metric>
-                  <Metric><Comment style={{ fontSize: '16px', color: '#999' }} /> <MetricText>{recipe.comment_count}</MetricText></Metric>
-                </RecipeMetrics>
-              </RecipeInfo>
-              <ActionButtons>
-                <Tooltip title="수정">
-                  <IconButton onClick={() => handleEditRecipe(recipe.id)}>
-                    <Edit style={{ fontSize: '22px', color: '#1976d2' }} /> 
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="삭제">
-                  <IconButton onClick={() => setRecipeList(recipeList.filter((r) => r.id !== recipe.id))}>
-                    <Delete style={{ fontSize: '22px', color: '#f44336' }} />
-                  </IconButton>
-                </Tooltip>
-              </ActionButtons>
-            </RecipeCard>
-          ))}
-        </RecipeListWrapper>
+        <ContentContainer>
+          <RecipeListWrapper>
+            {recipeList && recipeList.length > 0 ? (
+              recipeList.map((recipe) => (
+                <RecipeCard key={recipe.id}>
+                  <Thumbnail 
+                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"} 
+                    alt="썸네일 이미지" 
+                  />
+                  <RecipeInfo>
+                    <RecipeName>{recipe.title}</RecipeName>
+                    <RecipeMetrics>
+                      <Metric>
+                        <Visibility style={{ fontSize: '16px', color: '#999' }} />
+                        <MetricText>{recipe.viewCount}</MetricText>
+                      </Metric>
+                      <Metric>
+                        <FavoriteBorder style={{ fontSize: '16px', color: '#999' }} />
+                        <MetricText>{recipe.bookmarkCount}</MetricText>
+                      </Metric>
+                      <Metric>
+                        <Comment style={{ fontSize: '16px', color: '#999' }} />
+                        <MetricText>{recipe.commentCount}</MetricText>
+                      </Metric>
+                    </RecipeMetrics>
+                  </RecipeInfo>
+                  <ActionButtons>
+                    <Tooltip title="수정">
+                      <IconButton onClick={() => handleEditRecipe(recipe.id)}>
+                        <Edit style={{ fontSize: '22px', color: '#1976d2' }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="삭제">
+                      <IconButton onClick={() => setRecipeList(recipeList.filter((r) => r.id !== recipe.id))}>
+                        <Delete style={{ fontSize: '22px', color: '#f44336' }} />
+                      </IconButton>
+                    </Tooltip>
+                  </ActionButtons>
+                </RecipeCard>
+              ))
+            ) : (
+              <p>레시피를 불러오는 중입니다...</p> // 로딩 중일 때 표시할 내용
+            )}
+          </RecipeListWrapper>
 
-        <PaginationWrapper>
+          <PaginationWrapper>
           <Pagination
-            count={Math.ceil(recipeList.length / itemsPerPage)}
+            count={totalPages} 
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
             shape="rounded"
           />
-        </PaginationWrapper>
+          </PaginationWrapper>
+        </ContentContainer>
       </ContentContainer>
     </AdminLayout>
   );

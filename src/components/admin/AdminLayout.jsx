@@ -1,8 +1,7 @@
-// src/components/admin/AdminLayout.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import FormHeader from './FormHeader';
 import ExitModal from './ExitModal';
+import AdminHeader from './AdminHeader';
 
 const AdminLayout = ({
   children,
@@ -11,18 +10,18 @@ const AdminLayout = ({
   isRegisterEnabled,
   isModified,
   onSubmit,
-  onBack, // 새로 추가된 prop
+  onBack, 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 뒤로 가기 클릭 핸들러
   const handleBackClick = () => {
     if (isModified) {
-      setIsModalOpen(true); // 변경사항이 있는 경우 모달 열기
+      setIsModalOpen(true);
     } else if (onBack) {
-      onBack(); // 부모 컴포넌트에서 전달받은 동작 실행
+      onBack(); 
     } else {
-      window.history.back(); // 부모 컴포넌트에서 onBack이 전달되지 않은 경우 기본 동작으로 뒤로 가기
+      window.history.back(); 
     }
   };
 
@@ -30,9 +29,9 @@ const AdminLayout = ({
   const handleModalConfirm = () => {
     setIsModalOpen(false);
     if (onBack) {
-      onBack(); // 부모 컴포넌트에서 전달받은 동작 실행
+      onBack();
     } else {
-      window.history.back(); // 부모 컴포넌트에서 onBack이 전달되지 않은 경우 기본 동작으로 뒤로 가기
+      window.history.back(); 
     }
   };
 
@@ -44,7 +43,7 @@ const AdminLayout = ({
   return (
     <Container>
       <FixedHeader>
-        <FormHeader
+        <AdminHeader
           title={title}
           rightLabel={rightLabel}
           isRegisterEnabled={isRegisterEnabled}

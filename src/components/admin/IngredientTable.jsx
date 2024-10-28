@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
-import unitData from '../../assets/data/units.json';
 
 const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpdateIngredient, onTotalCostChange }) => {
   // 레시피 전체의 총 비용 계산

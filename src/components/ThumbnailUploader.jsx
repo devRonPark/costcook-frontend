@@ -6,7 +6,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 const ThumbnailUploader = ({ onImageUpload, onImageRemove }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef(null); // 파일 인풋을 직접 참조하기 위한 ref
+  const fileInputRef = useRef(null);
 
   // 이미지 변경 핸들러
   const handleImageChange = (e) => {
