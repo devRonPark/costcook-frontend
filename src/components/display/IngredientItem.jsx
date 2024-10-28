@@ -23,7 +23,7 @@ const IngredientContainer = styled.div`
   }
 
   /* 체크된 상태 스타일 */
-  &.selected {
+  &.preferred {
     background-color: #b2ebf2;
     border: 2px solid #009688;
   }
@@ -51,26 +51,39 @@ const IngredientLabel = styled.span`
 const IngredientItem = ({
   step,
   ingredient,
-  selectedIngredients,
-  preferences,
+  preferredIngredients,
   dislikedIngredients,
   handleIngredientChange,
 }) => {
-  const isSelected = selectedIngredients.some((i) => i.id === ingredient.id); // 선택 여부 확인
-  const isDisliked = dislikedIngredients.some((i) => i.id === ingredient.id); // 기피 재료 여부 확인
-  const isPreferred = preferences.some((i) => i.id === ingredient.id); // 선호 재료 여부 확인
+  const selectedIngredients = [...preferredIngredients, ...dislikedIngredients];
+  const currentStep = step === 1 ? 'dislikedIngredient' : 'preferredIngredient';
+  const isSelected =
+    selectedIngredients.length > 0 &&
+    selectedIngredients.some((i) => i.id === ingredient.id); // 선택 여부 확인
+  const isDisliked =
+    dislikedIngredients.length > 0 &&
+    dislikedIngredients.some((i) => i.id === ingredient.id); // 기피 재료 여부 확인
+  const isPreferred =
+    preferredIngredients.length > 0 &&
+    preferredIngredients.some((i) => i.id === ingredient.id); // 선호 재료 여부 확인
 
   return (
     <IngredientContainer
-      className={`${isSelected ? 'selected' : ''} ${
-        step === 1 && isPreferred ? 'disliked' : '' // Step 1에서 선호 재료에 기피 재료 스타일 적용
-      } ${step === 2 && isDisliked ? 'disliked' : ''}`} // Step 2에서 기피 재료에 기피 재료 스타일 적용
-      onClick={() => handleIngredientChange(ingredient)} // 클릭 시 핸들러
+      className={`${
+        isSelected && currentStep === 'dislikedIngredient' ? 'disliked' : ''
+      } ${
+        currentStep === 'dislikedIngredient' && isPreferred ? 'preferred' : ''
+      } ${
+        isSelected && currentStep === 'preferredIngredient' ? 'preferred' : ''
+      } ${
+        currentStep === 'preferredIngredient' && isDisliked ? 'disliked' : ''
+      }`}
+      onClick={() => handleIngredientChange(currentStep, ingredient)} // 클릭 시 핸들러
     >
       {/* 체크박스는 숨김 처리 */}
       <Checkbox
         checked={isSelected}
-        onChange={() => handleIngredientChange(ingredient)} // 체크박스 변경 핸들러
+        onChange={() => handleIngredientChange(currentStep, ingredient)} // 체크박스 변경 핸들러
         style={{ display: 'none' }} // 체크박스를 화면에 보이지 않게 설정
       />
       <img
