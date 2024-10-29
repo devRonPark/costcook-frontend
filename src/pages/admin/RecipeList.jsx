@@ -8,6 +8,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
 import apiClient from '../../services/api';
 
+const BASE_SERVER_URL = import.meta.env.VITE_BASE_SERVER_URL;
+
 const AdminRecipeList = () => {
  
   const navigate = useNavigate();

@@ -1,12 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 
-const ThumbnailUploader = ({ onImageUpload, onImageRemove }) => {
-  const [thumbnail, setThumbnail] = useState(null);
+const ThumbnailUploader = ({ onImageUpload, onImageRemove, imageUrl }) => {
+  const [thumbnail, setThumbnail] = useState(imageUrl || null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  
+  useEffect(() => {
+    console.log(thumbnail);
+  }, []);
 
   // 이미지 변경 핸들러
   const handleImageChange = (e) => {
@@ -15,7 +19,7 @@ const ThumbnailUploader = ({ onImageUpload, onImageRemove }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnail(reader.result);
-        onImageUpload(file); // 부모 컴포넌트에 파일 전달
+        onImageUpload(file);
       };
       reader.readAsDataURL(file);
     }
@@ -50,7 +54,7 @@ const ThumbnailUploader = ({ onImageUpload, onImageRemove }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnail(reader.result);
-        onImageUpload(file); // 부모 컴포넌트에 파일 전달
+        onImageUpload(file);
       };
       reader.readAsDataURL(file);
     }
@@ -61,7 +65,7 @@ const ThumbnailUploader = ({ onImageUpload, onImageRemove }) => {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      isDragging={isDragging} // 드래그 상태 전달
+      isDragging={isDragging}
     >
       {thumbnail ? (
         <PreviewImage src={thumbnail} alt="썸네일 미리보기" />

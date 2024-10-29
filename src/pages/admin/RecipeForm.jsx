@@ -10,145 +10,64 @@ import ThumbnailUploader from '../../components/ThumbnailUploader';
 import styled from 'styled-components';
 import apiClient from '../../services/api';
 
+const BASE_SERVER_URL = import.meta.env.VITE_BASE_SERVER_URL;
+
 const AdminRecipeForm = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 현재 편집 중인 레시피 정보를 location에서 가져옴
-  const editingRecipe = location.state?.recipe; 
+  const editingRecipe = location.state?.recipe;
 
   // 상태 초기화
   const initializeState = () => ({
-    recipeName: editingRecipe?.title || '', // 편집 중인 레시피의 제목, 없으면 빈 문자열
-    servings: editingRecipe?.servings || 1, // 편집 중인 레시피의 인분 수, 없으면 1
-    selectedCategory: editingRecipe?.category?.id || 1, // 편집 중인 카테고리 ID, 없으면 1
-    ingredientList: [], // 초기 재료 목록
-    thumbnailFile: null, // 썸네일 파일 상태
-    thumbnailUrl: editingRecipe?.thumbnailUrl || null, // 편집 중인 썸네일 URL, 없으면 null
-    totalCost: editingRecipe?.price || 0, // 편집 중인 가격, 없으면 0
+    recipeName: editingRecipe?.title || '',
+    servings: editingRecipe?.servings || 1,
+    selectedCategory: editingRecipe?.category?.id || 1,
+    ingredientList: [],
+    thumbnailFile: null,
+    thumbnailUrl: BASE_SERVER_URL + editingRecipe?.thumbnailUrl || null,
+    totalCost: editingRecipe?.price || 0,
   });
 
-  const [state, setState] = useState(initializeState); // 상태 초기화
-  const [isEditingRecipe, setIsEditingRecipe] = useState(!!editingRecipe); // 레시피 편집 모드 여부
-  const [isEditingIngredients, setIsEditingIngredients] = useState(false); // 재료 테이블 편집 모드 여부
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+  // 상태 변수
+  const [state, setState] = useState(initializeState);
+  const [isEditingRecipe, setIsEditingRecipe] = useState(!!editingRecipe);
+  const [isEditingIngredients, setIsEditingIngredients] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 모달 열기
-  const openModal = () => {
-    setIsModalOpen(true);
-    setIsEditingIngredients(false); // 모달을 열 때 재료 테이블 편집 상태를 해제
+  const { recipeName, servings, selectedCategory, ingredientList, thumbnailFile, totalCost } = state;
+
+  // 상태 변경 함수
+  const handleInputChange = (key, value) => {
+    setState((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
   };
 
-  // 모달 닫기
-  const closeModal = () => setIsModalOpen(false);
-
-  // 재료 테이블 편집 모드 변경 핸들러
-  const toggleIngredientEditMode = () => setIsEditingIngredients((prev) => !prev);
-
-  const { recipeName, servings, selectedCategory, ingredientList, thumbnailFile, thumbnailUrl, totalCost } = state;
-
-  // 편집 화면으로 들어오는 재료 리스트 가져오기
-  const fetchIngredients = async () => {
-    try {
-      const response = await apiClient.get(`/admin/recipes/${editingRecipe.id}/ingredients`);
-      if (response.status === 200) {
-        const formattedIngredients = response.data.map((ingredient) => ({
-          ...ingredient,
-          id: ingredient.ingredientId, // ingredientId를 id로 매핑
-        }));
-        setState((prevState) => ({
-          ...prevState,
-          ingredientList: formattedIngredients, // 서버에서 가져온 재료 리스트로 업데이트
-        }));
-      }
-    } catch (error) {
-      console.error('재료 리스트 가져오기 실패 : ', error);
-    }
-  };
-
-  useEffect(() => {
-    if(isEditingRecipe) fetchIngredients();
-  }, []);
-
-
-  // 등록 버튼 활성화 조건
-  const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
-
-  // 페이지 변경 경고 활성화 조건
-  const isModified = Boolean(recipeName) || ingredientList.length > 0 || Boolean(thumbnailFile);
-
-  // 서버로 등록 요청
-  const handleSubmit = async () => {
-    // DB 등록시 가격을 식사량으로 나눠야 함. 1인분 기준
-    try {
-      // FormData 생성
-      const formData = new FormData();
-
-      // 레시피 정보 JSON 데이터 추가 (Blob으로 변환)
-      const recipeData = {
-        title: recipeName,
-        categoryId: selectedCategory,
-        servings: servings,
-        description: '설명',
-        ingredients: ingredientList.map(ingredient => ({
-          ingredientId: ingredient.id,
-          quantity: ingredient.quantity,
-        })),
-        price: totalCost,
-      };
-      formData.append('recipe', new Blob([JSON.stringify(recipeData)], { type: 'application/json' }));
-
-      // 썸네일 파일 추가
-      if (thumbnailFile) {
-        formData.append('thumbnail', thumbnailFile);
-      }
-
-      // 서버로 요청 전송
-      const response = await apiClient.post('/admin/recipes', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.status === 200) {
-        alert(response.data);
-      } else {
-        alert(response.data);
-      }
-    } catch (error) {
-      console.error('서버 통신 에러:', error);
-      alert('서버 통신 중 오류가 발생했습니다.');
-    }
-
-    navigate("/admin/recipe-list");
-  };
-
-  // 재료 수량 업데이트 함수
   const updateIngredientList = (updatedList) => {
     setState((prevState) => ({
       ...prevState,
       ingredientList: updatedList,
     }));
   };
-  
+
   const updateTotalCost = (newTotalCost) => {
     setState((prevState) => ({
       ...prevState,
       totalCost: newTotalCost,
     }));
   };
-  
-  // onDeleteIngredient, onUpdateIngredient 함수를 가독성 있게 분리
+
+  // 이벤트 핸들러
   const handleDeleteIngredient = (ingredientId) => {
     const updatedList = state.ingredientList.filter(
       (ingredient) => ingredient.id !== ingredientId
     );
     updateIngredientList(updatedList);
   };
-  
+
   const handleUpdateIngredient = (ingredientId, newQuantity) => {
-    console.log("재료 : " + ingredientId);
     const updatedList = state.ingredientList.map((ingredient) =>
       ingredient.id === ingredientId
         ? { ...ingredient, quantity: newQuantity }
@@ -157,16 +76,105 @@ const AdminRecipeForm = () => {
     updateIngredientList(updatedList);
   };
 
-
   const handleImageUpload = (file) => {
-    setThumbnailFile(file);
-    // 파일을 서버로 보내거나 다른 작업을 수행할 수 있음
-    console.log('Uploaded file:', file);
+    const fileUrl = URL.createObjectURL(file);
+    handleInputChange('thumbnailFile', file);
+    handleInputChange('thumbnailUrl', fileUrl);
   };
 
-  // 편집 모드 변경 핸들러
-  const toggleEditMode = () => setIsEditing((prev) => !prev);
+  const handleImageRemove = () => {
+    handleInputChange('thumbnailFile', null);
+    handleInputChange('thumbnailUrl', null);
+    console.log('Thumbnail removed');
+  };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+    setIsEditingIngredients(false);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const toggleIngredientEditMode = () => setIsEditingIngredients((prev) => !prev);
+
+  // 데이터 가져오기
+  const fetchIngredients = async () => {
+    try {
+      const response = await apiClient.get(`/admin/recipes/${editingRecipe.id}/ingredients`);
+      if (response.status === 200) {
+        const formattedIngredients = response.data.map((ingredient) => ({
+          ...ingredient,
+          id: ingredient.ingredientId,
+        }));
+        updateIngredientList(formattedIngredients);
+      }
+    } catch (error) {
+      console.error('재료 리스트 가져오기 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditingRecipe) {
+      fetchIngredients();
+    }
+  }, []);
+
+  // 데이터 전송하기
+  // 서버에 레시피 데이터를 제출하는 함수
+  const handleSubmit = async () => {
+    try {
+      const formData = createFormData();
+      const response = await submitRecipeData(formData);
+
+      if (response.status === 200) {
+        alert(isEditingRecipe ? '레시피가 수정되었습니다.' : '레시피가 등록되었습니다.');
+        navigate("/admin/recipe-list");
+      }
+    } catch (error) {
+      console.error('서버 통신 에러:', error);
+      alert('서버 통신 중 오류가 발생했습니다.');
+    }
+  };
+
+  // FormData 생성 함수
+  const createFormData = () => {
+    const formData = new FormData();
+    const recipeData = {
+      title: recipeName,
+      categoryId: selectedCategory,
+      servings,
+      description: '설명',
+      ingredients: ingredientList.map(ingredient => ({
+        ingredientId: ingredient.id,
+        quantity: ingredient.quantity,
+      })),
+      price: totalCost,
+    };
+
+    formData.append('recipe', new Blob([JSON.stringify(recipeData)], { type: 'application/json' }));
+    if (thumbnailFile) {
+      formData.append('thumbnail', thumbnailFile);
+    }
+
+    return formData;
+  };
+
+  // 레시피 데이터를 서버로 전송하는 함수
+  const submitRecipeData = async (formData) => {
+    const url = isEditingRecipe ? `/admin/recipes/${editingRecipe.id}` : '/admin/recipes';
+    const method = isEditingRecipe ? 'patch' : 'post';
+
+    return apiClient[method](url, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  };
+
+
+  // 조건 설정
+  const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
+  const isModified = Boolean(recipeName) || ingredientList.length > 0 || Boolean(thumbnailFile);
+
+  // 렌더링
   return (
     <AdminLayout
       title="레시피"
@@ -183,15 +191,20 @@ const AdminRecipeForm = () => {
             type="text"
             placeholder="레시피 이름을 입력하세요"
             value={recipeName}
-            onChange={(e) => setRecipeName(e.target.value)}
+            onChange={(e) => handleInputChange("recipeName", e.target.value)}
+            disabled={isEditingRecipe} // 편집 중일 때 입력 비활성화
+            style={{ backgroundColor: isEditingRecipe ? '#f0f0f0' : 'white' }} // 회색 배경 설정
           />
         </Section>
 
         {/* 레시피 카테고리 설정 섹션 */}
         <Section>
           <SectionTitle>레시피 카테고리</SectionTitle>
-          <SelectWrapper value={selectedCategory} onChange={(e) => setSelectedCategory(Number(e.target.value))}>
-            {menuData.map((menu) => ( // menuData는 그대로 사용
+          <SelectWrapper
+            value={selectedCategory}
+            onChange={(e) => handleInputChange("selectedCategory", Number(e.target.value))}
+          >
+            {menuData.map((menu) => (
               <option key={menu.id} value={menu.id}>
                 {menu.name}
               </option>
@@ -202,7 +215,10 @@ const AdminRecipeForm = () => {
         {/* 레시피 식사량 설정 섹션 */}
         <Section>
           <SectionTitle>레시피 식사량</SectionTitle>
-          <SelectWrapper value={servings} onChange={(e) => setServings(Number(e.target.value))}>
+          <SelectWrapper
+            value={servings}
+            onChange={(e) => handleInputChange("servings", Number(e.target.value))}
+          >
             {[1, 2, 3, 4].map((num) => (
               <option key={num} value={num}>
                 {num}인분
@@ -234,9 +250,12 @@ const AdminRecipeForm = () => {
         </Section>
 
         <Section>
-          <h2>레시피 썸네일</h2>
-          <ThumbnailUploader onImageUpload={handleImageUpload} />
-          {/* 추가적인 레시피 입력 폼 */}
+          <SectionTitle>레시피 썸네일</SectionTitle>
+          <ThumbnailUploader 
+            onImageUpload={handleImageUpload}
+            onImageRemove={handleImageRemove}
+            imageUrl={state.thumbnailUrl}
+          />
         </Section>
 
         {/* RecipeIngredientPage 컴포넌트를 렌더링 */}
