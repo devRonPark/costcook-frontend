@@ -251,11 +251,12 @@ const MyPage = () => {
       <DateContainer>
         <ProfileContainer>
           <ImageDisplay
-            width="200px"
-            height="200px"
+            width="150px"
+            height="150px"
+            border="2px solid black"
+            margin="20px 0"
             src={user?.profileUrl ?? defaultImagePath}
             altText={`${user?.id ?? ''} 번 회원 프로필 이미지`}
-            margin="20px 0"
           />
           <ProfileNameContainer>{user?.nickname ?? ''}</ProfileNameContainer>
         </ProfileContainer>
@@ -277,7 +278,7 @@ const MyPage = () => {
           <strong style={{ color: COLORS.PREFERRED.COLOR }}>
             좋아하는 재료
           </strong>
-          를 추가하거나 수정 할 수 있습니다
+          를 추가하거나 수정할 수 있습니다
         </h4>
         <SettingButtonContainer>
           <Button
@@ -294,7 +295,7 @@ const MyPage = () => {
           <strong style={{ color: COLORS.DISLIKED.COLOR }}>
             싫어하는 재료
           </strong>
-          를 추가하거나 수정 할 수 있습니다
+          를 추가하거나 수정할 수 있습니다
         </h4>
         <SettingButtonContainer>
           <Button
@@ -334,7 +335,8 @@ export default MyPage;
 const DateContainer = styled.div`
   height: 300px;
   width: 100%;
-  border-bottom: 1px black solid;
+  border: 1px black solid;
+  border-radius: 5px;
   display: flex;
   justify-content: space-around;
   flex-direction: row;
@@ -346,21 +348,12 @@ const ProfileContainer = styled.div`
   height: 290px;
   width: 45%;
   display: flex;
-  justify-content: space-around;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px;
-`;
-const ProfileImageContainer = styled.div`
-  height: 200px;
-  width: 100%;
-  border: 1px black solid;
-  display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   padding: 0 20px;
 `;
+
 const ProfileNameContainer = styled.div`
   height: 60px;
   width: 100%;
@@ -380,46 +373,40 @@ const DateButtonContainer = styled.div`
   align-items: center;
   padding: 0 20px;
 `;
-const DateButton = styled.div`
-  height: 60px;
-  width: 90%;
-  border: 1px black solid;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px;
-`;
 
 const SettingContainer = styled.div`
   height: 100px;
   width: 100%;
-  border-bottom: 1px black solid;
+  border: 1px black solid;
+  border-radius: 5px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   padding: 0 20px;
+  margin-top: 20px;
 `;
 const SettingButtonContainer = styled.div`
   height: 30px;
   width: 100%;
   margin-top: 10px;
   border: 1px black solid;
+  border-radius: 5px;
+  border-radius: 5px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 `;
 const ButtonLayoutContainer = styled.div`
-  height: 290px;
   width: 100%;
-  border-bottom: 1px black solid;
+  border: 1px black solid;
+  border-radius: 5px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  margin-top: 20px;
 `;
 
 const ButtonContainer = styled.div`
