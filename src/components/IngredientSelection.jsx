@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import styled from 'styled-components';
 import IngredientSelectionList from './display/IngredientSelectionList';
+import { COLORS } from '../utils/constant';
 
 // 제목 스타일
 const Title = styled(Typography)`
@@ -8,7 +9,11 @@ const Title = styled(Typography)`
   font-weight: bold;
   text-align: center;
   color: ${({ step }) =>
-    step === 1 ? '#FF5733' : step === 2 ? '#3498DB' : 'black'};
+    step === 1
+      ? COLORS.DISLIKED.COLOR
+      : step === 2
+      ? COLORS.PREFERRED.COLOR
+      : 'black'} !important;
   margin-bottom: 60px !important;
 `;
 

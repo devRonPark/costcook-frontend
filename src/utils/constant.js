@@ -2,6 +2,7 @@
 export const defaultImagePath = `${
   import.meta.env.VITE_PUBLIC_URL
 }/default_user_profile.png`;
+
 // 화면에 렌더링되는 재료 정보
 export const ingredients = [
   {
@@ -51,3 +52,18 @@ export const ingredients = [
     imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_flour.png`,
   },
 ];
+
+export const COLORS = {
+  PREFERRED: {
+    COLOR: '#0a2aff', // 선호재료 색깔
+    BORDER: '#0052cc', // 선호재료 경계선 색깔
+    BACKGROUND: '#e6f0ff', // 선호재료 배경색
+    HOVER_BACKGROUND: '#b3d7ff', // 선호재료 hover 배경색
+  },
+  DISLIKED: {
+    COLOR: '#ff080c', // 비선호재료 색깔
+    BORDER: '#cc0000', // 비선호재료 경계선 색깔
+    BACKGROUND: '#ffe6e6', // 비선호재료 배경색
+    HOVER_BACKGROUND: '#ffb3b3', // 비선호재료 hover 배경색
+  },
+};

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Checkbox from '@mui/material/Checkbox';
+import { COLORS } from '../../utils/constant';
 
 // 재료 아이템을 담는 컨테이너 스타일
 const IngredientContainer = styled.div`
@@ -18,20 +19,20 @@ const IngredientContainer = styled.div`
 
   /* Hover 시 효과 */
   &:hover {
-    background-color: #e0f7fa;
-    border: 2px solid #009688;
+    background-color: #cce7e7;
+    border: 2px solid #00796b;
   }
 
-  /* 체크된 상태 스타일 */
+  /* 선호 재료일 때 스타일 */
   &.preferred {
-    background-color: #b2ebf2;
-    border: 2px solid #009688;
+    background-color: ${COLORS.PREFERRED.BACKGROUND};
+    border: 2px solid ${COLORS.PREFERRED.BORDER};
   }
 
-  /* 기피 재료일 때 스타일 (step이 2일 때만 적용됨) */
+  /* 기피 재료일 때 스타일 */
   &.disliked {
-    border: 2px solid red;
-    background-color: #ffcccc;
+    border: 2px solid ${COLORS.DISLIKED.BORDER};
+    background-color: ${COLORS.DISLIKED.BACKGROUND};
     cursor: not-allowed;
   }
 

@@ -12,7 +12,7 @@ import { removeCookie } from '../utils/cookieUtil';
 import UserProfile from '../components/UserProfile';
 import PageContainer from '../components/layout/PageContainer';
 import ProfileUpdateHeader from '../components/layout/Header/ProfileUpdateHeader';
-import { defaultImagePath, ingredients } from '../utils/constant';
+import { COLORS, defaultImagePath, ingredients } from '../utils/constant';
 import IngredientSelection from '../components/IngredientSelection';
 
 const MyPage = () => {
@@ -273,17 +273,35 @@ const MyPage = () => {
         </DateButtonContainer>
       </DateContainer>
       <SettingContainer>
-        <h4>좋아하는 재료를 추가하거나 수정 할 수 있습니다</h4>
+        <h4>
+          <strong style={{ color: COLORS.PREFERRED.COLOR }}>
+            좋아하는 재료
+          </strong>
+          를 추가하거나 수정 할 수 있습니다
+        </h4>
         <SettingButtonContainer>
-          <Button name="preferred" onClick={(e) => toggleTasteManagement(e)}>
+          <Button
+            name="preferred"
+            onClick={(e) => toggleTasteManagement(e)}
+            style={{ width: '100%', color: COLORS.PREFERRED.COLOR }}
+          >
             선호 재료 관리
           </Button>
         </SettingButtonContainer>
       </SettingContainer>
       <SettingContainer>
-        <h4>싫어하는 재료를 추가하거나 수정 할 수 있습니다</h4>
+        <h4>
+          <strong style={{ color: COLORS.DISLIKED.COLOR }}>
+            싫어하는 재료
+          </strong>
+          를 추가하거나 수정 할 수 있습니다
+        </h4>
         <SettingButtonContainer>
-          <Button name="disliked" onClick={(e) => toggleTasteManagement(e)}>
+          <Button
+            name="disliked"
+            onClick={(e) => toggleTasteManagement(e)}
+            style={{ width: '100%', color: COLORS.DISLIKED.COLOR }}
+          >
             비선호 재료 관리
           </Button>
         </SettingButtonContainer>
@@ -327,7 +345,6 @@ const DateContainer = styled.div`
 const ProfileContainer = styled.div`
   height: 290px;
   width: 45%;
-  border: 1px black solid;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
@@ -347,7 +364,6 @@ const ProfileImageContainer = styled.div`
 const ProfileNameContainer = styled.div`
   height: 60px;
   width: 100%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -358,7 +374,6 @@ const ProfileNameContainer = styled.div`
 const DateButtonContainer = styled.div`
   height: 290px;
   width: 45%;
-  border: 1px black solid;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
