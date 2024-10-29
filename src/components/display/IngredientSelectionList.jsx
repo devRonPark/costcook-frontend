@@ -5,8 +5,7 @@ import IngredientItem from './IngredientItem';
 const IngredientSelectionList = ({
   step,
   ingredients,
-  selectedIngredients,
-  preferences,
+  preferredIngredients,
   dislikedIngredients,
   handleIngredientChange,
 }) => {
@@ -17,8 +16,7 @@ const IngredientSelectionList = ({
           key={ingredient.id}
           step={step}
           ingredient={ingredient}
-          selectedIngredients={selectedIngredients}
-          preferences={preferences}
+          preferredIngredients={preferredIngredients}
           dislikedIngredients={dislikedIngredients}
           handleIngredientChange={handleIngredientChange}
         />

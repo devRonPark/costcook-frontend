@@ -5,7 +5,7 @@ const ContentContainer = styled.div`
   width: 100%;
   max-width: 600px;
   box-sizing: border-box;
-  margin-top: 140px; 
+  margin-top: 50px; 
 `;
 
 export default ContentContainer;

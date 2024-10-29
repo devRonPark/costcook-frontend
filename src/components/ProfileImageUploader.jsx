@@ -30,6 +30,13 @@ const ProfileImage = styled.img`
   object-fit: cover; /* 이미지 비율 유지하며 잘리게 설정 */
 `;
 
+const Placeholder = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const EditButton = styled.label`
   position: absolute; /* 절대 위치 설정 */
   top: 5px; /* 상단 여백 */
@@ -52,23 +59,17 @@ const HiddenFileInput = styled.input`
   display: none; /* 파일 입력 숨김 */
 `;
 
-const UserProfileEdit = ({ profileImage, handleFileChange }) => {
+const ProfileImageUploader = ({
+  imageUrl, // 프로필 이미지 URL
+  onImageChange, // 이미지 변경 핸들러
+}) => {
   return (
     <Container>
       <ImagePreviewContainer>
-        {profileImage ? (
-          <ProfileImage src={profileImage} alt="Profile" />
+        {imageUrl ? (
+          <ProfileImage src={imageUrl} alt="Profile" />
         ) : (
-          <div
-            style={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            프로필 사진 없음
-          </div>
+          <Placeholder>프로필 사진 없음</Placeholder>
         )}
       </ImagePreviewContainer>
       <EditButton>
@@ -76,11 +77,11 @@ const UserProfileEdit = ({ profileImage, handleFileChange }) => {
         <HiddenFileInput
           type="file"
           accept="image/*"
-          onChange={handleFileChange} // 파일 변경 핸들러 연결
+          onChange={onImageChange} // 파일 변경 핸들러 연결
         />
       </EditButton>
     </Container>
   );
 };
 
-export default UserProfileEdit;
+export default ProfileImageUploader;
