@@ -10,7 +10,6 @@ import ingredientsData from '../../assets/data/ingredients.json';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 
-
 const AdminIngredientPage = () => {
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [selectedUnit, setSelectedUnit] = useState(null);

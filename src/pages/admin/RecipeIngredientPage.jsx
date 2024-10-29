@@ -1,95 +1,135 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import unitsData from '../../assets/data/units.json';
 import AdminLayout from '../../components/admin/AdminLayout';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 import IngredientSearchSection from '../../components/admin/IngredientSearchSection';
+import IngredientQuantitySection from '../../components/admin/IngredientQuantitySection';
 
-const RecipeIngredientPage = () => {
+const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) => {
+  // 상태 : 선택된 재료
   const [selectedIngredient, setSelectedIngredient] = useState(null);
+  // 상태 : 재료의 수량
+  const [quantity, setQuantity] = useState('');
+  // 상태 : 재료 이름이 너무 길어져서 정보창에 한 줄로 표시되지 못해 왼쪽으로 이동할지?
   const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  // 정보창에 보여줄 정보
   const textRef = useRef(null);
 
-  const isRegisterEnabled = Boolean(selectedIngredient);
-  const isModified = Boolean(selectedIngredient);
+  // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
+  const isRegisterEnabled = Boolean(selectedIngredient && quantity > 0);
+  // 페이지 변경 경고 활성화 조건 (선택된 재료나 수량이 변경된 경우)
+  const isModified = Boolean(selectedIngredient) || Boolean(quantity);
 
-  const unitName = selectedIngredient ? unitsData.find((unit) => unit.id === selectedIngredient.unit_id)?.name : '';
+  // 선택된 재료에 표시되는 단위
+  const unitName = selectedIngredient ? selectedIngredient.unitName : '';
 
-  useEffect(() => {
+  // 애니메이션 체크 로직을 별도의 함수로 분리
+  const checkShouldAnimate = () => {
     if (textRef.current) {
       const containerWidth = textRef.current.parentElement.offsetWidth;
       const textWidth = textRef.current.scrollWidth;
       setShouldAnimate(textWidth > containerWidth);
     }
-  }, [selectedIngredient]);
-
-  const handleSelectIngredient = (ingredient) => {
-    setSelectedIngredient(ingredient);
   };
 
-  const handleSearch = (trimmedInput, filteredData) => {
+  useEffect(() => {
+    checkShouldAnimate();
+  }, [selectedIngredient]);
+
+  // 이벤트 핸들러 : 재료를 검색했을 때
+  const handleSearchIngredient = () => {
     setSelectedIngredient(null);
+    setQuantity('');
+  };
+
+  // 이벤트 핸들러 : 재료를 선택했을 때
+  const handleSelectIngredient = (newIngredient) => {
+    setSelectedIngredient(newIngredient);
+    setQuantity('');
+  };
+
+  // 이벤트 핸들러 : 재료 수량을 입력하고 확인 버튼을 눌렀을 때
+  const handleQuantityConfirm = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
+  // 이벤트 핸들러 : "등록" 버튼을 클릭했을 때
+  const handleSubmit = () => {
+    if (selectedIngredient && quantity) {
+      const newIngredient = { ...selectedIngredient, quantity };
+
+      // 재료 리스트에 새 재료 추가
+      let updatedIngredientList = [...ingredientList, newIngredient];
+
+      // 재료 리스트를 가나다 순으로 정렬
+      updatedIngredientList = updatedIngredientList.sort((a, b) =>
+        a.name.localeCompare(b.name, 'ko', { sensitivity: 'base' })
+      );
+
+      // 부모 컴포넌트의 재료 리스트 업데이트 함수 호출
+      setIngredientList(updatedIngredientList);
+
+      // 등록이 완료되면 부모 컴포넌트로 돌아가기 (모달을 닫는 방식)
+      onClose();
+    } else {
+      alert('재료와 수량을 입력해 주세요.');
+    }
+  };
+
+  // 이벤트 핸들러 : 뒤로가기 버튼을 클릭했을 때
+  const handleBack = () => {
+    // 재료 리스트는 변경하지 않고 모달을 닫음
+    onClose();
   };
 
   return (
     <AdminLayout
       title="재료"
       rightLabel="등록"
-      isRegisterEnabled={isRegisterEnabled}
-      isModified={isModified}
+      isRegisterEnabled={isRegisterEnabled} // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
+      isModified={isModified} // 페이지 변경 경고 활성화 여부
+      onSubmit={handleSubmit} // 등록 버튼 클릭 시 동작
+      onBack={handleBack} // 뒤로가기 버튼 클릭 시 동작
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
-        {[`[재료] ${selectedIngredient ? selectedIngredient.name : '미입력'} / `]}
+        {selectedIngredient
+          ? `${selectedIngredient.name} ${quantity ? `${quantity}${unitName}` : ''}`
+          : '선택된 재료가 없습니다.'}
       </InfoContainer>
 
-      <ContentContainer>
+      <ScrollableContentContainer>
         <IngredientSearchSection
           onSelectIngredient={handleSelectIngredient}
-          onSearchIngredient={handleSearch}
+          onSearchIngredient={handleSearchIngredient}
+          existingIngredients={ingredientList}
         />
 
         {selectedIngredient && (
-          <Section>
-            <SectionTitle>재료 수량</SectionTitle>
-            <QuantityInputWrapper>
-              <div style={{ fontSize: '1rem' }}>
-                몇 <span style={{ fontWeight: 'bold' }}>{unitName}</span> 넣으시겠습니까?
-              </div>
-              <QuantityInput type="number" min="1" />
-            </QuantityInputWrapper>
-          </Section>
+          <IngredientQuantitySection
+            unitName={unitName}
+            onQuantityConfirm={handleQuantityConfirm} // 확인 버튼을 눌렀을 때만 수량 업데이트
+            selectedIngredient={selectedIngredient}
+          />
         )}
-      </ContentContainer>
+      </ScrollableContentContainer>
     </AdminLayout>
   );
 };
 
 export default RecipeIngredientPage;
 
-// 스타일 컴포넌트 정의 영역
+import styled from 'styled-components';
 
-const Section = styled.div`
-  margin-top: 24px; 
-`;
+const ScrollableContentContainer = styled(ContentContainer)`
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  padding: 16px;
 
-const SectionTitle = styled.h2`
-  margin-bottom: 16px;
-`;
-
-const QuantityInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between; 
-  gap: 8px;
-  width: 100%;
-`;
-
-const QuantityInput = styled.input`
-  width: 80px; 
-  padding: 4px;
-  font-size: 1rem;
-  text-align: right;
-  border: 1px solid #ccc; 
-  border-radius: 4px;
+  /* 스크롤바 완전히 숨기기 */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera에서 숨기기 */
+  }
+  -ms-overflow-style: none;  /* IE와 Edge에서 숨기기 */
+  scrollbar-width: none;  /* Firefox에서 숨기기 */
 `;

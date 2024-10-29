@@ -1,25 +1,38 @@
-// src/components/admin/AdminLayout.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import FormHeader from './FormHeader';
 import ExitModal from './ExitModal';
+import AdminHeader from './AdminHeader';
 
-const AdminLayout = ({ children, title, rightLabel, isRegisterEnabled, isModified, onSubmit }) => {
+const AdminLayout = ({
+  children,
+  title,
+  rightLabel,
+  isRegisterEnabled,
+  isModified,
+  onSubmit,
+  onBack
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 뒤로 가기 클릭 핸들러
   const handleBackClick = () => {
     if (isModified) {
-      setIsModalOpen(true); // 변경사항이 있는 경우 모달 열기
+      setIsModalOpen(true);
+    } else if (onBack) {
+      onBack(); 
     } else {
-      window.history.back(); // 변경사항이 없으면 그냥 뒤로가기
+      window.history.back(); 
     }
   };
 
   // 모달에서 "예"를 클릭했을 때 동작
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    window.history.back(); // 뒤로 가기
+    if (onBack) {
+      onBack();
+    } else {
+      window.history.back(); 
+    }
   };
 
   // 모달에서 "아니요"를 클릭했을 때 동작
@@ -30,7 +43,7 @@ const AdminLayout = ({ children, title, rightLabel, isRegisterEnabled, isModifie
   return (
     <Container>
       <FixedHeader>
-        <FormHeader
+        <AdminHeader
           title={title}
           rightLabel={rightLabel}
           isRegisterEnabled={isRegisterEnabled}
@@ -54,6 +67,7 @@ export default AdminLayout;
 
 // 스타일 컴포넌트 정의
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,9 +97,6 @@ const FixedHeader = styled.div`
 const Content = styled.div`
   flex: 1;
   width: 100%;
-  padding: 20px;
+  padding: 0 20px;
   box-sizing: border-box;
-  overflow-y: auto;
-  margin-top: 64px;
 `;
-

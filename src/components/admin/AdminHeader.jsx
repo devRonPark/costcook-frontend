@@ -1,9 +1,8 @@
-// src/components/admin/FormHeader.jsx
 import React from 'react';
 import styled from 'styled-components';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const FormHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmit }) => (
+const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmit }) => (
   <HeaderContainer>
     <IconWrapper onClick={onBackClick}>
       <ArrowBackIconStyled />
@@ -22,7 +21,7 @@ const FormHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmi
   </HeaderContainer>
 );
 
-export default FormHeader;
+export default AdminHeader;
 
 // 스타일 컴포넌트 정의
 const HeaderContainer = styled.header`
