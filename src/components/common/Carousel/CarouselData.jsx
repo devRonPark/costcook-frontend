@@ -11,7 +11,7 @@ const TextField = styled.div`
   }
 `;
 
-const CarouselData = ({ name, price, likes, rating }) => {
+const CarouselData = ({ name, price, likes, score }) => {
   return (
     <TextField>
       <h3>{name}</h3>
@@ -21,7 +21,7 @@ const CarouselData = ({ name, price, likes, rating }) => {
       <p style={{ color: 'red' }}>♥</p>
       <p> {likes}K</p>
       <p style={{ color: '#FF9400' }}> ★</p>
-      <p> {rating}</p>
+      <p> {score}</p>
     </TextField>
   );
 };

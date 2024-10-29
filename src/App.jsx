@@ -63,7 +63,7 @@ function App() {
             }
           />
           <Route
-            path="/recipeDetail"
+            path="/recipeDetail/:recipeId"
             element={
               <PageTransition>
                 <RecipeDetail />

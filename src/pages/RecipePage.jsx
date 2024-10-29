@@ -1,12 +1,13 @@
 import { useInView } from 'react-intersection-observer';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
+import { recipeAPI } from '../services/recipe.api';
+import { StarRating } from '../utils/StarRating';
+import { formatPrice } from '../utils/formatData';
 
 const RecipePage = () => {
   const navigate = useNavigate();
@@ -20,16 +21,13 @@ const RecipePage = () => {
   // 데이터 가져오는 메소드
   const fetchData = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/recipes?page=${page}&size=9&sort=${sort}&order=${order}`
-      );
+      const res = await recipeAPI.getRecipeList(page, sort, order);
       if (res.data.recipes.length === 0) {
         console.log('더 이상 불러올 데이터가 없습니다.');
         setHasMore(false);
         return;
       }
-      // 중복 레시피 제거 후 상태 업데이트
-      // setRecipeList((prevRecipes) => [...prevRecipes, ...res.data.recipes]) // 새로운 레시피 추가
+
       setRecipeList((prevRecipes) => {
         const newRecipes = res.data.recipes.filter(
           (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
@@ -37,26 +35,29 @@ const RecipePage = () => {
         return [...prevRecipes, ...newRecipes];
       });
       console.log(res.data.recipes);
+      
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
   };
 
-  // 스크롤시 페이지 변경
+  // 정렬 시 데이터 초기화
   useEffect(() => {
     setPage(0);
     setHasMore(true);
   }, [sort, order]);
-
+  
+  // 스크롤시 페이지 변경
   useEffect(() => {
     if (inView && hasMore) {
       setPage((prevPage) => prevPage + 1);
     }
   }, [inView, hasMore]); // 스크롤 끝에 올 때마다 호출
 
+  // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
-  }, [page]); // page 변경될 때마다 호출
+  }, [page]); 
 
   // 정렬 기능 핸들러
   // 평점 높은 순
@@ -125,15 +126,7 @@ const RecipePage = () => {
     }
   };
 
-  // 평점 0 ~ 5 분기처리 ★☆☆☆☆ : 우선 (int) avgRatings 값에 따라 표기(소수점 버림)
-  const renderStars = (ratings) => {
-    const intStars = Math.floor(ratings); // 소수점 버림
-    const stars = [
-      ...Array.from({ length: intStars }, () => '★'), // 별 채우기
-      ...Array.from({ length: 5 - intStars }, () => '☆'), // 빈 별
-    ];
-    return stars.join(''); // 배열을 문자열로 결합
-  };
+
 
   return (
     <Layout isBackBtnExist pageName="레시피 전체 목록" isRecipeListPage>
@@ -145,25 +138,24 @@ const RecipePage = () => {
       {/* 레시피 목록  Container */}
       <ListRowContainer>
         {recipeList.map((recipe) => (
-          // thumbnailUrl가 아래값처럼 되어있는 경우 이미지경로 추출(수정 예정)
-          // C:\Users\WD\Desktop\costcook-image\b09047ad-ba5e-4773-9f14-e31d44295ad8_망고요거트스무디.jpg
-          // console.log(`http://localhost:8080/img/${imageName}`);
-
           <List key={recipe.id}>
-            <a href={`http://localhost:8080/api/recipes/${recipe.id}`}>
+            <a href={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
-                {/* <img style={{width:'90%'}} alt={recipe.title} src={`http://localhost:8080/img/${recipe.thumbnailUrl?.split('\\').pop()}`}/> */}
                 <RecipeImage
                   alt={recipe.title}
-                  src={`http://localhost:8080/img/${recipe.thumbnailUrl}.jpg`}
+                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                 />
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{recipe.price}원</PriceText>
+            <PriceText>{formatPrice(recipe.price)}원</PriceText>
+
             <StarText>
-              {renderStars(recipe.avgRatings)} ({recipe.avgRatings}점)
+              <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
+              
+                
+
           </List>
         ))}
         <LoadingBox>
@@ -176,6 +168,7 @@ const RecipePage = () => {
       </ListRowContainer>
     </Layout>
   );
+  
 };
 
 export default RecipePage;
