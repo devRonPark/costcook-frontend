@@ -16,7 +16,7 @@ const AdminRecipeList = () => {
 
   // API 호출을 위한 useEffect
   const [recipeList, setRecipeList] = useState([]);
-  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
+  const [totalPages, setTotalPages] = useState(1); 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -32,16 +32,24 @@ const AdminRecipeList = () => {
       });
       setRecipeList(response.data.recipes);
       setTotalPages(response.data.totalPages);
-
-      console.log('레시피 데이터:', response.data.recipes);
-      console.log('썸네일 경로 확인:');
-      response.data.recipes.forEach((recipe) => {
-        console.log(`레시피 제목: ${recipe.title}, 썸네일 URL: ${recipe.thumbnailUrl}`);
-      });
     } catch (error) {
       console.error('레시피 목록을 불러오는 중 오류 발생:', error);
     }
   }, [currentPage, itemsPerPage]);
+
+  const deleteRecipe = useCallback(async (recipeId) => {
+    try {
+      // 서버에 삭제 요청 보내기
+      await apiClient.delete(`/admin/recipes/${recipeId}`);
+      console.log(`레시피 ID ${recipeId}가 삭제되었습니다.`);
+
+      // 삭제 후 목록 갱신을 위해 레시피 목록 다시 가져오기
+      fetchRecipes();
+    } catch (error) {
+      console.error(`레시피 ID ${recipeId} 삭제 중 오류 발생:`, error);
+      alert('레시피를 삭제하는 중 오류가 발생했습니다.');
+    }
+  }, [fetchRecipes]);
 
   useEffect(() => {
     fetchRecipes();
@@ -52,13 +60,19 @@ const AdminRecipeList = () => {
   };
 
   const handleAddRecipe = () => {
-    // navigate to the recipe form page
     navigate('/admin/recipe-form');
   };
 
   const handleEditRecipe = (recipeId) => {
     const editingRecipe = recipeList.find(recipe => recipe.id === recipeId);
     navigate(`/admin/recipe-form/${recipeId}`, { state: { recipe: editingRecipe } });
+  };
+
+  const handleDeleteRecipe = (recipeId) => {
+    const isConfirmed = window.confirm(`레시피 ID: ${recipeId}를 삭제하시겠습니까?`);
+    if (isConfirmed) {
+      deleteRecipe(recipeId);
+    }
   };
 
   return (
@@ -102,7 +116,7 @@ const AdminRecipeList = () => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="삭제">
-                      <IconButton onClick={() => setRecipeList(recipeList.filter((r) => r.id !== recipe.id))}>
+                      <IconButton onClick={() => handleDeleteRecipe(recipe.id)}>
                         <Delete style={{ fontSize: '22px', color: '#f44336' }} />
                       </IconButton>
                     </Tooltip>

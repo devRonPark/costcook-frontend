@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
@@ -7,10 +7,6 @@ const ThumbnailUploader = ({ onImageUpload, onImageRemove, imageUrl }) => {
   const [thumbnail, setThumbnail] = useState(imageUrl || null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
-  
-  useEffect(() => {
-    console.log(thumbnail);
-  }, []);
 
   // 이미지 변경 핸들러
   const handleImageChange = (e) => {

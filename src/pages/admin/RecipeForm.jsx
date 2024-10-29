@@ -25,7 +25,7 @@ const AdminRecipeForm = () => {
     selectedCategory: editingRecipe?.category?.id || 1,
     ingredientList: [],
     thumbnailFile: null,
-    thumbnailUrl: BASE_SERVER_URL + editingRecipe?.thumbnailUrl || null,
+    thumbnailUrl: editingRecipe?.thumbnailUrl ? BASE_SERVER_URL + editingRecipe.thumbnailUrl : null,
     totalCost: editingRecipe?.price || 0,
   });
 
