@@ -14,24 +14,25 @@ const HeaderContainer = styled.header`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // 약간의 그림자 효과
 `;
 
+const ButtonWrapper = styled.div`
+  position: absolute;
+`;
+
 const HeaderTitle = styled.h1`
-  font-size: 18px;
+  font-size: 1.5rem;
   font-weight: bold;
   margin: 0 auto;
 `;
 
-const ProfileUpdateHeader = ({ step, setStep }) => {
-  // step이 2 또는 3일 때만 뒤로 가기 버튼을 보여주고 클릭 시 step을 감소시킴
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
+const ProfileUpdateHeader = ({ pageName, step, handleBack }) => {
   return (
     <HeaderContainer>
-      {step > 1 && <BackButton onClick={handleBack} />}
-      <HeaderTitle>프로필 업데이트</HeaderTitle>
+      {(step > 1 || step === undefined) && (
+        <ButtonWrapper>
+          <BackButton onClick={handleBack} />
+        </ButtonWrapper>
+      )}
+      <HeaderTitle>{pageName ?? ''}</HeaderTitle>
     </HeaderContainer>
   );
 };

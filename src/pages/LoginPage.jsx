@@ -27,9 +27,9 @@ const LoginPage = () => {
       client_id: import.meta.env.VITE_KAKAO_CLIENT_ID,
     });
     console.log(import.meta.env.VITE_KAKAO_REDIRECT_URI);
-    // const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+    const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
 
-    // window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동
+    window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동
   };
 
   return (

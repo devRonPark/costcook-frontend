@@ -32,5 +32,4 @@ const SubContainer = styled.div`
   margin: 20px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid black;
 `;
