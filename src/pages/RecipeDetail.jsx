@@ -10,6 +10,7 @@ import { formatPrice } from '../utils/formatData';
 import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
+import { toast } from 'react-toastify';
 
 const RecipeDetail = () => {
   // 레시피 & 재료
@@ -24,11 +25,10 @@ const RecipeDetail = () => {
 
   // 리뷰 목록
   const [reviewList, setReviewList] = useState([]); // 전체 리뷰 목록
-  const [page, setPage] = useState(0); // 리뷰 페이지
+  const [page, setPage] = useState(1); // 리뷰 페이지
   const [hasMore, setHasMore] = useState(true); // 추가 리뷰가 있는지 확인
   const { ref, inView } = useInView(); // 스크롤 감지용 useRef
   
-
 
     // 활성 탭 상태 관리(처음부터 열려있음)
   const [activeTabs, setActiveTabs] = useState([
@@ -58,9 +58,9 @@ const RecipeDetail = () => {
 
 
   // 레시피 상세 정보 가져오기
-  const getRecipe = async () => {
+  const getRecipeById = async () => {
     try {
-      const res = await recipeAPI.getRecipe(recipeId);
+      const res = await recipeAPI.getRecipeById(recipeId);
       // 레시피 데이터
       setRecipe(res.data)
       console.log("레시피 정보: ", res.data);
@@ -83,7 +83,7 @@ const RecipeDetail = () => {
   }
   // 가져온 정보 보여주기
     useEffect(() => {
-      getRecipe();
+      getRecipeById();
   }, []);
 
 
@@ -92,27 +92,18 @@ const RecipeDetail = () => {
   // 리뷰 데이터 가져오기
   const fetchReviews = async () => {
     try {
-      const res = await recipeAPI.getRecipeReviews(recipeId);
-      console.log("리뷰 데이터 : ", res.data);
-      
-      // 총 리뷰 수
-      const totalReviews = res.data.length;
-      // 총 리뷰 페이지
-      const totalReviewsPage = Math.ceil(totalReviews / 3);
-      
-      if (res.data.length === 0 ) {
-        console.log("더이상 불러올 데이터가 없습니다.")
+      const res = await recipeAPI.getRecipeReviews(recipeId, page);
+      console.log("리뷰 데이터 : ", res.data.reviews);      
+      if (res.data.reviews.length === 0 ) {
+        toast.info('더 이상 불러올 데이터가 없습니다.');
         setHasMore(false);
         return;
       }
       // 기존 리뷰에 새 리뷰 추가
-      setReviewList((prevReviews) => {
-        const newReviews = res.data.filter(
-          (newReview) => !prevReviews.some((prev) => prev.id === newReview.id)
-        );
-        return [...prevReviews, ...newReviews];
-      });
-      console.log(res.data);
+      setReviewList((prevReviews) => [...res.data.reviews, ...prevReviews]);
+
+
+      console.log("전체 데이터 : ", res.data);
     } catch (error) {
       console.error("리뷰 불러오기 오류", error)
     }
@@ -242,9 +233,12 @@ const RecipeDetail = () => {
         {activeTabs.includes('cookingMethod') && (
           <TabContent>
             
-            조리방법 내용
+            {/* 만개 레시피 경로이동 */}
+            "이 레시피의 조리방법은 만개의 레시피에서 제공됩니다."
             <br/>
-            (rcp_sno를 만개의 레시피 조리방법 내용 통째로 가져오기)
+            (경로 이동 -> 아이콘) 만들기
+    
+
 
           </TabContent>          
         )}
@@ -312,6 +306,10 @@ const RecipeDetail = () => {
               <ReviewContainer key={review.id}>
                 <ReviewImage><img src='' alt='리뷰이미지'/></ReviewImage>
                 <ReviewTextContainer>
+
+                  {/* 생성일 표기 */}
+                  <span>{review.createdAt}</span>
+
                   <TitleText>{review.user.nickname}</TitleText>
                   <StarText>{'★'.repeat(review.score)}</StarText>
                   <ContentText>{review.comment}</ContentText>
@@ -321,7 +319,13 @@ const RecipeDetail = () => {
 
             {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
             {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
-            
+
+            <LoadingBox>
+              {hasMore && (
+                <p ref={ref}>로딩 중...</p>
+              )}
+            </LoadingBox>
+
           </TabContent>
         )}
 
@@ -425,4 +429,13 @@ const ContentText = styled.a`
 
 const StarText = styled.a`
   font-size: 13px;
+`;
+
+
+
+// 데이터 추가 로드 시 하단 로딩 텍스트 영역
+const LoadingBox = styled.div`
+  width: 100%;
+  text-align: center;
+  margin: 10px;
 `;

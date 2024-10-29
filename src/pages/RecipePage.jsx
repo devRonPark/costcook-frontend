@@ -1,18 +1,17 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../utils/StarRating';
 import { formatPrice } from '../utils/formatData';
+import { toast } from 'react-toastify';
 
 const RecipePage = () => {
-  const navigate = useNavigate();
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
-  const [page, setPage] = useState(0); // 현재 페이지
+  const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
   const [sort, setSort] = useState(SORT.CREATED_AT); // 디폴트 sort : 생성일
@@ -23,17 +22,21 @@ const RecipePage = () => {
     try {
       const res = await recipeAPI.getRecipeList(page, sort, order);
       if (res.data.recipes.length === 0) {
-        console.log('더 이상 불러올 데이터가 없습니다.');
+        toast.info('더 이상 불러올 데이터가 없습니다.');
         setHasMore(false);
         return;
       }
+      console.log("페이지 : ", page)
 
+      // 중복 데이터 삭제
       setRecipeList((prevRecipes) => {
         const newRecipes = res.data.recipes.filter(
           (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
         );
         return [...prevRecipes, ...newRecipes];
       });
+      // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]); // 중복 데이터가 생긴다
+
       console.log(res.data.recipes);
       
     } catch (error) {
@@ -43,11 +46,11 @@ const RecipePage = () => {
 
   // 정렬 시 데이터 초기화
   useEffect(() => {
-    setPage(0);
+    setPage(1);
     setHasMore(true);
   }, [sort, order]);
   
-  // 스크롤시 페이지 변경
+  // 스크롤시 페이지 증가
   useEffect(() => {
     if (inView && hasMore) {
       setPage((prevPage) => prevPage + 1);
@@ -64,35 +67,35 @@ const RecipePage = () => {
   const handleAvgRatingsDesc = () => {
     setSort(SORT.AVG_RATINGS);
     setOrder(ORDER.DESC);
-    setPage(0);
+    setPage(1);
     setRecipeList([]);
   };
   // 평점 낮은 순
   const handleAvgRatingsAsc = () => {
     setSort(SORT.AVG_RATINGS);
     setOrder(ORDER.ASC);
-    setPage(0);
+    setPage(1);
     setRecipeList([]);
   };
   // 조회수 높은 순
   const handleViewCountSortDesc = () => {
     setSort(SORT.VIEW_COUNT);
     setOrder(ORDER.DESC);
-    setPage(0);
+    setPage(1);
     setRecipeList([]);
   };
   // 조회수 낮은 순
   const handleViewCountSortAsc = () => {
     setSort(SORT.VIEW_COUNT);
     setOrder(ORDER.ASC);
-    setPage(0);
+    setPage(1);
     setRecipeList([]);
   };
   // 초기화 (생성일, 내림차순)
   const handleResetSort = () => {
     setSort(SORT.CREATED_AT);
     setOrder(ORDER.DESC);
-    setPage(0);
+    setPage(1);
     setRecipeList([]);
     console.log('정렬 초기화');
   };
@@ -126,8 +129,6 @@ const RecipePage = () => {
     }
   };
 
-
-
   return (
     <Layout isBackBtnExist pageName="레시피 전체 목록" isRecipeListPage>
       <FilterListContainer>
@@ -153,16 +154,11 @@ const RecipePage = () => {
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
-              
-                
-
           </List>
         ))}
         <LoadingBox>
-          {hasMore ? (
+          {hasMore && (
             <p ref={ref}>로딩 중...</p>
-          ) : (
-            <p>더 이상 불러올 데이터가 없습니다.</p>
           )}
         </LoadingBox>
       </ListRowContainer>
