@@ -98,7 +98,7 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
           : '선택된 재료가 없습니다.'}
       </InfoContainer>
 
-      <ContentContainer>
+      <ScrollableContentContainer>
         <IngredientSearchSection
           onSelectIngredient={handleSelectIngredient}
           onSearchIngredient={handleSearchIngredient}
@@ -112,9 +112,24 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
             selectedIngredient={selectedIngredient}
           />
         )}
-      </ContentContainer>
+      </ScrollableContentContainer>
     </AdminLayout>
   );
 };
 
 export default RecipeIngredientPage;
+
+import styled from 'styled-components';
+
+const ScrollableContentContainer = styled(ContentContainer)`
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  padding: 16px;
+
+  /* 스크롤바 완전히 숨기기 */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera에서 숨기기 */
+  }
+  -ms-overflow-style: none;  /* IE와 Edge에서 숨기기 */
+  scrollbar-width: none;  /* Firefox에서 숨기기 */
+`;
