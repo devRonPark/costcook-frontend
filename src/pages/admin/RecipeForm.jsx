@@ -28,7 +28,8 @@ const AdminRecipeForm = () => {
     thumbnailUrl: editingRecipe?.thumbnailUrl ? BASE_SERVER_URL + editingRecipe.thumbnailUrl : null,
     totalCost: editingRecipe?.price || 0,
     rcpSno: editingRecipe?.rcpSno || '',
-    description: editingRecipe?.description || ''
+    description: editingRecipe?.description || '',
+    thumbnailDeleted: false,
   });
 
   // 상태 변수
@@ -93,11 +94,13 @@ const AdminRecipeForm = () => {
     const fileUrl = URL.createObjectURL(file);
     handleInputChange('thumbnailFile', file);
     handleInputChange('thumbnailUrl', fileUrl);
+    handleInputChange('thumbnailDeleted', false); // 썸네일 추가 시 false 설정
   };
-
+  
   const handleImageRemove = () => {
     handleInputChange('thumbnailFile', null);
     handleInputChange('thumbnailUrl', null);
+    handleInputChange('thumbnailDeleted', true); // 썸네일 삭제 시 true 설정
   };
 
   const openModal = () => {
@@ -151,6 +154,7 @@ const AdminRecipeForm = () => {
   // FormData 생성 함수
   const createFormData = () => {
     const formData = new FormData();
+    alert(`전송할 thumbnailDeleted 값: ${state.thumbnailDeleted}`);
     const recipeData = {
       title: recipeName,
       categoryId: selectedCategory,
@@ -162,6 +166,7 @@ const AdminRecipeForm = () => {
         quantity: ingredient.quantity,
       })),
       price: totalCost,
+      thumbnailDeleted: state.thumbnailDeleted,
     };
 
     formData.append('recipe', new Blob([JSON.stringify(recipeData)], { type: 'application/json' }));

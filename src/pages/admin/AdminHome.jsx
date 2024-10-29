@@ -55,8 +55,10 @@ const Box = styled.div`
   color: #333;
   cursor: pointer;
   transition: background-color 0.3s;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 
   &:hover {
     background-color: #e0e0e0;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
   }
 `;
