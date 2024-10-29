@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
@@ -23,15 +23,19 @@ const ThumbnailUploader = ({ onImageUpload, onImageRemove, imageUrl }) => {
 
   // 이미지 삭제 핸들러
   const handleImageRemove = () => {
-    setThumbnail(null);
+    // 미리보기 초기화
+    setThumbnail(null);  
+    // 파일 입력값 초기화
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; 
+      fileInputRef.current.value = '';  
     }
+    // 상위 컴포넌트에 이미지 삭제 알림
     if (onImageRemove) {
-      onImageRemove(); 
+      onImageRemove();  
     }
   };
-
+  
+  
   // 드래그 앤 드롭 핸들러
   const handleDragOver = (e) => {
     e.preventDefault();

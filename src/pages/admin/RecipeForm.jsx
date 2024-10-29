@@ -85,7 +85,6 @@ const AdminRecipeForm = () => {
   const handleImageRemove = () => {
     handleInputChange('thumbnailFile', null);
     handleInputChange('thumbnailUrl', null);
-    console.log('Thumbnail removed');
   };
 
   const openModal = () => {
