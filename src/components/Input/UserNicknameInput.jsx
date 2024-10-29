@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
@@ -36,19 +36,30 @@ const ResetButton = styled.button`
 `;
 
 const UserNicknameInput = ({
-  nickname,
-  setNickname,
+  name,
+  value,
+  handleChange,
   placeholder = '닉네임을 입력하세요',
 }) => {
+  const inputRef = useRef();
+
+  const handleReset = () => {
+    // nickname state 값 초기화
+    handleChange(name, '');
+    // input 커서 활성화
+    inputRef.current.focus();
+  };
   return (
     <NicknameInputContainer>
       <NicknameInput
         type="text"
-        value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        name={name}
+        value={value}
+        onChange={(e) => handleChange(name, e.target.value)}
         placeholder={placeholder}
+        ref={inputRef}
       />
-      <ResetButton onClick={() => setNickname('')}>
+      <ResetButton onClick={handleReset}>
         <RestartAltIcon />
       </ResetButton>
     </NicknameInputContainer>
