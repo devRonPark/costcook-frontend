@@ -27,6 +27,8 @@ const AdminRecipeForm = () => {
     thumbnailFile: null,
     thumbnailUrl: editingRecipe?.thumbnailUrl ? BASE_SERVER_URL + editingRecipe.thumbnailUrl : null,
     totalCost: editingRecipe?.price || 0,
+    rcpSno: editingRecipe?.rcpSno || '',
+    description: editingRecipe?.description || ''
   });
 
   // 상태 변수
@@ -35,7 +37,7 @@ const AdminRecipeForm = () => {
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { recipeName, servings, selectedCategory, ingredientList, thumbnailFile, totalCost } = state;
+  const { recipeName, servings, selectedCategory, ingredientList, thumbnailFile, totalCost, rcpSno, description } = state;
 
   // 상태 변경 함수
   const handleInputChange = (key, value) => {
@@ -60,6 +62,17 @@ const AdminRecipeForm = () => {
   };
 
   // 이벤트 핸들러
+  const handleRcpSnoChange = (value) => {
+    if (value === '' || (Number.isInteger(Number(value)) && Number(value) > 0)) {
+        setState((prevState) => ({
+            ...prevState,
+            rcpSno: value === '' ? '' : String(Number(value)),
+        }));
+    } else {
+        alert("고유번호는 자연수여야 합니다.");
+    }
+  };
+
   const handleDeleteIngredient = (ingredientId) => {
     const updatedList = state.ingredientList.filter(
       (ingredient) => ingredient.id !== ingredientId
@@ -142,7 +155,8 @@ const AdminRecipeForm = () => {
       title: recipeName,
       categoryId: selectedCategory,
       servings,
-      description: '설명',
+      description,
+      rcpSno: Number(rcpSno),
       ingredients: ingredientList.map(ingredient => ({
         ingredientId: ingredient.id,
         quantity: ingredient.quantity,
@@ -170,8 +184,8 @@ const AdminRecipeForm = () => {
 
 
   // 조건 설정
-  const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0;
-  const isModified = Boolean(recipeName) || ingredientList.length > 0 || Boolean(thumbnailFile);
+  const isRegisterEnabled = Boolean(recipeName) && ingredientList.length > 0 && rcpSno != '';
+  const isModified = Boolean(recipeName) || ingredientList.length > 0 || Boolean(thumbnailFile) || rcpSno > 0;
 
   // 렌더링
   return (
@@ -194,6 +208,27 @@ const AdminRecipeForm = () => {
             onChange={(e) => handleInputChange("recipeName", e.target.value)}
             disabled={isEditingRecipe} // 편집 중일 때 입력 비활성화
             style={{ backgroundColor: isEditingRecipe ? '#f0f0f0' : 'white' }} // 회색 배경 설정
+          />
+        </Section>
+
+        <Section>
+          <SectionTitle>만개 레시피 고유번호</SectionTitle>
+          <StyledInput
+              type="number"
+              placeholder="레시피 고유번호"
+              value={rcpSno}
+              onChange={(e) => handleRcpSnoChange(e.target.value)}
+              disabled={isEditingRecipe}
+              style={{ backgroundColor: isEditingRecipe ? '#f0f0f0' : 'white' }}
+          />
+        </Section>
+
+        <Section>
+          <SectionTitle>레시피 설명</SectionTitle>
+          <StyledTextarea
+              placeholder="레시피 설명을 입력하세요"
+              value={description}
+              onChange={(e) => handleInputChange("description", e.target.value)}
           />
         </Section>
 
@@ -293,6 +328,17 @@ const SectionTitleWrapper = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 8px;
+`;
+
+const StyledTextarea = styled.textarea`
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
 `;
 
 const SectionTitle = styled.h2`
