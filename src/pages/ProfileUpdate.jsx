@@ -9,7 +9,7 @@ import ProfileUpdateHeader from '../components/layout/Header/ProfileUpdateHeader
 import UserConsentModal from '../components/UserConsentModal';
 import AuthApi from '../services/auth.api';
 import { useNavigate } from 'react-router-dom';
-import { defaultImagePath } from '../utils/constant';
+import { defaultImagePath, ingredients } from '../utils/constant';
 import { useAuth } from '../context/Auth/AuthContext';
 
 const ButtonContainer = styled.div`
@@ -17,56 +17,6 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
 `;
-
-// 화면에 렌더링되는 재료 정보
-const ingredients = [
-  {
-    id: 28,
-    name: '소고기',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_beef.png`,
-  },
-  {
-    id: 11,
-    name: '돼지고기',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_pork.png`,
-  },
-  {
-    id: 3,
-    name: '닭고기',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_chicken.png`,
-  },
-  {
-    id: 5,
-    name: '건어물류',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_dried_fish.png`,
-  },
-  {
-    id: 13,
-    name: '과일류',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_fruit.png`,
-  },
-  {
-    id: 29,
-    name: '버섯류',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_mushroom.png`,
-  },
-  {
-    id: 7,
-    name: '곡류',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_rice.png`,
-  },
-  {
-    id: 12,
-    name: '달걀/유제품',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_dairy.png`,
-  },
-
-  {
-    id: 4,
-    name: '밀가루',
-    imageUrl: `${import.meta.env.VITE_PUBLIC_URL}/category_flour.png`,
-  },
-];
 
 const ProfileUpdate = () => {
   const {
@@ -117,14 +67,8 @@ const ProfileUpdate = () => {
     if (profileFile) {
       formData.append('profileImage', profileFile);
     }
-    formData.append(
-      'preferredIngredients',
-      preferredIngredients.map((i) => i.id)
-    );
-    formData.append(
-      'dislikedIngredients',
-      dislikedIngredients.map((i) => i.id)
-    );
+    formData.append('preferredIngredients', preferredIngredients);
+    formData.append('dislikedIngredients', dislikedIngredients);
     formData.append('personalInfoAgreement', personalInfoAgreement);
     try {
       const response = await AuthApi.updateMyInfo(formData);
@@ -205,7 +149,11 @@ const ProfileUpdate = () => {
 
   return (
     <div style={{ maxWidth: '600px', minHeight: '100vh', margin: '0 auto' }}>
-      <ProfileUpdateHeader step={step} handleBack={handleBack} />
+      <ProfileUpdateHeader
+        pageName="프로필 업데이트"
+        step={step}
+        handleBack={handleBack}
+      />
       {/* 여기서 쓰이는 헤더에는 뒤로 가기 버튼이 존재하는데 step 이 2, 3 일 때만 화면에 보여진다. 뒤로가기 버튼 클릭 시, step이 2인 화면이라면 step이 1인 화면으로 이동. step이 3인 홤녀이라면 step이 2인 화면으로 이동. */}
       <StepIndicator currentStep={step} totalSteps={3} />
 

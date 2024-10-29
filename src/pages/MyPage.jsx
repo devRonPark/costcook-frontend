@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { useAuth } from '../context/Auth/AuthContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ImageDisplay from '../components/display/ImageDisplay';
 import RoundedButton from '../components/common/Button/RoundedButton';
 import AuthApi from '../services/auth.api';
@@ -12,33 +12,21 @@ import { removeCookie } from '../utils/cookieUtil';
 import UserProfile from '../components/UserProfile';
 import PageContainer from '../components/layout/PageContainer';
 import ProfileUpdateHeader from '../components/layout/Header/ProfileUpdateHeader';
-import { defaultImagePath } from '../utils/constant';
+import { defaultImagePath, ingredients } from '../utils/constant';
+import IngredientSelection from '../components/IngredientSelection';
 
 const MyPage = () => {
-  const { state, dispatch } = useAuth();
+  const {
+    state: { user },
+    dispatch,
+  } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState('show');
+  const [preferredSaveBtnActive, setPreferredSaveBtnActive] = useState(false);
+  const [dislikedSaveBtnActive, setDislikedSaveBtnActive] = useState(false);
 
-  // 현재 로그인한 사용자 정보 조회
-  useEffect(() => {
-    async function fetchMyInfo() {
-      try {
-        const res = await AuthApi.getMyInfo();
-        if (res.status === 200) {
-          console.log(res.data);
-          // user 전역 state 업데이트
-          dispatch({
-            type: 'SET_MY_INFO',
-            payload: res.data,
-          });
-        }
-      } catch (error) {
-        console.error('내 정보 조회 실패:', error);
-      }
-    }
-
-    fetchMyInfo();
-  }, []);
+  const preferredIngredientsCopy = useRef(null);
+  const dislikedIngredientsCopy = useRef(null);
 
   const handleChange = (field, value) =>
     dispatch({ type: 'UPDATE_MY_INFO', payload: { field, value } });
@@ -111,17 +99,150 @@ const MyPage = () => {
     }
   };
 
+  const toggleTasteManagement = (e) => {
+    const { name } = e.target;
+    if (name === 'preferred') {
+      setMode('editPreferredIngredients');
+    } else if (name === 'disliked') {
+      setMode('editDislikedIngredients');
+    }
+  };
+
+  const handleUserTasteSave = async () => {
+    const { preferredIngredients, dislikedIngredients } = user;
+
+    const formData = new FormData();
+    if (mode === 'editPreferredIngredients') {
+      formData.append('preferredIngredients', preferredIngredients);
+    } else if (mode === 'editDislikedIngredients') {
+      formData.append('dislikedIngredients', dislikedIngredients);
+    }
+
+    try {
+      const response = await AuthApi.updateMyInfo(formData);
+      if (response.status === 200) {
+        toast.info('회원 정보가 성공적으로 업데이트되었습니다!');
+        // 마이 페이지로 이동.
+        setMode('show');
+      }
+    } catch (error) {
+      console.error('사용자 정보 업데이트 실패:', error);
+      toast.error(
+        '회원 정보 업데이트에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      // user.preferredIngredients 가 null이 아닌 경우만 값 저장
+      if (
+        user.preferredIngredients !== null &&
+        preferredIngredientsCopy.current === null
+      ) {
+        preferredIngredientsCopy.current = JSON.stringify(
+          [...user.preferredIngredients].sort()
+        );
+      }
+
+      // user.dislikedIngredients 가 null이 아닌 경우만 값 저장
+      if (
+        user.dislikedIngredients !== null &&
+        dislikedIngredientsCopy.current === null
+      ) {
+        dislikedIngredientsCopy.current = JSON.stringify(
+          [...user.dislikedIngredients].sort()
+        );
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (
+      mode === 'editPreferredIngredients' &&
+      user &&
+      preferredIngredientsCopy.current !== null
+    ) {
+      const hasChanged =
+        JSON.stringify([...user.preferredIngredients].sort()) !==
+        preferredIngredientsCopy.current;
+      const isEmpty = user.preferredIngredients.length === 0;
+      setPreferredSaveBtnActive(hasChanged && !isEmpty);
+    } else if (
+      mode === 'editDislikedIngredients' &&
+      user &&
+      dislikedIngredientsCopy.current !== null
+    ) {
+      const hasChanged =
+        JSON.stringify([...user.dislikedIngredients].sort()) !==
+        dislikedIngredientsCopy.current;
+      const isEmpty = user.dislikedIngredients.length === 0;
+      setDislikedSaveBtnActive(hasChanged && !isEmpty);
+    }
+  }, [user, mode]);
+
+  const isSaveBtnActive =
+    mode === 'editPreferredIngredients'
+      ? preferredSaveBtnActive
+      : dislikedSaveBtnActive;
+
   if (mode === 'editMyProfile') {
     return (
       <PageContainer>
-        <ProfileUpdateHeader handleBack={handleProfileUpdateHeaderBack} />
+        <ProfileUpdateHeader
+          pageName="내 프로필"
+          handleBack={handleProfileUpdateHeaderBack}
+        />
         <UserProfile
-          nickname={state.user?.nickname ?? ''}
+          nickname={user?.nickname ?? ''}
           handleChange={handleChange}
-          profileUrl={state.user?.profileUrl ?? defaultImagePath}
+          profileUrl={user?.profileUrl ?? defaultImagePath}
           handleFileChange={handleFileChange}
           onClick={handleProfileUpdate}
         />
+      </PageContainer>
+    );
+  } else if (
+    mode === 'editPreferredIngredients' ||
+    mode === 'editDislikedIngredients'
+  ) {
+    return (
+      <PageContainer>
+        {/* 모드에 따라 페이지 렌더링 */}
+        <ProfileUpdateHeader
+          pageName={
+            mode === 'editPreferredIngredients'
+              ? '선호 재료 관리'
+              : '비선호 재료 관리'
+          }
+          handleBack={handleProfileUpdateHeaderBack}
+        />
+        <IngredientSelection
+          step={mode === 'editDislikedIngredients' ? 1 : 2}
+          ingredients={ingredients}
+          dislikedIngredients={
+            user?.dislikedIngredients?.length > 0
+              ? user?.dislikedIngredients
+              : []
+          }
+          preferredIngredients={
+            user?.preferredIngredients?.length > 0
+              ? user?.preferredIngredients
+              : []
+          }
+          handleChange={handleChange}
+          margin="60px 0 0 0"
+        />
+        <ButtonContainer>
+          <RoundedButton
+            text="저장"
+            onClick={handleUserTasteSave}
+            backgroundColor="#FFDB58"
+            hoverBackgroundColor="#FFD700"
+            border="1px solid black"
+            isDisabled={!isSaveBtnActive}
+          />
+        </ButtonContainer>
       </PageContainer>
     );
   }
@@ -132,13 +253,11 @@ const MyPage = () => {
           <ImageDisplay
             width="200px"
             height="200px"
-            src={state.user?.profileUrl ?? defaultImagePath}
-            altText={`${state?.user?.id ?? ''} 번 회원 프로필 이미지`}
+            src={user?.profileUrl ?? defaultImagePath}
+            altText={`${user?.id ?? ''} 번 회원 프로필 이미지`}
             margin="20px 0"
           />
-          <ProfileNameContainer>
-            {state.user?.nickname ?? ''}
-          </ProfileNameContainer>
+          <ProfileNameContainer>{user?.nickname ?? ''}</ProfileNameContainer>
         </ProfileContainer>
         <DateButtonContainer>
           <RoundedButton
@@ -156,15 +275,17 @@ const MyPage = () => {
       <SettingContainer>
         <h4>좋아하는 재료를 추가하거나 수정 할 수 있습니다</h4>
         <SettingButtonContainer>
-          <Link to="../list">
-            <Button>선호 재료 관리</Button>
-          </Link>
+          <Button name="preferred" onClick={(e) => toggleTasteManagement(e)}>
+            선호 재료 관리
+          </Button>
         </SettingButtonContainer>
       </SettingContainer>
       <SettingContainer>
         <h4>싫어하는 재료를 추가하거나 수정 할 수 있습니다</h4>
         <SettingButtonContainer>
-          <Button>비선호 재료 관리</Button>
+          <Button name="disliked" onClick={(e) => toggleTasteManagement(e)}>
+            비선호 재료 관리
+          </Button>
         </SettingButtonContainer>
       </SettingContainer>
       <ButtonLayoutContainer>
@@ -289,7 +410,6 @@ const ButtonLayoutContainer = styled.div`
 const ButtonContainer = styled.div`
   height: 120px;
   width: 100%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: row;

@@ -2,18 +2,13 @@ import UserNicknameInput from './Input/UserNicknameInput';
 import styled from 'styled-components';
 import RoundedButton from './common/Button/RoundedButton';
 import ProfileImageUploader from './ProfileImageUploader';
+import ButtonContainer from './common/Button/ButtonContainer';
 
 const UserProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
   row-gap: 30px;
   margin-top: 60px;
-`;
-
-const ButtonContainer = styled.div`
-  margin-top: 60px;
-  display: flex;
-  justify-content: center;
 `;
 
 const UserProfile = ({

@@ -1,20 +1,22 @@
 import styled from 'styled-components';
 
 const RoundedButton = ({
-  text = '버튼', // 기본값: "버튼"
-  onClick = () => (window.location.href = '#'), // 기본값: 페이지 이동 없음
-  backgroundColor = 'white', // 기본값: 흰색 배경
-  hoverBackgroundColor = '#e0a44b', // 기본값: hover 시 배경색
-  width = '400px', // 기본값: 400px
-  border = '1px solid black', // 기본값: 1px 실선 검정색
+  text = '버튼',
+  onClick = () => (window.location.href = '#'),
+  backgroundColor = 'white',
+  hoverBackgroundColor = '#e0a44b',
+  width = '400px',
+  border = '1px solid black',
+  isDisabled = false,
 }) => {
   return (
     <RoundedButtonContainer
-      onClick={onClick}
+      onClick={isDisabled ? null : onClick}
       backgroundColor={backgroundColor}
       hoverBackgroundColor={hoverBackgroundColor}
       width={width}
       border={border}
+      disabled={isDisabled}
     >
       {text}
     </RoundedButtonContainer>
@@ -24,17 +26,19 @@ const RoundedButton = ({
 export default RoundedButton;
 
 const RoundedButtonContainer = styled.button`
-  width: ${(props) => props.width}; // 가로 길이 설정
+  width: ${(props) => props.width};
   height: 60px;
   font-size: 20px;
-  background-color: ${(props) => props.backgroundColor}; // 배경색 설정
-  border: ${(props) => props.border}; // 테두리 설정
+  background-color: ${(props) =>
+    props.disabled ? 'lightgray' : props.backgroundColor};
+  border: ${(props) => props.border};
   padding: 10px;
   border-radius: 20px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  color: ${(props) => (props.disabled ? '#666' : 'black')};
 
   &:hover {
     background-color: ${(props) =>
-      props.hoverBackgroundColor}; // hover 시 배경색 설정
+      !props.disabled && '#FFD700'}; // hover 시 진한 노란색
   }
 `;

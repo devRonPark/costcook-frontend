@@ -71,15 +71,15 @@ const authReducer = (state, action) => {
         const { preferredIngredients, dislikedIngredients } = state.user;
 
         // 기피 재료에 포함되어 있으면 preferredIngredients에 추가하지 않음
-        if (dislikedIngredients.some((i) => i.id === value.id)) {
+        if (dislikedIngredients.some((i) => i === value)) {
           return state; // 변경하지 않고 이전 상태 반환
         }
 
         // preferredIngredients에 포함되어 있으면 제거
         const updatedPreferredIngredients = preferredIngredients.some(
-          (i) => i.id === value.id
+          (i) => i === value
         )
-          ? preferredIngredients.filter((i) => i.id !== value.id) // 제거
+          ? preferredIngredients.filter((i) => i !== value) // 제거
           : [...preferredIngredients, value]; // 포함되어 있지 않으면 추가
 
         return {
@@ -94,15 +94,15 @@ const authReducer = (state, action) => {
         const { preferredIngredients, dislikedIngredients } = state.user;
 
         // 선호 재료에 포함되어 있으면 그대로 유지
-        if (preferredIngredients.some((i) => i.id === value.id)) {
+        if (preferredIngredients.some((i) => i === value)) {
           return state; // 변경하지 않고 이전 상태 반환
         }
 
         // dislikedIngredients에 포함되어 있으면 제거
         const updatedDislikedIngredients = dislikedIngredients.some(
-          (i) => i.id === value.id
+          (i) => i === value
         )
-          ? dislikedIngredients.filter((i) => i.id !== value.id) // 제거
+          ? dislikedIngredients.filter((i) => i !== value) // 제거
           : [...dislikedIngredients, value]; // 포함되어 있지 않으면 추가
         return {
           ...state,
