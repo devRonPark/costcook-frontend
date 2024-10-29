@@ -35,6 +35,7 @@ import ProfileUpdate from './pages/ProfileUpdate';
 import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
+import AdminHome from './pages/admin/AdminHome';
 
 
 function App() {
@@ -153,15 +154,15 @@ function App() {
 
           {/* 관리자만 접근 가능 */}
           <Route 
+            path="/admin" 
+            element={<AdminHome />} 
+          />
+          <Route 
             path="/admin/ingredient" 
             element={<AdminIngredientPage />} 
           />
           <Route 
             path="/admin/recipe-form" 
-            element={<AdminRecipeForm />} 
-          />
-          <Route 
-            path="/admin/recipe-form/:recipeId" 
             element={<AdminRecipeForm />} 
           />
           <Route

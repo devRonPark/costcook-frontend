@@ -181,6 +181,7 @@ const AdminRecipeForm = () => {
       isRegisterEnabled={isRegisterEnabled} // 등록 버튼 활성화 여부
       isModified={isModified}  // 페이지 변경 감지 여부 (경고 모달용)
       onSubmit={handleSubmit}  // 등록 버튼 클릭 시 호출될 함수
+      onBack={() => navigate("/admin/recipe-list")}
     >
       <ContentContainer>
         {/* 레시피 이름 입력 섹션 */}

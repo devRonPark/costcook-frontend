@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { Visibility, FavoriteBorder, Comment, Edit, Delete } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
@@ -65,7 +65,7 @@ const AdminRecipeList = () => {
 
   const handleEditRecipe = (recipeId) => {
     const editingRecipe = recipeList.find(recipe => recipe.id === recipeId);
-    navigate(`/admin/recipe-form/${recipeId}`, { state: { recipe: editingRecipe } });
+    navigate(`/admin/recipe-form`, { state: { recipe: editingRecipe } });
   };
 
   const handleDeleteRecipe = (recipeId) => {
@@ -81,6 +81,7 @@ const AdminRecipeList = () => {
       rightLabel="추가"
       isRegisterEnabled={true} // 등록 버튼 활성화 조건을 항상 true로 설정
       onSubmit={handleAddRecipe} // 추가 버튼을 눌렀을 때 handleAddRecipe 호출
+      onBack={() => navigate("/admin")}
     >
       <ContentContainer>
         <ContentContainer>

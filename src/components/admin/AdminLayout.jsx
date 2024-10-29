@@ -10,7 +10,7 @@ const AdminLayout = ({
   isRegisterEnabled,
   isModified,
   onSubmit,
-  onBack, 
+  onBack
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
