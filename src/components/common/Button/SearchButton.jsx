@@ -8,7 +8,7 @@ const StyledButton = styled(IconButton)`
     width: 40px;
     height: 40px;
     background-color: transparent;
-    color: black;
+    color: ${(props) => props.color || 'black'}; /* 색상은 props로 설정 가능 */
     padding: 0;
     margin-left: 10px; /* 입력 필드와의 간격 추가 */
 
@@ -19,15 +19,16 @@ const StyledButton = styled(IconButton)`
     }
 
     &:hover {
-      color: orange; /* hover 시 아이콘 색상 */
+      color: ${(props) =>
+        props.hoverColor || 'orange'}; /* hover 시 아이콘 색상 */
     }
   }
 `;
 
-const SearchButton = ({ onClick }) => {
+const SearchButton = ({ onClick, buttonProps }) => {
   return (
-    <StyledButton onClick={onClick}>
-      <SearchIcon fontSize="small" /> {/* 아이콘 크기 조절 */}
+    <StyledButton onClick={onClick} {...buttonProps}>
+      <SearchIcon fontSize="medium" /> {/* 아이콘 크기 조절 */}
     </StyledButton>
   );
 };
