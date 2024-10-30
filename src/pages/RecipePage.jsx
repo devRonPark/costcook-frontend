@@ -3,10 +3,11 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
+import { formatPrice } from '../utils/formatData';
+
 
 const RecipePage = () => {
   const navigate = useNavigate();
@@ -151,16 +152,15 @@ const RecipePage = () => {
 
           <List key={recipe.id}>
             <a href={`http://localhost:8080/api/recipes/${recipe.id}`}>
-              <RecipeImageBox>
-                {/* <img style={{width:'90%'}} alt={recipe.title} src={`http://localhost:8080/img/${recipe.thumbnailUrl?.split('\\').pop()}`}/> */}
+            <RecipeImageBox>
                 <RecipeImage
                   alt={recipe.title}
-                  src={`http://localhost:8080/img/${recipe.thumbnailUrl}.jpg`}
+                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                 />
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{recipe.price}원</PriceText>
+            <PriceText>{formatPrice(recipe.price)}원 ({recipe.servings}인분기준)</PriceText>
             <StarText>
               {renderStars(recipe.avgRatings)} ({recipe.avgRatings}점)
             </StarText>
@@ -260,7 +260,7 @@ const TitleText = styled.h3`
 
 // 가격
 const PriceText = styled.a`
-  font-size: 12px;
+  font-size: 11px;
   margin: 3px 0;
 `;
 
