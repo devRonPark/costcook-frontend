@@ -160,7 +160,7 @@ const RecipePage = () => {
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{formatPrice(recipe.price)}원 ({recipe.servings}인분기준)</PriceText>
+            <PriceText>{formatPrice(recipe.price / recipe.servings)}원 (1인분기준)</PriceText>
             <StarText>
               {renderStars(recipe.avgRatings)} ({recipe.avgRatings}점)
             </StarText>
