@@ -5,12 +5,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Layout from '../components/layout/Layout';
 import { recipeAPI } from '../services/recipe.api';
-import { StarRating } from '../utils/StarRating';
+import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
 import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
-import { toast } from 'react-toastify';
 
 const RecipeDetail = () => {
   const navigate = useNavigate();
@@ -94,7 +93,6 @@ const RecipeDetail = () => {
       const res = await recipeAPI.getRecipeReviews(recipeId, page);
       console.log("리뷰 데이터 : ", res.data.reviews);      
       if (res.data.reviews.length === 0 ) {
-        toast.info('더 이상 불러올 데이터가 없습니다.');
         setHasMore(false);
         return;
       }
@@ -175,11 +173,9 @@ const RecipeDetail = () => {
       </ScoreContainer>
       <TabListContainer>
         <TabList onClick={() => handleTabClick('ingredients')}>
-          {activeTabs.includes('ingredients')
-            ? <> 레시피 재료 (1인분 기준) {recipe.price ? formatPrice(recipe.price) : 0}원 </>
-            : '레시피 재료'
-          }
-
+          {/* 탭 상태 관련 없이 항상 보여주기 */}
+          레시피 재료 ({recipe.servings}인분 기준) {recipe.price ? formatPrice(recipe.price) : 0}원
+          {activeTabs.includes('ingredients')}
           {activeTabs.includes('ingredients') ? (
             <KeyboardArrowUpIcon />
           ) : (
@@ -260,6 +256,7 @@ const RecipeDetail = () => {
             >
               만개의레시피 조리 방법 보기
             </button>
+            <ExternalContent rcpSno={recipe.rcpSno}/>
     
           </TabContent>          
         )}
@@ -341,6 +338,25 @@ const RecipeDetail = () => {
 };
 
 export default RecipeDetail;
+
+
+// 만개의 레시피 조리방법 가져오기
+const ExternalContent = ({rcpSno}) => {
+  const [content, setContent] = useState('');
+  const getExternalContent = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_REST_SERVER}/recipes/test?number=${rcpSno}`
+    );
+    console.log("만개의레시피 크롤링 : ", res.data);
+    setContent(res.data);
+  };
+  useEffect(() => {
+    getExternalContent();
+  }, []);
+  return <div dangerouslySetInnerHTML={{ __html: content }} />;
+};
+
+
 
 const ReceiptImage = styled.div`
   height: 300px;

@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import { FaStar } from 'react-icons/fa';
+import { reviewAPI } from '../../services/review.api';
 
 const RecipeEvaluation = ({ isLoggedIn, userScore, onSubmitScore }) => {
   const [score, setScore] = useState(userScore || 0);
@@ -12,17 +13,28 @@ const RecipeEvaluation = ({ isLoggedIn, userScore, onSubmitScore }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [tempScore, setTempScore] = useState(userScore || 0);
 
+  // 점수 클릭
   const handleStarClick = (index) => {
     setTempScore(index + 1);
     setModalIsOpen(true);
   };
 
-  const handleSubmit = () => {
+  // 리뷰 제출
+  const handleSubmit = async () => {
+
+    try {
+      const res = await reviewAPI();
+    } catch (error) {
+      
+    }
+
+
     setScore(tempScore);
     onSubmitScore(tempScore, review);
     setModalIsOpen(false);
   };
 
+  // 취소
   const handleCancel = () => {
     setModalIsOpen(false);
     setReview('');

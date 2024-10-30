@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
 import { recipeAPI } from '../services/recipe.api';
-import { StarRating } from '../utils/StarRating';
+import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
 import { toast } from 'react-toastify';
 
