@@ -1,6 +1,7 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
@@ -8,6 +9,7 @@ import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../utils/StarRating';
 import { formatPrice } from '../utils/formatData';
 import { toast } from 'react-toastify';
+
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
@@ -140,8 +142,10 @@ const RecipePage = () => {
       <ListRowContainer>
         {recipeList.map((recipe) => (
           <List key={recipe.id}>
+
             <a href={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
+
                 <RecipeImage
                   alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
