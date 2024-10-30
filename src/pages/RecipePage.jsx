@@ -1,6 +1,7 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
@@ -8,6 +9,7 @@ import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../utils/StarRating';
 import { formatPrice } from '../utils/formatData';
 import { toast } from 'react-toastify';
+
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
@@ -140,8 +142,10 @@ const RecipePage = () => {
       <ListRowContainer>
         {recipeList.map((recipe) => (
           <List key={recipe.id}>
+
             <a href={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
+
                 <RecipeImage
                   alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
@@ -149,7 +153,8 @@ const RecipePage = () => {
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{formatPrice(recipe.price)}원</PriceText>
+
+            <PriceText>{formatPrice(recipe.price / recipe.servings)}원 (1인분기준)</PriceText>
 
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
@@ -249,7 +254,7 @@ const TitleText = styled.h3`
 
 // 가격
 const PriceText = styled.a`
-  font-size: 12px;
+  font-size: 11px;
   margin: 3px 0;
 `;
 

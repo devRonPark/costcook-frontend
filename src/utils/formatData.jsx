@@ -12,4 +12,6 @@ export const formatFavoriteCount = (count) => {
     } else {
         return count.toString();
     }
+
 }
+
