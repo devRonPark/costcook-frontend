@@ -5,11 +5,17 @@ import ClearIcon from '@mui/icons-material/Clear'; // 리셋 아이콘 추가
 import { useEffect, useState } from 'react';
 import { getRecentKeywords, saveSearchKeyword } from '../utils/searchRecipe';
 import { IconButton } from '@mui/material';
+import { recipeAPI } from '../services/recipe.api';
+import RecipeCard from '../components/display/RecipeCard';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const SearchPage = () => {
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState('');
+  const [searchParams] = useSearchParams();
   const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // 포커스 상태 관리
   const [recentKeywords, setRecentKeywords] = useState([]);
+  const [searchedRecipes, setSearchedRecipes] = useState(null);
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 로컬 스토리지에서 최근 검색어를 가져옴
@@ -17,26 +23,47 @@ const SearchPage = () => {
     setRecentKeywords(storedRecentKeywords);
   }, []);
 
+  useEffect(() => {
+    const searchByKeyword = async () => {
+      // URL에서 keyword 파라미터 가져와 초기 검색어로 설정
+      const urlKeyword = searchParams.get('keyword');
+      if (urlKeyword) {
+        setKeyword(urlKeyword);
+        await handleSearch(urlKeyword); // URL에 있는 검색어로 초기 검색 수행
+      }
+    };
+
+    searchByKeyword();
+  }, [searchParams]);
+
+  useEffect(() => {
+    console.log(searchedRecipes);
+  }, [searchedRecipes]);
+
   const handleInputChange = (event) => {
     setKeyword(event.target.value);
   };
 
-  const handleSearch = () => {
-    console.log('검색 API 요청:', keyword);
-
+  const handleSearch = async (keyword) => {
+    // keyword가 비어 있을 때 검색 API 호출 방지
     if (keyword) {
-      // 검색어 추가
-      const updatedSearches = [...new Set([keyword, ...recentKeywords])]; // 중복 방지
-      setRecentKeywords(updatedSearches);
-      // 검색어는 로컬 스토리지에 저장.
-      saveSearchKeyword(keyword);
-      setKeyword(''); // 검색 후 입력 필드 초기화
+      navigate(`/search?keyword=${keyword}`);
+
+      // 최근 검색어 추가
+      const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 방지
+      setRecentKeywords(updatedKeywords);
+      const res = await recipeAPI.searchRecipeList({ keyword, page: 1 });
+      if (res.status === 200) {
+        setSearchedRecipes(res.data.recipes);
+        // 검색어는 로컬 스토리지에 저장.
+        saveSearchKeyword(keyword);
+      }
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      handleSearch();
+      handleSearch(keyword);
     }
   };
 
@@ -44,6 +71,39 @@ const SearchPage = () => {
     setKeyword(''); // 검색어 리셋
   };
 
+  const searchResultRender = () => {
+    if (searchedRecipes.length === 0) {
+      return (
+        <SearchResultContainer>
+          {`${keyword} 에 대한 검색 결과가 존재하지 않습니다.`}
+        </SearchResultContainer>
+      );
+    }
+    return (
+      <SearchResultContainer>
+        {searchedRecipes.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))}
+      </SearchResultContainer>
+    );
+  };
+  const recentlyKeywordRender = () => {
+    return (
+      <>
+        <h2>최근 검색어</h2>
+        <SearchListContainer>
+          {/* 검색어가 없으면, List에 최근 검색어가 없어요 라는 단어를 들어간 Data만 출력 */}
+          {recentKeywords.length === 0 ? (
+            <SearchList>최근 검색어가 없어요</SearchList>
+          ) : (
+            recentKeywords.map((recentKeyword, index) => (
+              <SearchList key={index}>{recentKeyword}</SearchList>
+            ))
+          )}
+        </SearchListContainer>
+      </>
+    );
+  };
   return (
     <Layout isBackBtnExist>
       <SearchInputContainer>
@@ -73,17 +133,9 @@ const SearchPage = () => {
         </ResetButton>
       </SearchInputContainer>
       <OutputContainer>
-        <h2>최근 검색어</h2>
-        <SearchListContainer>
-          {/* 검색어가 없으면, List에 최근 검색어가 없어요 라는 단어를 들어간 Data만 출력 */}
-          {recentKeywords.length === 0 ? (
-            <SearchList>최근 검색어가 없어요</SearchList>
-          ) : (
-            recentKeywords.map((recentKeyword, index) => (
-              <SearchList key={index}>{recentKeyword}</SearchList>
-            ))
-          )}
-        </SearchListContainer>
+        {searchedRecipes === null
+          ? recentlyKeywordRender()
+          : searchResultRender()}
       </OutputContainer>
     </Layout>
   );
@@ -178,4 +230,17 @@ const SearchList = styled.div`
   border: 1px solid black;
   height: 100px;
   width: 400px;
+`;
+
+// 레시피 목록 영역
+const SearchResultContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px black solid;
+  flex-wrap: wrap;
+  max-height: 80vh;
+  overflow-y: auto;
 `;
