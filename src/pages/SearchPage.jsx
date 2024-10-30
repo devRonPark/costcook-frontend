@@ -1,8 +1,27 @@
 import styled from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
+import { useState } from 'react';
 
 const SearchPage = () => {
+  const [keyword, setKeyword] = useState('');
+
+  const handleInputChange = (event) => {
+    setKeyword(event.target.value);
+  };
+
+  const handleSearch = () => {
+    // 여기에서 검색 API 호출 로직을 작성합니다.
+    console.log('검색 API 요청:', keyword);
+    // 예: searchRecipes(keyword);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <Layout isBackBtnExist>
       <SearchInputContainer>
@@ -10,9 +29,11 @@ const SearchPage = () => {
           type="text"
           placeholder="궁금한 레시피를 검색해 보세요"
           value={keyword}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown} // Enter 키 입력 처리 추가
         />
         {/* 검색 버튼 위치 잡아주는 컨테이너 역할 */}
-        <SearchButtonWrap>
+        <SearchButtonWrap onClick={handleSearch}>
           <SearchButton /> {/* 검색 버튼 클릭 시 검색 */}
         </SearchButtonWrap>
       </SearchInputContainer>
