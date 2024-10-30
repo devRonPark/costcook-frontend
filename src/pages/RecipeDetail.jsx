@@ -263,28 +263,13 @@ const RecipeDetail = () => {
             setModalIsOpen={setModalIsOpen}
           />
           {/* 평가 상태에 따른 메시지 표시 */}
-          {!userScore ? (
+          {userScore == null ? (
             <p>레시피를 평가해주세요.</p>
           ) : (
             <p>평가 해주셔서 감사합니다.</p>
           )}
           </TabContent>
         )}
-        
-        {/* RecipeEvaluation.jsx에 모달 포함되어있음 */}
-        {modalIsOpen && (
-        <div className="modal">
-          {/* 모달 내용 */}
-          <h2>리뷰 작성하기</h2>
-          <textarea
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            placeholder="리뷰를 작성하세요"
-          />
-          <button onClick={() => handleSubmitScore(userScore, review)}>제출</button>
-          <button onClick={() => setModalIsOpen(false)}>닫기</button>
-        </div>
-      )}
 
 
 

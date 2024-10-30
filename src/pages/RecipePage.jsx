@@ -149,8 +149,7 @@ const RecipePage = () => {
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{formatPrice(recipe.price)}원</PriceText>
-
+            <PriceText>{formatPrice(recipe.price)}원 ({recipe.servings}인분기준)</PriceText>
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
@@ -249,7 +248,7 @@ const TitleText = styled.h3`
 
 // 가격
 const PriceText = styled.a`
-  font-size: 12px;
+  font-size: 11px;
   margin: 3px 0;
 `;
 
