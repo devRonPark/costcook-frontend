@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
 import ClearIcon from '@mui/icons-material/Clear'; // 리셋 아이콘 추가
@@ -86,22 +86,33 @@ const SearchPage = () => {
     clearAllSearchKeywords();
   };
 
+  const NoResultsMessage = () => (
+    <div style={{ textAlign: 'center' }}>
+      <img
+        src="/not_found.png"
+        alt="검색된 레시피가 없음"
+        width={30}
+        height={30}
+      />
+      <p>검색된 레시피가 없어요</p>
+    </div>
+  );
+
   const searchResultRender = () => {
-    if (searchedRecipes.length === 0) {
-      return (
-        <SearchResultContainer>
-          {`${keyword} 에 대한 검색 결과가 존재하지 않습니다.`}
-        </SearchResultContainer>
-      );
-    }
+    const hasResults = searchedRecipes.length > 0;
     return (
-      <SearchResultContainer>
-        {searchedRecipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
+      <SearchResultContainer hasResults={hasResults}>
+        {hasResults ? (
+          searchedRecipes.map((recipe) => (
+            <RecipeCard key={recipe.id} recipe={recipe} />
+          ))
+        ) : (
+          <NoResultsMessage />
+        )}
       </SearchResultContainer>
     );
   };
+
   const recentlyKeywordRender = () => {
     return (
       <RecentKeywords
@@ -221,11 +232,17 @@ const OutputContainer = styled.div`
 const SearchResultContainer = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  border: 1px black solid;
-  flex-wrap: wrap;
-  max-height: 80vh;
   overflow-y: auto;
+
+  // hasResults가 false일 때의 스타일
+  ${(props) =>
+    !props.hasResults &&
+    css`
+      justify-content: center;
+      height: 100%;
+      color: #757575;
+      font-weight: bold;
+    `}
 `;
