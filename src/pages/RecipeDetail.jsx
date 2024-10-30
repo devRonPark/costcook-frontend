@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -13,6 +13,7 @@ import ImageDisplay from '../components/display/ImageDisplay';
 import { toast } from 'react-toastify';
 
 const RecipeDetail = () => {
+  const navigate = useNavigate();
   // 레시피 & 재료
   const {recipeId} = useParams();
   const [recipe, setRecipe] = useState({}); // 전체 레시피 정보
@@ -125,6 +126,15 @@ const RecipeDetail = () => {
 
 
 
+  // 조리 방법 경로 이동 (만개의 레시피)
+  // #obx_recipe_step_start : 조리방법 태그의 고유 ID
+  const handleButtonClick = () => {
+    if (typeof window !== 'undefined' && window.open) {
+      window.open(`https://m.10000recipe.com/recipe/${recipe.rcpSno}#obx_recipe_step_start`, '_blank');
+    } else {
+      console.error("window is not defined or window.open is not available.");
+    }
+  };
 
   // 리뷰 제출 핸들러
   const handleSubmitScore = (score, review) => {
@@ -137,6 +147,7 @@ const RecipeDetail = () => {
     setUserScore(score);
     setReview(review);
   };
+
 
 
 
@@ -231,14 +242,25 @@ const RecipeDetail = () => {
         </TabList>
         {activeTabs.includes('cookingMethod') && (
           <TabContent>
-            
             {/* 만개 레시피 경로이동 */}
-            "이 레시피의 조리방법은 만개의 레시피에서 제공됩니다."
             <br/>
-            (경로 이동 - 아이콘) 만들기
+            <p>조리방법은 만개의 레시피에서 제공됩니다.</p>
+            <br/>
+            <button
+              onClick={handleButtonClick}
+              style={{
+                backgroundColor: '#28a745',
+                color: 'white',
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '5px',
+                fontSize: '16px',
+                cursor: 'pointer'
+              }}
+            >
+              만개의레시피 조리 방법 보기
+            </button>
     
-
-
           </TabContent>          
         )}
 
