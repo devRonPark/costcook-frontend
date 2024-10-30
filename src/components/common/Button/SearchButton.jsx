@@ -1,21 +1,35 @@
 import React from 'react';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
-import { Button } from '@mui/material'; // Button 컴포넌트 임포트
+import { IconButton } from '@mui/material'; // Button 컴포넌트 임포트
 
-const SearchButton = () => (
-  <StyledButton>
-    <SearchIcon fontSize="large" />
-  </StyledButton>
-);
+const StyledButton = styled(IconButton)`
+  && {
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    color: black;
+    padding: 0;
+    margin-left: 10px; /* 입력 필드와의 간격 추가 */
+
+    /* 모바일 및 데스크톱 반응형 스타일 */
+    @media (max-width: 600px) {
+      width: 36px; /* 모바일에서 버튼 크기 조정 */
+      height: 36px; /* 모바일에서 버튼 크기 조정 */
+    }
+
+    &:hover {
+      color: orange; /* hover 시 아이콘 색상 */
+    }
+  }
+`;
+
+const SearchButton = ({ onClick }) => {
+  return (
+    <StyledButton onClick={onClick}>
+      <SearchIcon fontSize="small" /> {/* 아이콘 크기 조절 */}
+    </StyledButton>
+  );
+};
 
 export default SearchButton;
-
-const StyledButton = styled(Button)`
-  width: 50px; // 버튼의 너비
-  height: 50px; // 버튼의 높이
-  display: flex; // Flexbox를 사용하여 중앙 정렬
-  justify-content: center; // 아이콘 중앙 정렬
-  align-items: center; // 아이콘 중앙 정렬
-  border-radius: 5px; // 모서리를 부드럽게 하기 위한 옵션
-`;
