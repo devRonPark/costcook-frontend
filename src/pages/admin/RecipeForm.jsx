@@ -28,16 +28,16 @@ const AdminRecipeForm = () => {
   // [1] 초기 상태
 
   const initialState = {
-    // recipeName(이름), rcpSno(만개 번호), desciption(설명), servings(설명)
-    // selectedCategory(카테고리 번호), totalCost(총 비용), ingredientList(재료 리스트)
+    // title(이름), rcpSno(만개 번호), desciption(설명), servings(설명)
+    // categoryId(카테고리 번호), price(총 비용), ingredients(재료 리스트)
     // thumbnailFile(썸네일 객체), thumbnailUrl(썸네일 경로), thumbnailDeleted(현재 썸네일이 삭제?)
-    recipeName: editingRecipe?.title || '', 
+    title: editingRecipe?.title || '', 
     rcpSno: editingRecipe?.rcpSno || '', 
     description: editingRecipe?.description || '',
     servings: editingRecipe?.servings || 1,
-    selectedCategory: editingRecipe?.category?.id || 1,
-    totalCost: editingRecipe?.price || 0,
-    ingredientList: [],
+    categoryId: editingRecipe?.category?.id || 1,
+    price: editingRecipe?.price || 0,
+    ingredients: [],
     thumbnailFile: null,
     thumbnailUrl: editingRecipe?.thumbnailUrl ? BASE_SERVER_URL + editingRecipe.thumbnailUrl : null,
     thumbnailDeleted: false,
@@ -64,29 +64,32 @@ const AdminRecipeForm = () => {
   };
 
   const updateTotalCost = () => {
-    const totalCost = currentState.ingredientList.reduce((acc, ingredient) => {
-      return acc + (ingredient.price * ingredient.quantity);
+    const totalCost = currentState.ingredients.reduce((acc, ingredient) => {
+      const ingredientPrice = Number(ingredient.pricePerUnit) || 0;   
+      const quantity = Number(ingredient.quantity) || 0; 
+      return acc + (ingredientPrice * quantity);
     }, 0);
-    handleInputChange('totalCost', totalCost);
-  };
 
+    handleInputChange("price", totalCost); 
+  };
+  
   const handleUpdateIngredient = (ingredientId, newQuantity) => {
-    // ingredientList 배열을 순회하면서 특정 ingredientId와 일치하는 재료를 찾음.
+    // ingredients 배열을 순회하면서 특정 ingredientId와 일치하는 재료를 찾음.
     // 일치하는 재료의 quantity를 newQuantity로 업데이트하여 새로운 배열을 생성함.
-    const updatedList = currentState.ingredientList.map((ingredient) =>
+    const updatedList = currentState.ingredients.map((ingredient) =>
       ingredient.id === ingredientId ? { ...ingredient, quantity: newQuantity } : ingredient
     );
     // 변경된 재료 리스트를 상태에 반영
-    handleInputChange('ingredientList', updatedList);
+    handleInputChange('ingredients', updatedList);
   };
 
   const handleDeleteIngredient = (ingredientId) => {
-    // ingredientList 배열을 순회하여 특정 ingredientId와 일치하지 않는 재료만 남기고 필터링
-    const updatedList = currentState.ingredientList.filter(
+    // ingredients 배열을 순회하여 특정 ingredientId와 일치하지 않는 재료만 남기고 필터링
+    const updatedList = currentState.ingredients.filter(
       (ingredient) => ingredient.id !== ingredientId
     );
     // 변경된 재료 리스트를 상태에 반영
-    handleInputChange('ingredientList', updatedList);
+    handleInputChange('ingredients', updatedList);
   };
 
 
@@ -99,7 +102,7 @@ const AdminRecipeForm = () => {
         const formattedIngredients = response.data.map((ingredient) => ({
           ...ingredient, id: ingredient.ingredientId,
         }));
-        handleInputChange('ingredientList', formattedIngredients);
+        handleInputChange('ingredients', formattedIngredients);
       }
     } catch (error) {
       console.error('재료 리스트 가져오기 실패:', error);
@@ -132,27 +135,23 @@ const AdminRecipeForm = () => {
 
   const createFormData = () => {
     const formData = new FormData();
-
-    // 수정 모드일 때 바뀐 데이터들만 전송함.
-    // 추가 모드일 때 전체 데이터들을 전송함.
-    const formFields = isEditingRecipe ? getChangedFields() : currentState; 
-
-    // ingredientList 배열을 준비함
-    const ingredients = currentState.ingredientList.map(ingredient => ({
-        ingredientId: ingredient.id,
-        quantity: ingredient.quantity,
-    }));
-
-    // 필드들을 FormData에 추가함.
-    // 배열 형태의 필드는 json 형태로 변환함.
-    Object.entries(formFields).forEach(([key, value]) => {
-        if (key === "ingredientList") {
-            formData.append(key, JSON.stringify(ingredients));
-        } else {
-            formData.append(key, value);
-        }
+  
+    // 수정 모드일 때 변경된 데이터만 사용, 추가 모드에서는 전체 사용
+    const formFields = isEditingRecipe ? getChangedFields() : currentState;
+  
+    formFields.ingredients.forEach((ingredient, index) => {
+      formData.append(`ingredients[${index}].ingredientId`, ingredient.id);
+      formData.append(`ingredients[${index}].quantity`, ingredient.quantity);
     });
-
+  
+    // 다른 필드들도 FormData에 추가함
+    Object.entries(formFields).forEach(([key, value]) => {
+      // `ingredients` 필드는 이미 추가했으므로 제외
+      if (key !== "ingredients") {
+        formData.append(key, value);
+      }
+    });
+  
     return formData;
   };
 
@@ -163,10 +162,19 @@ const AdminRecipeForm = () => {
     // 서버에 전송할 FormData 객체를 생성함.
     const formData = createFormData();
     
+    console.log("FormData before sending to the server:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
     // 모드에 따라 API URL, HTTP 메서드, 성공 메시지를 설정함.
-    const [url, method, successMessage] = isEditingRecipe
-      ? [`/admin/recipes/${editingRecipe.id}`, 'patch', '레시피가 수정되었습니다.']
-      : ['/admin/recipes', 'post', '레시피가 등록되었습니다.'];
+    const [url, method] = isEditingRecipe
+      ? [`/admin/recipes/${editingRecipe.id}`, 'patch']
+      : ['/admin/recipes', 'post'];
+
+    const [successMessage, errorMessage] = isEditingRecipe
+      ? ['레시피가 수정되었습니다.', '레시피 수정에 실패했습니다.']
+      : ['레시피가 등록되었습니다.', '레시피 등록에 실패했습니다.']
   
     try {
       // 설정된 URL과 메서드로 API 요청을 전송함.
@@ -181,7 +189,7 @@ const AdminRecipeForm = () => {
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
-      toast.error('레시피 수정에 실패했습니다.');
+      toast.error(errorMessage);
     }
   };
   
@@ -216,8 +224,8 @@ const AdminRecipeForm = () => {
 
   // [8] 조건 설정 
 
-  const isRegisterEnabled = Boolean(currentState.recipeName) && currentState.ingredientList.length > 0 && currentState.rcpSno !== '';
-  const isModified = Boolean(currentState.recipeName) || currentState.ingredientList.length > 0 || Boolean(currentState.thumbnailFile) || currentState.rcpSno !== '';
+  const isRegisterEnabled = Boolean(currentState.title) && currentState.ingredients.length > 0 && currentState.rcpSno !== '';
+  const isModified = Boolean(currentState.title) || currentState.ingredients.length > 0 || Boolean(currentState.thumbnailFile) || currentState.rcpSno !== '';
 
 
   // 렌더링
@@ -237,8 +245,8 @@ const AdminRecipeForm = () => {
           <StyledInput
             type="text"
             placeholder="레시피 이름을 입력하세요"
-            value={currentState.recipeName}
-            onChange={(e) => handleInputChange("recipeName", e.target.value)}
+            value={currentState.title}
+            onChange={(e) => handleInputChange("title", e.target.value)}
             disabled={isEditingRecipe}
             style={{ backgroundColor: isEditingRecipe ? '#f0f0f0' : 'white' }} 
           />
@@ -269,7 +277,7 @@ const AdminRecipeForm = () => {
         <Section>
           <SectionTitle>레시피 카테고리</SectionTitle>
           <SelectWrapper
-            value={currentState.selectedCategory}
+            value={currentState.categoryId}
             onChange={(e) => handleInputChange("selectedCategory", Number(e.target.value))}
           >
             {menuData.map((menu) => (
@@ -301,7 +309,7 @@ const AdminRecipeForm = () => {
             <SectionTitle>레시피 재료</SectionTitle>
             <ButtonGroup>
               <AddButton onClick={openModal}>추가</AddButton>
-              {currentState.ingredientList.length > 0 && (
+              {currentState.ingredients.length > 0 && (
                 <EditButton onClick={toggleIngredientEditMode}>
                   {isEditingIngredients ? '편집 완료' : '편집'}
                 </EditButton>
@@ -309,7 +317,7 @@ const AdminRecipeForm = () => {
             </ButtonGroup>
           </SectionTitleWrapper>
           <IngredientTable
-            ingredientList={currentState.ingredientList}
+            ingredientList={currentState.ingredients}
             isEditing={isEditingIngredients}
             onDeleteIngredient={handleDeleteIngredient}
             onUpdateIngredient={handleUpdateIngredient}
@@ -330,8 +338,8 @@ const AdminRecipeForm = () => {
         {isModalOpen && (
           <ModalWrapper>
            <RecipeIngredientPage
-            ingredientList={currentState.ingredientList} 
-            setIngredientList={(newIngredientList) => handleInputChange("ingredientList", newIngredientList)}
+            ingredientList={currentState.ingredients} 
+            setIngredientList={(newIngredients) => handleInputChange("ingredients", newIngredients)}
             onClose={closeModal}
           />
           </ModalWrapper>
