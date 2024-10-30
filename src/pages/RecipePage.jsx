@@ -153,9 +153,7 @@ const RecipePage = () => {
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-
             <PriceText>{formatPrice(recipe.price / recipe.servings)}원 (1인분기준)</PriceText>
-
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
