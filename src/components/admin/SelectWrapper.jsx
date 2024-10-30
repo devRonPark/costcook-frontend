@@ -2,15 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const ServingsWrapper = ({ value, onChange }) => {
+const SelectWrapper = ({ value, onChange, children }) => {
   return (
     <Wrapper>
       <StyledSelect value={value} onChange={onChange}>
-        {[1, 2, 3, 4].map((num) => (
-          <option key={num} value={num}>
-            {num}인분
-          </option>
-        ))}
+        {/* 부모 컴포넌트에서 전달된 옵션들 렌더링 */}
+        {children}
       </StyledSelect>
       <ArrowIconWrapper>
         <ArrowDropDownIcon fontSize="large" />
@@ -19,8 +16,9 @@ const ServingsWrapper = ({ value, onChange }) => {
   );
 };
 
-export default ServingsWrapper;
+export default SelectWrapper;
 
+// 스타일 정의
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
@@ -28,13 +26,13 @@ const Wrapper = styled.div`
 
 const StyledSelect = styled.select`
   width: 100%;
-  height: 48px; /* 높이 고정 */
+  height: 48px;
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  appearance: none; /* 기본 화살표 아이콘 제거 */
+  appearance: none;
   cursor: pointer;
 
   &:focus {

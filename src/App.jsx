@@ -23,10 +23,10 @@ import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
-import AdminRecipePage from './pages/admin/RecipePage';
 import AdminIngredientPage from './pages/admin/IngredientPage';
+import AdminRecipeForm from './pages/admin/RecipeForm';
+import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
-import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
@@ -34,6 +34,9 @@ import Activities from './pages/Activities';
 import ProfileUpdate from './pages/ProfileUpdate';
 import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
+import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
+import AdminHome from './pages/admin/AdminHome';
+
 
 function App() {
   const location = useLocation();
@@ -63,7 +66,7 @@ function App() {
             }
           />
           <Route
-            path="/recipeDetail"
+            path="/recipeDetail/:recipeId"
             element={
               <PageTransition>
                 <RecipeDetail />
@@ -112,7 +115,6 @@ function App() {
               </AuthProvider>
             }
           />
-
           {/* 로그인한 회원만 접근 가능 */}
           <Route path="/profile/update" element={<ProfileUpdate />} />
           <Route path="/signup/complete" element={<SignUpComplete />} />
@@ -151,11 +153,25 @@ function App() {
           />
 
           {/* 관리자만 접근 가능 */}
-          <Route path="/admin/ingredient" element={<AdminIngredientPage />} />
-          <Route path="/admin/recipe" element={<AdminRecipePage />} />
+          <Route 
+            path="/admin" 
+            element={<AdminHome />} 
+          />
+          <Route 
+            path="/admin/ingredient" 
+            element={<AdminIngredientPage />} 
+          />
+          <Route 
+            path="/admin/recipe-form" 
+            element={<AdminRecipeForm />} 
+          />
           <Route
-            path="/admin/recipeIngredient"
+            path="/admin/recipe-ingredient"
             element={<RecipeIngredientPage />}
+          />
+          <Route 
+            path="/admin/recipe-list" 
+            element={<AdminRecipeList />} 
           />
           {/* 아직 명확하지 않은 페이지 */}
           <Route

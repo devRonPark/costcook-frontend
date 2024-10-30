@@ -30,7 +30,7 @@ const CarouselCard = ({ isActive, isPrev, isNext, data }) => {
     return 'scale(0.8)'; // scale-75
   };
 
-  // scr = data.title, alt = data.alt , 음식이름 = name , 음식가격 = price, 북마크 = likes , 별점 = rating
+  // scr = data.title, alt = data.alt , 음식이름 = name , 음식가격 = price, 북마크 = likes , 별점 = score
   return (
     <CardContainer scale={getScale()}>
       <Image src={data.title} alt={data.alt} />
@@ -38,7 +38,7 @@ const CarouselCard = ({ isActive, isPrev, isNext, data }) => {
         name="음식이름"
         price={8000}
         likes={2}
-        rating={4.5}
+        score={4.5}
       ></CarouselData>
     </CardContainer>
   );
