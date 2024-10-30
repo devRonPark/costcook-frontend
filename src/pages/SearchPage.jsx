@@ -3,11 +3,17 @@ import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
 import ClearIcon from '@mui/icons-material/Clear'; // 리셋 아이콘 추가
 import { useEffect, useState } from 'react';
-import { getRecentKeywords, saveSearchKeyword } from '../utils/searchRecipe';
+import {
+  clearAllSearchKeywords,
+  deleteSearchKeyword,
+  getRecentKeywords,
+  saveSearchKeyword,
+} from '../utils/searchRecipe';
 import { IconButton } from '@mui/material';
 import { recipeAPI } from '../services/recipe.api';
 import RecipeCard from '../components/display/RecipeCard';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import RecentKeywords from '../components/RecentKeywords';
 
 const SearchPage = () => {
   const navigate = useNavigate();
@@ -35,10 +41,6 @@ const SearchPage = () => {
 
     searchByKeyword();
   }, [searchParams]);
-
-  useEffect(() => {
-    console.log(searchedRecipes);
-  }, [searchedRecipes]);
 
   const handleInputChange = (event) => {
     setKeyword(event.target.value);
@@ -71,6 +73,19 @@ const SearchPage = () => {
     setKeyword(''); // 검색어 리셋
   };
 
+  const handleKeywordRemove = (keyword) => {
+    console.log(`삭제 대상 검색어: ${keyword}`);
+    setRecentKeywords((prevKeywords) =>
+      prevKeywords.filter((item) => item !== keyword)
+    ); // 특정 검색어 제거
+    deleteSearchKeyword(keyword);
+  };
+
+  const handleAllKeywordsRemove = () => {
+    setRecentKeywords([]);
+    clearAllSearchKeywords();
+  };
+
   const searchResultRender = () => {
     if (searchedRecipes.length === 0) {
       return (
@@ -89,19 +104,11 @@ const SearchPage = () => {
   };
   const recentlyKeywordRender = () => {
     return (
-      <>
-        <h2>최근 검색어</h2>
-        <SearchListContainer>
-          {/* 검색어가 없으면, List에 최근 검색어가 없어요 라는 단어를 들어간 Data만 출력 */}
-          {recentKeywords.length === 0 ? (
-            <SearchList>최근 검색어가 없어요</SearchList>
-          ) : (
-            recentKeywords.map((recentKeyword, index) => (
-              <SearchList key={index}>{recentKeyword}</SearchList>
-            ))
-          )}
-        </SearchListContainer>
-      </>
+      <RecentKeywords
+        recentKeywords={recentKeywords}
+        onRemoveKeyword={handleKeywordRemove}
+        onRemoveAllKeywords={handleAllKeywordsRemove}
+      />
     );
   };
   return (
@@ -208,28 +215,6 @@ const OutputContainer = styled.div`
   text-align: left;
   display: flex;
   flex-direction: column; /* 자식들을 세로로 배치 */
-`;
-
-const SearchListContainer = styled.div`
-  margin-top: 20px;
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  border: 1px black solid;
-  justify-content: center;
-  text-align: center;
-  flex-direction: column;
-`;
-
-const SearchList = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 5px;
-  border: 1px solid black;
-  height: 100px;
-  width: 400px;
 `;
 
 // 레시피 목록 영역
