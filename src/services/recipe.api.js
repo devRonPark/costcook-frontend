@@ -1,9 +1,8 @@
-import api from './api';
+import apiClient from './api';
 
 export const recipeAPI = {
-
-    getRecipeList : () => api.get("/recipes"),
-    // paginationOption: { page: 1, sort: {}, order: {}}
-    // getRecipeWithPagination: (paginationOption) => api.get(`/recipes?page=${page}&size=9&sort=${sort}&order=${order}`)
-
+    getRecipeList : (page, sort, order) => apiClient.get(`/recipes?page=${page}&size=9&sort=${sort}&order=${order}`),
+    getRecipeById : (recipeId) => apiClient.get(`/recipes/${recipeId}`),
+    // getReviewsByRecipeIdWithPagination
+    getRecipeReviews : (recipeId, page) => apiClient.get(`/recipes/${recipeId}/reviews?page=${page}`),
 }

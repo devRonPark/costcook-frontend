@@ -16,12 +16,12 @@ const Review = () => {
               </ReviewSettingBtn>
             </ReviewTitle>
             <ReviewContent>내용</ReviewContent>
-            <ReviewRatingContainer>
-              <ReviewRating>★★★★★ 5.0</ReviewRating>
-              <ReviewRating>
+            <ReviewScoreContainer>
+              <ReviewScore>★★★★★ 5.0</ReviewScore>
+              <ReviewScore>
                 <h5>1일전</h5>
-              </ReviewRating>
-            </ReviewRatingContainer>
+              </ReviewScore>
+            </ReviewScoreContainer>
           </ReviewDataContainer>
         </ReviewContainer>
         <ReviewContainer>
@@ -34,12 +34,12 @@ const Review = () => {
               </ReviewSettingBtn>
             </ReviewTitle>
             <ReviewContent>내용</ReviewContent>
-            <ReviewRatingContainer>
-              <ReviewRating>★★★★★ 5.0</ReviewRating>
-              <ReviewRating>
+            <ReviewScoreContainer>
+              <ReviewScore>★★★★★ 5.0</ReviewScore>
+              <ReviewScore>
                 <h5>1일전</h5>
-              </ReviewRating>
-            </ReviewRatingContainer>
+              </ReviewScore>
+            </ReviewScoreContainer>
           </ReviewDataContainer>
         </ReviewContainer>
         <ReviewContainer>
@@ -52,12 +52,12 @@ const Review = () => {
               </ReviewSettingBtn>
             </ReviewTitle>
             <ReviewContent>내용</ReviewContent>
-            <ReviewRatingContainer>
-              <ReviewRating>★★★★★ 5.0</ReviewRating>
-              <ReviewRating>
+            <ReviewScoreContainer>
+              <ReviewScore>★★★★★ 5.0</ReviewScore>
+              <ReviewScore>
                 <h5>1일전</h5>
-              </ReviewRating>
-            </ReviewRatingContainer>
+              </ReviewScore>
+            </ReviewScoreContainer>
           </ReviewDataContainer>
         </ReviewContainer>
       </DateContainer>
@@ -124,7 +124,7 @@ const ReviewContent = styled.div`
   width: 100%;
   border-bottom: 1px black solid;
 `;
-const ReviewRatingContainer = styled.div`
+const ReviewScoreContainer = styled.div`
   height: 30px;
   width: 100%;
   display: flex;
@@ -133,6 +133,6 @@ const ReviewRatingContainer = styled.div`
   border-bottom: 1px black solid;
   align-items: center;
 `;
-const ReviewRating = styled.div`
+const ReviewScore = styled.div`
   width: auto;
 `;
