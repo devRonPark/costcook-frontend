@@ -10,6 +10,8 @@ import { formatPrice } from '../utils/formatData';
 import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
+import { CleaningServices } from '@mui/icons-material';
+import axios from 'axios';
 
 const RecipeDetail = () => {
   const navigate = useNavigate();
@@ -256,7 +258,11 @@ const RecipeDetail = () => {
             >
               만개의레시피 조리 방법 보기
             </button>
-            <ExternalContent rcpSno={recipe.rcpSno}/>
+            
+            {
+              recipe?.rcpSno && // 없는 경우 빈 객체 반환
+              <ExternalContent rcpSno={recipe.rcpSno} />
+            }
     
           </TabContent>          
         )}
@@ -341,18 +347,21 @@ export default RecipeDetail;
 
 
 // 만개의 레시피 조리방법 가져오기
-const ExternalContent = ({rcpSno}) => {
+const ExternalContent = ({rcpSno}) => {  
   const [content, setContent] = useState('');
+
   const getExternalContent = async () => {
     const res = await axios.get(
       `${import.meta.env.VITE_REST_SERVER}/recipes/test?number=${rcpSno}`
     );
-    console.log("만개의레시피 크롤링 : ", res.data);
+    // console.log("만개의레시피 크롤링 : ", res.data);
     setContent(res.data);
   };
+
   useEffect(() => {
     getExternalContent();
   }, []);
+
   return <div dangerouslySetInnerHTML={{ __html: content }} />;
 };
 
