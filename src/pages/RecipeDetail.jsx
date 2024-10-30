@@ -55,8 +55,6 @@ const RecipeDetail = () => {
     ); // 탭을 토글
   };
 
-
-
   // 레시피 상세 정보 가져오기
   const getRecipeById = async () => {
     try {
