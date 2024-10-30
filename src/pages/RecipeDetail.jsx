@@ -100,7 +100,7 @@ const RecipeDetail = () => {
         return;
       }
       // 기존 리뷰에 새 리뷰 추가
-      setReviewList((prevReviews) => [...res.data.reviews, ...prevReviews]);
+      setReviewList((prevReviews) => [ ...prevReviews, ...res.data.reviews ]);
 
 
       console.log("전체 데이터 : ", res.data);
@@ -152,8 +152,9 @@ const RecipeDetail = () => {
           width={"100%"}
           borderRadius={"0%"}
           altText={recipe.title}
-          src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}/>
-      </ReceiptImage>
+          src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+          ></ImageDisplay>
+          </ReceiptImage>
       
       <ScoreContainer>
         <ScoreSubContainer text="center"><StarRating ratings={recipe.avgRatings} /></ScoreSubContainer>

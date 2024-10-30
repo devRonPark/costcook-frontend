@@ -35,7 +35,7 @@ const RecipePage = () => {
         );
         return [...prevRecipes, ...newRecipes];
       });
-      // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]); // 중복 데이터가 생긴다
+      // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]);
 
       console.log(res.data.recipes);
       
