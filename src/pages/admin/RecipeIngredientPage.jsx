@@ -123,7 +123,7 @@ import styled from 'styled-components';
 
 const ScrollableContentContainer = styled(ContentContainer)`
   overflow-y: auto;
-  max-height: calc(100vh - 200px);
+  max-height: 100vh;
   padding: 16px;
 
   /* 스크롤바 완전히 숨기기 */

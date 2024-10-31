@@ -41,7 +41,6 @@ const AdminRecipeList = () => {
     try {
       // 서버에 삭제 요청 보내기
       await apiClient.delete(`/admin/recipes/${recipeId}`);
-      console.log(`레시피 ID ${recipeId}가 삭제되었습니다.`);
 
       // 삭제 후 목록 갱신을 위해 레시피 목록 다시 가져오기
       fetchRecipes();
