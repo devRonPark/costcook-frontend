@@ -15,8 +15,10 @@ import axios from 'axios';
 import { useAuth } from '../context/Auth/AuthContext';
 
 const RecipeDetail = () => {
+  // 접속중 유저 정보
   const { state } = useAuth();
-  console.log(state?.user);
+  const userInfo = state?.user;
+  // const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
 
   const navigate = useNavigate();
   // 레시피 & 재료
@@ -62,6 +64,7 @@ const RecipeDetail = () => {
       // 레시피 데이터
       setRecipe(res.data);
       console.log('레시피 정보: ', res.data);
+      console.log('레시피ID: ', res.data.recipeId);
 
       // 재료 데이터
       const ingredients = res.data.ingredients.map((item) => ({
@@ -84,7 +87,9 @@ const RecipeDetail = () => {
   }, []);
 
   // 리뷰 관련 메소드
-  // 리뷰 데이터 가져오기
+  // 이 레시피에 내가 작성한 리뷰 가져오기
+
+  // DB의 리뷰 데이터 가져오기
   const fetchReviews = async () => {
     try {
       const res = await recipeAPI.getRecipeReviews(recipeId, page);
@@ -311,12 +316,14 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            <p>내가 작성한 리뷰</p>
-            ----
-            <p>내가 작성한 리뷰 영역</p>
-            ----
+            {userInfo != null ? (
+              <p>내가 작성한 리뷰 영역 </p>
+            ) : (
+              <p>유저 정보 없음</p>
+            )}
+
             {reviewList.map((review) => (
-              <ReviewContainer key={review.id}>
+              <ReviewContainer key={review.id} review={review}>
                 <ReviewImage>
                   <img src="" alt="리뷰이미지" />
                 </ReviewImage>

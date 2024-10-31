@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from 'date-fns'; // date-fns 라이브러리 사용
-import ko from 'date-fns/locale/ko'; // 한국어 로케일
+// import { formatDistanceToNow } from 'date-fns'; // date-fns 라이브러리 사용
+// import ko from 'date-fns/locale/ko'; // 한국어 로케일
 
 // 평점 0 ~ 5 분기처리 ★☆☆☆☆ : 우선 (int) avgRatings 값에 따라 표기(소수점 버림)
 export const renderStars = (ratings) => {
