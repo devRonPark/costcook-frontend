@@ -4,7 +4,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-// import { FaStar } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
 
 const RecipeEvaluation = ({ isLoggedIn, userScore, onSubmitScore }) => {
   const [score, setScore] = useState(userScore || 0);
@@ -30,88 +30,51 @@ const RecipeEvaluation = ({ isLoggedIn, userScore, onSubmitScore }) => {
   };
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        padding: '20px',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-      }}
-    >
+    <div style={{ position: 'relative', padding: '20px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
       {/* 로그인 했다고 가정 */}
       {/* (로그인 연동 후 !isLoggedIn 으로 바꾸기) */}
       {isLoggedIn ? (
         <>
           <div style={{ filter: 'blur(3px)' }}>
-            {Array(5)
-              .fill()
-              .map((_, index) => (
-                <FaStar
-                  key={index}
-                  style={{ cursor: 'pointer', color: 'lightgray' }}
-                />
-              ))}
+            {Array(5).fill().map((_, index) => (
+              <FaStar key={index} style={{ cursor: 'pointer', color: 'lightgray' }} />
+            ))}
           </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              textAlign: 'center',
-            }}
-          >
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
             <p>로그인 한 유저만 평가할 수 있습니다</p>
-            <button onClick={() => console.log('로그인 페이지로 이동')}>
-              로그인
-            </button>
+            <button onClick={() => console.log('로그인 페이지로 이동')}>로그인</button>
           </div>
         </>
       ) : (
         <>
           <div>
-            {Array(5)
-              .fill()
-              .map((_, index) => (
-                <div>별</div>
-                // <FaStar
-                //   key={index}
-                //   onClick={() => handleStarClick(index)}
-                //   style={{
-                //     cursor: 'pointer',
-                //     color: index < score ? 'gold' : 'lightgray',
-                //   }}
-                // />
-              ))}
+            {Array(5).fill().map((_, index) => (
+              <FaStar
+                key={index}
+                onClick={() => handleStarClick(index)}
+                style={{ cursor: 'pointer', color: index < score ? 'gold' : 'lightgray' }}
+              />
+            ))}
           </div>
         </>
       )}
 
       <Dialog open={modalIsOpen} onClose={handleCancel}>
-        <DialogTitle style={{ textAlign: 'center' }}>리뷰 작성</DialogTitle>
+        <DialogTitle style={{textAlign: 'center'}}>리뷰 작성</DialogTitle>
         <DialogContent>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginBottom: '10px',
-              width: '300px',
-            }}
-          >
-            {Array(5)
-              .fill()
-              .map((_, index) => (
-                <div>별</div>
-                // <FaStar
-                //   key={index}
-                //   onClick={() => setTempScore(index + 1)}
-                //   style={{
-                //     cursor: 'pointer',
-                //     color: index < tempScore ? 'gold' : 'lightgray',
-                //     fontSize: '20px',
-                //     marginRight: '2px',
-                //   }}
-                // />
-              ))}
+          <div style={{ display: 'flex', justifyContent:'flex-end', marginBottom: '10px' , width: '300px'}}>
+            {Array(5).fill().map((_, index) => (
+              <FaStar
+                key={index}
+                onClick={() => setTempScore(index + 1)}
+                style={{
+                  cursor: 'pointer',
+                  color: index < tempScore ? 'gold' : 'lightgray',
+                  fontSize: '20px',
+                  marginRight: '2px'
+                }}
+              />
+            ))}
           </div>
           <textarea
             value={review}
