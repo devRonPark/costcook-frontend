@@ -1,15 +1,15 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
 import { recipeAPI } from '../services/recipe.api';
-import { StarRating } from '../utils/StarRating';
+import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
 import { toast } from 'react-toastify';
-
+import { Link } from 'react-router-dom';
+import { StyledScrollbar } from '../components/display/ScrollbarStyle';
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
@@ -28,7 +28,7 @@ const RecipePage = () => {
         setHasMore(false);
         return;
       }
-      console.log("페이지 : ", page)
+      console.log('페이지 : ', page);
 
       // 중복 데이터 삭제
       setRecipeList((prevRecipes) => {
@@ -40,7 +40,6 @@ const RecipePage = () => {
       // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]);
 
       console.log(res.data.recipes);
-      
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
@@ -51,7 +50,7 @@ const RecipePage = () => {
     setPage(1);
     setHasMore(true);
   }, [sort, order]);
-  
+
   // 스크롤시 페이지 증가
   useEffect(() => {
     if (inView && hasMore) {
@@ -62,7 +61,7 @@ const RecipePage = () => {
   // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
-  }, [page]); 
+  }, [page]);
 
   // 정렬 기능 핸들러
   // 평점 높은 순
@@ -132,7 +131,7 @@ const RecipePage = () => {
   };
 
   return (
-    <Layout isBackBtnExist pageName="레시피 전체 목록" isRecipeListPage>
+    <Layout isBackBtnExist pageName="레시피 전체 목록" isSearchBtnExist>
       <FilterListContainer>
         {/* 드롭다운 정렬버튼 */}
         <FilterDropdownButton handleSortChange={handleSortChange} />
@@ -142,32 +141,27 @@ const RecipePage = () => {
       <ListRowContainer>
         {recipeList.map((recipe) => (
           <List key={recipe.id}>
-
-            <a href={`/recipeDetail/${recipe.id}`}>
+            <Link to={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
-
                 <RecipeImage
                   alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                 />
               </RecipeImageBox>
-            </a>
+            </Link>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{formatPrice(recipe.price / recipe.servings)}원 (1인분기준)</PriceText>
+            <PriceText>
+              {formatPrice(recipe.price / recipe.servings)}원 (1인분)
+            </PriceText>
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
           </List>
         ))}
-        <LoadingBox>
-          {hasMore && (
-            <p ref={ref}>로딩 중...</p>
-          )}
-        </LoadingBox>
+        <LoadingBox>{hasMore && <p ref={ref}>로딩 중...</p>}</LoadingBox>
       </ListRowContainer>
     </Layout>
   );
-  
 };
 
 export default RecipePage;
@@ -179,19 +173,15 @@ const FilterListContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  border: 1px black solid;
-  /* border-radius: 10px 10px 0px 0px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); */
 `;
 
 // 레시피 목록 영역
-const ListRowContainer = styled.div`
+const ListRowContainer = styled(StyledScrollbar)`
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  border: 1px black solid;
   flex-wrap: wrap;
   max-height: 80vh;
   overflow-y: auto;
@@ -203,18 +193,16 @@ const List = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 5px;
-  /* border: 1px solid black; */
   height: 200px; // 220px에서 줄임
-  width: 120px;
+  width: 150px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 `;
 
 // 레시피 이미지 영역
 const RecipeImageBox = styled.div`
-  height: 120px;
-  width: 120px;
-  /* border-bottom: 1px black solid; */
+  height: 130px;
+  width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,7 +212,7 @@ const RecipeImageBox = styled.div`
 // 레시피 이미지
 const RecipeImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: 102%;
   object-fit: cover;
   border-radius: 10px 10px 0px 0px;
 `;
