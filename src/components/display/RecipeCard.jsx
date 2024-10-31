@@ -6,10 +6,13 @@ import { forwardRef } from 'react';
 const RecipeCard = forwardRef(({ recipe }, ref) => {
   const navigate = useNavigate();
   return (
-    <CardContainer onClick={() => navigate(`/recipes/${recipe.id}`)} ref={ref}>
+    <CardContainer
+      onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
+      ref={ref}
+    >
       <ThumbnailImageBox>
         <Image
-          src={`${import.meta.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
+          src={`${import.meta.env.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
         />
       </ThumbnailImageBox>
       <div>
@@ -39,6 +42,7 @@ const CardContainer = styled.div`
   width: 100%;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
 `;
 
 // 레시피 이미지 영역
