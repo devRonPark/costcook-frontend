@@ -16,7 +16,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
   };
 
   const handleConfirmDelete = () => {
-    onDelete(review.id); // 삭제 처리
+    onDelete(review); // 삭제 처리
     setIsDeleteModalOpen(false); // 모달 닫기
   };
 

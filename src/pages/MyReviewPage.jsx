@@ -8,6 +8,7 @@ import UserApi from '../services/user.api';
 import { toast } from 'react-toastify';
 import ReviewCard from '../components/display/ReviewCard';
 import ReviewEditModal from '../components/ReviewEditModal';
+import ReviewApi from '../services/review.api';
 
 const MyReviewPage = () => {
   const navigate = useNavigate();
@@ -28,20 +29,72 @@ const MyReviewPage = () => {
     setIsModalOpen(true);
   };
 
+  // 리뷰 삭제 확인 창에서 확인 클릭 시 리뷰 삭제 처리
+  const handleDeleteClick = async (review) => {
+    try {
+      const res = await ReviewApi.deleteReview(review.id);
+
+      // 삭제 성공 시 리뷰 목록에서 해당 리뷰 제거
+      if (res.status === 204) {
+        setMyReviews((prevReviews) =>
+          prevReviews.filter((r) => r.id !== review.id)
+        );
+        toast.info('리뷰가 성공적으로 삭제되었습니다!'); // 사용자에게 성공 메시지 표시
+      }
+    } catch (err) {
+      // 에러 발생 시 적절한 메시지 설정
+      const errorMessage =
+        err.response && err.response.data && err.response.data.message
+          ? err.response.data.message // 서버에서 반환된 메시지 사용
+          : '리뷰 삭제에 실패했습니다. 서버 오류가 발생했습니다. 다시 시도해 주세요.'; // 기본 메시지
+
+      toast.error(errorMessage); // 에러 메시지 표시
+
+      // 재시도 버튼 (optional)
+      const retry = window.confirm(
+        '리뷰 삭제에 실패했습니다. 다시 시도하시겠습니까?'
+      );
+
+      // 사용자가 재시도를 원할 경우 함수 재호출
+      if (retry) {
+        handleDeleteClick(review); // 재시도
+      }
+    }
+  };
+
   // 모달 내 인풋 변경 시
   const handleReviewChange = (field, value) => {
     setReviewState((prevState) => ({ ...prevState, [field]: value }));
   };
 
-  // 모달 저장 버튼 클릭 시 변경 사항 반영
-  const handleReviewSubmit = () => {
-    if (isEditMode) {
-      // TODO: 리뷰 수정 API 연동
-      const updatedReviews = myReviews.map((review) =>
-        review.id === selectedReview.id ? { ...review, ...reviewState } : review
-      );
-      setMyReviews(updatedReviews);
-      setIsModalOpen(false);
+  const handleReviewSubmit = async () => {
+    if (!isEditMode) return; // 수정 모드가 아닐 경우 조기 반환
+
+    const reviewToUpdate = {
+      id: selectedReview.id,
+      ...reviewState,
+    };
+    console.log(reviewToUpdate);
+
+    try {
+      const res = await ReviewApi.updateReview(reviewToUpdate);
+      if (res.status === 200) {
+        const updatedReviews = myReviews.map((review) =>
+          review.id === selectedReview.id
+            ? { ...review, ...reviewState } // 수정된 상태로 업데이트
+            : review
+        );
+        setMyReviews(updatedReviews); // 상태 업데이트
+        setIsModalOpen(false); // 모달 닫기
+        toast.success('리뷰가 성공적으로 업데이트되었습니다!'); // 성공 메시지
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message // 서버에서 반환된 메시지 사용
+          : '리뷰 업데이트에 실패했습니다. 다시 시도해 주세요.'; // 기본 메시지
+
+      toast.error(errorMessage); // 에러 메시지 표시
     }
   };
 
@@ -106,7 +159,7 @@ const MyReviewPage = () => {
               key={review.id}
               review={review}
               onEdit={handleEditClick}
-              onDelete={() => alert('리뷰 삭제 요청')}
+              onDelete={handleDeleteClick}
             />
           ))
         ) : !loading ? (
