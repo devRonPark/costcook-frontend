@@ -70,6 +70,7 @@ const RecentKeywords = ({
   recentKeywords,
   onRemoveKeyword,
   onRemoveAllKeywords,
+  onKeywordClick,
 }) => {
   const navigate = useNavigate();
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
@@ -95,6 +96,7 @@ const RecentKeywords = ({
       return;
     }
 
+    onKeywordClick(keyword);
     // 선택 삭제 모드가 아닌 상태
     navigate(`/search?keyword=${keyword}`);
   };

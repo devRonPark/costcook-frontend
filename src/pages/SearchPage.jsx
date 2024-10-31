@@ -99,6 +99,19 @@ const SearchPage = () => {
     clearAllSearchKeywords(); // 로컬 스토리지 초기화
   };
 
+  const handleKeywordClick = (clickedKeyword) => {
+    // 목록에서 제거
+    const updatedKeywords = recentKeywords.filter(
+      (item) => item !== clickedKeyword
+    );
+
+    // 클릭한 검색어를 가장 최근 검색어로 추가
+    const newKeywords = [clickedKeyword, ...updatedKeywords];
+
+    setRecentKeywords(newKeywords); // 상태 업데이트
+    saveSearchKeyword(clickedKeyword); // 로컬 스토리지에 저장
+  };
+
   // 스크롤시 페이지 증가
   useEffect(() => {
     // 인피니트 스크롤 로직
@@ -162,12 +175,19 @@ const SearchPage = () => {
         recentKeywords={recentKeywords}
         onRemoveKeyword={handleKeywordRemove}
         onRemoveAllKeywords={handleAllKeywordsRemove}
+        onKeywordClick={handleKeywordClick}
       />
     );
   };
 
+  const handleBackBtnClick = () => {
+    navigate('/search');
+    setSearchedRecipes(null);
+    setKeyword(''); // 검색어 리셋
+  };
+
   return (
-    <Layout isBackBtnExist>
+    <Layout isBackBtnExist onBackClick={handleBackBtnClick}>
       <SearchInputContainer>
         <SearchButtonWrap onClick={handleSearch}>
           <SearchButton
