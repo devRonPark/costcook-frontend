@@ -24,7 +24,7 @@ const AdminRecipeList = () => {
     try {
       const response = await apiClient.get('/recipes', {
         params: {
-          page: currentPage - 1, // 서버에서 페이지는 0부터 시작
+          page: currentPage, // 서버에서 페이지는 0부터 시작
           size: itemsPerPage,
           sort: 'createdAt',
           order: 'desc',
