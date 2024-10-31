@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -5,35 +6,54 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import { Star } from '@mui/icons-material';
+import { Star, StarOutline } from '@mui/icons-material';
 
-const ReviewEditModal = ({ review, isOpen, onChange, onClose, onSubmit }) => {
+const ReviewEditModal = ({
+  review,
+  isOpen,
+  onChange,
+  onClose,
+  onSubmit,
+  isEditMode,
+}) => {
+  // 평점 설정 및 초기화
+  const handleStarClick = (index) => {
+    const newScore = review.score === index + 1 ? 0 : index + 1;
+    onChange('score', newScore);
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle style={{ textAlign: 'center' }}>리뷰 작성</DialogTitle>
+      <DialogTitle style={{ textAlign: 'center' }}>
+        {isEditMode ? '리뷰 수정' : '리뷰 작성'}
+      </DialogTitle>
       <DialogContent>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'center',
             marginBottom: '10px',
             width: '300px',
           }}
         >
           {Array(5)
             .fill()
-            .map((_, index) => (
-              <Star
-                key={index}
-                onClick={() => onChange('score', index + 1)}
-                style={{
-                  cursor: 'pointer',
-                  color: index < review.score ? 'gold' : 'lightgray',
-                  fontSize: '20px',
-                  marginRight: '2px',
-                }}
-              />
-            ))}
+            .map((_, index) => {
+              const isFilled = index < review.score;
+              return (
+                <span
+                  key={index}
+                  onClick={() => handleStarClick(index)}
+                  style={{ cursor: 'pointer', marginRight: '2px' }}
+                >
+                  {isFilled ? (
+                    <Star style={{ color: 'gold', fontSize: '24px' }} />
+                  ) : (
+                    <StarOutline style={{ color: 'gold', fontSize: '24px' }} />
+                  )}
+                </span>
+              );
+            })}
         </div>
         <textarea
           type="text"
@@ -46,7 +66,7 @@ const ReviewEditModal = ({ review, isOpen, onChange, onClose, onSubmit }) => {
             border: '1px solid #ced4da',
             marginBottom: '10px',
           }}
-          placeholder={'리뷰를 작성해주세요.'}
+          placeholder="리뷰를 작성해주세요."
         />
       </DialogContent>
       <DialogActions>
@@ -54,7 +74,7 @@ const ReviewEditModal = ({ review, isOpen, onChange, onClose, onSubmit }) => {
           취소
         </Button>
         <Button onClick={onSubmit} color="primary" variant="contained">
-          {'등록'}
+          {isEditMode ? '수정' : '등록'}
         </Button>
       </DialogActions>
     </Dialog>

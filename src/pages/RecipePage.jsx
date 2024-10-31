@@ -180,7 +180,6 @@ const FilterListContainer = styled.div`
 // 레시피 목록 영역
 const ListRowContainer = styled.div`
   width: 100%;
-  /* height: 250px; */
   display: flex;
   flex-direction: row;
   align-items: center;
