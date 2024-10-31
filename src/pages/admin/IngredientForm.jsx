@@ -10,7 +10,7 @@ import ingredientsData from '../../assets/data/ingredients.json';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 
-const AdminIngredientPage = () => {
+const AdminIngredientForm = () => {
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -120,7 +120,7 @@ const AdminIngredientPage = () => {
   );
 };
 
-export default AdminIngredientPage;
+export default AdminIngredientForm;
 
 const Section = styled.div`
   margin-top: 24px; 

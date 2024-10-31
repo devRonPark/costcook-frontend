@@ -23,7 +23,7 @@ import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
-import AdminIngredientPage from './pages/admin/IngredientPage';
+import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
 import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
@@ -36,6 +36,7 @@ import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
+import AdminIngredientList from './pages/admin/IngredientList';
 
 
 function App() {
@@ -158,8 +159,12 @@ function App() {
             element={<AdminHome />} 
           />
           <Route 
-            path="/admin/ingredient" 
-            element={<AdminIngredientPage />} 
+            path="/admin/ingredient-form" 
+            element={<AdminIngredientForm />} 
+          />
+          <Route 
+            path="/admin/ingredient-list" 
+            element={<AdminIngredientList />} 
           />
           <Route 
             path="/admin/recipe-form" 
