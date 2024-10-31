@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import styled from 'styled-components';
 import { formatCreationDate, renderStars } from '../../utils/format';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import DropdownButton from '../dropdown/DropdownButton';
 import DropdownMenu from '../dropdown/DropdownMenu';
 import ConfirmationModal from '../ConfirmationModal';
 
-const ReviewCard = ({ review, onEdit, onDelete }) => {
+const ReviewCard = forwardRef(({ review, onEdit, onDelete }, ref) => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 메뉴 활성화 여부 제어
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -35,13 +35,6 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
     setDropdownOpen(false); // 드롭다운 닫기
   };
 
-  const handleDelete = () => {
-    console.log(`${review.id} 번 리뷰 삭제할 꺼야!!!`);
-    // 삭제 처리
-    // onDelete(review.id); // 삭제 핸들러
-    setDropdownOpen(false); // 드롭다운 닫기
-  };
-
   const menuItems = [
     {
       text: '수정',
@@ -54,7 +47,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
   ];
 
   return (
-    <CardContainer>
+    <CardContainer ref={ref}>
       <ThumbnailImageBox>
         <Image
           src={`${import.meta.env.VITE_BASE_SERVER_URL}${
@@ -87,7 +80,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
           <StarText>
             {renderStars(review.score)} {review.score}
           </StarText>
-          <DateText>{formatCreationDate(review.createdAt)}</DateText>
+          <DateText>{formatCreationDate(review.updatedAt)}</DateText>
         </Footer>
       </ContentContainer>
 
@@ -100,7 +93,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
       />
     </CardContainer>
   );
-};
+});
 
 export default ReviewCard;
 
