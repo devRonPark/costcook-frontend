@@ -67,13 +67,11 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, exist
   
     try {
       // 백엔드 서버에 검색어를 전송하고 결과를 받아옴
-      const response = await apiClient.get('/admin/ingredients', {
+      const response = await apiClient.get('/admin/ingredients/search', {
         params: {
           keyword: inputValue, 
         },
       });
-
-      console.log(response.data);
 
       // 서버에서 받아온 검색 결과 저장
       setFilteredData(response.data);
