@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useState } from 'react';
+=======
+import { forwardRef, useState } from 'react';
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
 import styled from 'styled-components';
 import { formatCreationDate, renderStars } from '../../utils/format';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +10,11 @@ import DropdownButton from '../dropdown/DropdownButton';
 import DropdownMenu from '../dropdown/DropdownMenu';
 import ConfirmationModal from '../ConfirmationModal';
 
+<<<<<<< HEAD
 const ReviewCard = ({ review, onEdit, onDelete }) => {
+=======
+const ReviewCard = forwardRef(({ review, onEdit, onDelete }, ref) => {
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 메뉴 활성화 여부 제어
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -16,7 +24,11 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
   };
 
   const handleConfirmDelete = () => {
+<<<<<<< HEAD
     onDelete(review.id); // 삭제 처리
+=======
+    onDelete(review); // 삭제 처리
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
     setIsDeleteModalOpen(false); // 모달 닫기
   };
 
@@ -35,6 +47,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
     setDropdownOpen(false); // 드롭다운 닫기
   };
 
+<<<<<<< HEAD
   const handleDelete = () => {
     console.log(`${review.id} 번 리뷰 삭제할 꺼야!!!`);
     // 삭제 처리
@@ -42,6 +55,8 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
     setDropdownOpen(false); // 드롭다운 닫기
   };
 
+=======
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
   const menuItems = [
     {
       text: '수정',
@@ -54,7 +69,11 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
   ];
 
   return (
+<<<<<<< HEAD
     <CardContainer>
+=======
+    <CardContainer ref={ref}>
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
       <ThumbnailImageBox>
         <Image
           src={`${import.meta.env.VITE_BASE_SERVER_URL}${
@@ -87,7 +106,11 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
           <StarText>
             {renderStars(review.score)} {review.score}
           </StarText>
+<<<<<<< HEAD
           <DateText>{formatCreationDate(review.createdAt)}</DateText>
+=======
+          <DateText>{formatCreationDate(review.updatedAt)}</DateText>
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
         </Footer>
       </ContentContainer>
 
@@ -100,7 +123,11 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
       />
     </CardContainer>
   );
+<<<<<<< HEAD
 };
+=======
+});
+>>>>>>> e363e51e26b0b3fd3e1fd27d2d0e3235751619f0
 
 export default ReviewCard;
 

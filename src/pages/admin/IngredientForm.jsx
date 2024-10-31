@@ -3,14 +3,13 @@ import styled from 'styled-components';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ButtonContainer from '../../components/admin/ButtonContainer';
-import IngredientDuplicateContainer from '../../components/admin/IngredientDuplicateContainer';
-import unitsData from '../../assets/data/units.json';
+import DuplicateContainer from '../../components/admin/DuplicateContainer';
 import categoriesData from '../../assets/data/categories.json';
-import ingredientsData from '../../assets/data/ingredients.json';
+import unitsData from '../../assets/data/units.json';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 
-const AdminIngredientPage = () => {
+const AdminIngredientForm = () => {
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -93,8 +92,9 @@ const AdminIngredientPage = () => {
       <ContentContainer>
         <Section>
           <SectionTitle>재료 이름</SectionTitle>
-          <IngredientDuplicateContainer
-            data={ingredientsData}
+          <DuplicateContainer
+            apiEndpoint="/admin/ingredients/duplicate"
+            queryParamName="ingredientName"
             placeholder="재료 이름을 입력하세요"
             onCheckDuplicate={handleCheckDuplicate}
           />
@@ -120,7 +120,7 @@ const AdminIngredientPage = () => {
   );
 };
 
-export default AdminIngredientPage;
+export default AdminIngredientForm;
 
 const Section = styled.div`
   margin-top: 24px; 

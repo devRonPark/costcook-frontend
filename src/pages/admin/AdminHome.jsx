@@ -6,11 +6,6 @@ import styled from 'styled-components';
 const AdminHome = () => {
   const navigate = useNavigate();
 
-  // 네모 박스 클릭 핸들러
-  const handleNavigateToRecipes = () => {
-    navigate('/admin/recipe-list');
-  };
-
   const handleAlert = (message) => {
     alert(message);
   };
@@ -22,8 +17,8 @@ const AdminHome = () => {
       onBack={() => navigate("/")}
     >
       <BoxContainer>
-        <Box onClick={handleNavigateToRecipes}>레시피</Box>
-        <Box onClick={() => handleAlert("2번")}>페이지 2</Box>
+        <Box onClick={() => navigate('/admin/recipe-list')}>레시피</Box>
+        <Box onClick={() => navigate('/admin/ingredient-list')}>재료</Box>
         <Box onClick={() => handleAlert("3번")}>페이지 3</Box>
         <Box onClick={() => handleAlert("4번")}>페이지 4</Box>
       </BoxContainer>
