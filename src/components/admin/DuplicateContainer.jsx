@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import apiClient from '../../services/api';
 
-const IngredientDuplicateContainer = ({ data, placeholder, onCheckDuplicate }) => {
+const DuplicateContainer = ({ apiEndpoint, placeholder, onCheckDuplicate, queryParamName }) => {
   const [inputValue, setInputValue] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 비활성화 상태
@@ -15,15 +16,19 @@ const IngredientDuplicateContainer = ({ data, placeholder, onCheckDuplicate }) =
     setInputValue(e.target.value);
   };
 
-  const handleCheckDuplicate = () => {
+  const handleCheckDuplicate = async () => {
     const trimmedValue = inputValue.trim();
-    if (trimmedValue) {
-      const duplicate = data.some((item) => item.name === trimmedValue);
-      setIsDuplicate(duplicate);
+    if (trimmedValue && apiEndpoint) {
+      try {
+        const response = await apiClient.get(apiEndpoint, { params: { [queryParamName]: trimmedValue } });
+        const duplicate = response.data.exists; // boolean
+        setIsDuplicate(duplicate);
 
-      // 부모 컴포넌트로 중복 여부와 입력값 전달
-      if (onCheckDuplicate) {
-        onCheckDuplicate(trimmedValue, duplicate);
+        if (onCheckDuplicate) {
+          onCheckDuplicate(trimmedValue, duplicate);
+        }
+      } catch (error) {
+        console.error('중복 확인 중 오류 발생:', error);
       }
     }
   };
@@ -60,7 +65,7 @@ const IngredientDuplicateContainer = ({ data, placeholder, onCheckDuplicate }) =
   );
 };
 
-export default IngredientDuplicateContainer;
+export default DuplicateContainer;
 
 const Container = styled.div`
   width: 100%;

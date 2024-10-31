@@ -54,7 +54,7 @@ const AdminIngredientList = () => {
 
   return (
     <AdminLayout
-      title="재료 목록"
+      title="재료"
       rightLabel="추가"
       isRegisterEnabled={true}
       onSubmit={() => navigate('/admin/ingredient-form')}
@@ -84,7 +84,7 @@ const AdminIngredientList = () => {
               </IngredientCard>
             ))
           ) : (
-            <p>재료가 없습니다.</p>
+            <p>재료를 찾는 중입니다.</p>
           )}
         </IngredientListWrapper>
 
