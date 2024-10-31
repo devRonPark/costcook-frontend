@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ClearIcon from '@mui/icons-material/Clear';
 import DropdownButton from './dropdown/DropdownButton';
@@ -71,7 +71,6 @@ const RecentKeywords = ({
   onRemoveKeyword,
   onRemoveAllKeywords,
 }) => {
-  console.log(recentKeywords);
   const navigate = useNavigate();
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false); // 선택 삭제 모드 상태
@@ -100,20 +99,35 @@ const RecentKeywords = ({
     navigate(`/search?keyword=${keyword}`);
   };
 
-  const menuItems = [
-    {
-      text: '선택 삭제',
-      // 선택 삭제 버튼 클릭 > 각 KeywordItem 컴포넌트의 ClearButton 이 화면에 보여진다.
-      onClick: handleSelectDelete,
-    },
-    {
-      text: '전체 삭제',
-      onClick: () => {
-        console.log('전체 삭제');
-        onRemoveAllKeywords();
+  // useMemo로 menuItems 메모이제이션
+  const menuItems = useMemo(
+    () => [
+      {
+        text: '선택 삭제',
+        onClick: handleSelectDelete,
       },
-    },
-  ];
+      {
+        text: '전체 삭제',
+        onClick: () => onRemoveAllKeywords,
+      },
+    ],
+    [handleSelectDelete, onRemoveAllKeywords]
+  );
+
+  // useMemo로 recentKeywords 메모이제이션
+  const keywordList = useMemo(
+    () =>
+      recentKeywords.map((keyword, index) => (
+        <KeywordItem
+          key={index}
+          onClick={() => handleKeywordItemClick(keyword)}
+        >
+          {keyword}
+          {isSelecting && <ClearButton className="clear-button" />}
+        </KeywordItem>
+      )),
+    [recentKeywords, isSelecting]
+  );
 
   return (
     <RecentKeywordsContainer>
@@ -139,17 +153,7 @@ const RecentKeywords = ({
       {recentKeywords.length === 0 ? (
         <NoKeywordsMessage>최근 검색어가 없어요</NoKeywordsMessage>
       ) : (
-        <KeywordList>
-          {recentKeywords.map((keyword, index) => (
-            <KeywordItem
-              key={index}
-              onClick={() => handleKeywordItemClick(keyword)}
-            >
-              {keyword}
-              {isSelecting && <ClearButton className="clear-button" />}
-            </KeywordItem>
-          ))}
-        </KeywordList>
+        <KeywordList>{keywordList}</KeywordList>
       )}
     </RecentKeywordsContainer>
   );
