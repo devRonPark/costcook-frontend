@@ -27,7 +27,6 @@ import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
 import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
-import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
@@ -36,8 +35,12 @@ import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
+<<<<<<< HEAD
 import AdminIngredientList from './pages/admin/IngredientList';
 
+=======
+import MyReviewPage from './pages/MyReviewPage';
+>>>>>>> 644d956 (Feat: 내 리뷰 목록 페이지 UI 및 기능 구현(리뷰 목록 조회 API 연동 완료, 수정, 샂게 API 연동 아직))
 
 function App() {
   const location = useLocation();
@@ -152,8 +155,10 @@ function App() {
               </PageTransition>
             }
           />
+          <Route path="/my/reviews" element={<MyReviewPage />} />
 
           {/* 관리자만 접근 가능 */}
+<<<<<<< HEAD
           <Route 
             path="/admin" 
             element={<AdminHome />} 
@@ -170,14 +175,16 @@ function App() {
             path="/admin/recipe-form" 
             element={<AdminRecipeForm />} 
           />
+=======
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/ingredient" element={<AdminIngredientPage />} />
+          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
+>>>>>>> 644d956 (Feat: 내 리뷰 목록 페이지 UI 및 기능 구현(리뷰 목록 조회 API 연동 완료, 수정, 샂게 API 연동 아직))
           <Route
             path="/admin/recipe-ingredient"
             element={<RecipeIngredientPage />}
           />
-          <Route 
-            path="/admin/recipe-list" 
-            element={<AdminRecipeList />} 
-          />
+          <Route path="/admin/recipe-list" element={<AdminRecipeList />} />
           {/* 아직 명확하지 않은 페이지 */}
           <Route
             path="/list"

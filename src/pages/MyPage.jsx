@@ -320,7 +320,7 @@ const MyPage = () => {
             </Link>
           </ButtonSplitBox>
           <ButtonSplitBox>
-            <Link to="../review">
+            <Link to="/my/reviews">
               <Button>리뷰 관리</Button>
             </Link>
           </ButtonSplitBox>
