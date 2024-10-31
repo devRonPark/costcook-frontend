@@ -1,7 +1,8 @@
 import apiClient from './api';
 
 export const reviewAPI = {
-    createReview : () => apiClient.post(`/review`),
+    createReview : (reviewData) => apiClient.post(`/reviews`, reviewData),
+    modifyReview : (reviewId, reviewData) => apiClient.patch(`/reviews/${reviewId}`, reviewData),
 }
 
 
