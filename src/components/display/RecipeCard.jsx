@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { formatNumberWithCommas, renderStars } from '../../utils/format';
 import styled from 'styled-components';
+import { forwardRef } from 'react';
 
-const RecipeCard = ({ recipe }) => {
+const RecipeCard = forwardRef(({ recipe }, ref) => {
   const navigate = useNavigate();
   return (
-    <CardContainer onClick={() => navigate(`/recipes/${recipe.id}`)}>
+    <CardContainer onClick={() => navigate(`/recipes/${recipe.id}`)} ref={ref}>
       <ThumbnailImageBox>
         <Image
           src={`${import.meta.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
@@ -22,7 +23,7 @@ const RecipeCard = ({ recipe }) => {
       </div>
     </CardContainer>
   );
-};
+});
 
 export default RecipeCard;
 

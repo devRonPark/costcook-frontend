@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
-import ClearIcon from '@mui/icons-material/Clear'; // 리셋 아이콘 추가
-import { useEffect, useState } from 'react';
+import ClearIcon from '@mui/icons-material/Clear';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   clearAllSearchKeywords,
   deleteSearchKeyword,
@@ -14,28 +14,34 @@ import { recipeAPI } from '../services/recipe.api';
 import RecipeCard from '../components/display/RecipeCard';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import RecentKeywords from '../components/RecentKeywords';
+import LoadingComponent from '../components/common/LoadingComponent';
+import { useInView } from 'react-intersection-observer'; // Intersection Observer 훅 추가
 
 const SearchPage = () => {
   const navigate = useNavigate();
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState(''); // 검색어 상태
   const [searchParams] = useSearchParams();
-  const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // 포커스 상태 관리
-  const [recentKeywords, setRecentKeywords] = useState([]);
-  const [searchedRecipes, setSearchedRecipes] = useState(null);
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // 포커스 상태
+  const [recentKeywords, setRecentKeywords] = useState([]); // 최근 검색어 상태
+  const [searchedRecipes, setSearchedRecipes] = useState(null); // 검색된 레시피 상태
+  const [page, setPage] = useState(1); // 현재 페이지 상태
+  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
+  const [loading, setLoading] = useState(false); // 로딩 상태
+  const { ref: lastRecipeElementRef, inView } = useInView(); // 마지막 레시피 카드 참조 및 뷰 상태
 
+  // 컴포넌트 마운트 시 최근 검색어 가져오기
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 로컬 스토리지에서 최근 검색어를 가져옴
     const storedRecentKeywords = getRecentKeywords();
     setRecentKeywords(storedRecentKeywords);
   }, []);
 
   useEffect(() => {
     const searchByKeyword = async () => {
-      // URL에서 keyword 파라미터 가져와 초기 검색어로 설정
+      // URL에서 검색어 파라미터 가져오기
       const urlKeyword = searchParams.get('keyword');
       if (urlKeyword) {
         setKeyword(urlKeyword);
-        await handleSearch(urlKeyword); // URL에 있는 검색어로 초기 검색 수행
+        await handleSearch(urlKeyword); // URL 검색어로 초기 검색
       }
     };
 
@@ -43,48 +49,70 @@ const SearchPage = () => {
   }, [searchParams]);
 
   const handleInputChange = (event) => {
-    setKeyword(event.target.value);
+    setKeyword(event.target.value); // 검색어 변경
   };
 
-  const handleSearch = async (keyword) => {
-    // keyword가 비어 있을 때 검색 API 호출 방지
+  const handleSearch = async (keyword, newPage = 1) => {
+    // 검색어가 비어있지 않을 경우 검색
     if (keyword) {
       navigate(`/search?keyword=${keyword}`);
-
-      // 최근 검색어 추가
-      const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 방지
+      const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 제거
       setRecentKeywords(updatedKeywords);
-      const res = await recipeAPI.searchRecipeList({ keyword, page: 1 });
+
+      setLoading(true); // 로딩 시작
+
+      const res = await recipeAPI.searchRecipeList({ keyword, page: newPage });
       if (res.status === 200) {
-        setSearchedRecipes(res.data.recipes);
-        // 검색어는 로컬 스토리지에 저장.
-        saveSearchKeyword(keyword);
+        if (newPage === 1) {
+          setSearchedRecipes(res.data.recipes); // 첫 검색 시 레시피 초기화
+        } else {
+          setSearchedRecipes((prev) => [...prev, ...res.data.recipes]); // 추가 검색 시 덧붙임
+        }
+        setTotalPages(res.data.totalPages); // 총 페이지 수 업데이트
+        saveSearchKeyword(keyword); // 검색어 로컬 스토리지에 저장
       }
+      setLoading(false); // 로딩 종료
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      handleSearch(keyword);
+      setPage(1); // 페이지 리셋
+      handleSearch(keyword); // 검색 수행
     }
   };
 
   const handleReset = () => {
     setKeyword(''); // 검색어 리셋
+    setSearchedRecipes([]); // 검색 결과 초기화
   };
 
   const handleKeywordRemove = (keyword) => {
-    console.log(`삭제 대상 검색어: ${keyword}`);
-    setRecentKeywords((prevKeywords) =>
-      prevKeywords.filter((item) => item !== keyword)
-    ); // 특정 검색어 제거
-    deleteSearchKeyword(keyword);
+    setRecentKeywords(
+      (prevKeywords) => prevKeywords.filter((item) => item !== keyword) // 특정 검색어 제거
+    );
+    deleteSearchKeyword(keyword); // 로컬 스토리지에서 제거
   };
 
   const handleAllKeywordsRemove = () => {
-    setRecentKeywords([]);
-    clearAllSearchKeywords();
+    setRecentKeywords([]); // 모든 검색어 제거
+    clearAllSearchKeywords(); // 로컬 스토리지 초기화
   };
+
+  // 스크롤시 페이지 증가
+  useEffect(() => {
+    // 인피니트 스크롤 로직
+    // 마지막 레시피 카드가 보이고, 로딩 중이 아닐 때 다음 페이지 검색
+    if (inView && !loading && page < totalPages) {
+      console.log('다음 페이지 요청');
+      setLoading(true); // 로딩 시작
+      setPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        handleSearch(keyword, nextPage); // 다음 페이지 검색
+        return nextPage; // 페이지 업데이트
+      });
+    }
+  }, [inView, loading, page, totalPages]); // inView와 loading 상태에 따라 의존성 변경
 
   const NoResultsMessage = () => (
     <div style={{ textAlign: 'center' }}>
@@ -99,13 +127,28 @@ const SearchPage = () => {
   );
 
   const searchResultRender = () => {
-    const hasResults = searchedRecipes.length > 0;
+    const hasResults = searchedRecipes.length > 0; // 검색 결과 여부
     return (
       <SearchResultContainer hasResults={hasResults}>
         {hasResults ? (
-          searchedRecipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))
+          <>
+            {searchedRecipes.map((recipe, index) => {
+              return (
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  ref={
+                    index === searchedRecipes.length - 1
+                      ? lastRecipeElementRef
+                      : null
+                  } // 마지막 카드에 ref 설정
+                />
+              );
+            })}
+            {loading && (
+              <LoadingComponent loading={loading} loadingText={'로딩 중...'} />
+            )}
+          </>
         ) : (
           <NoResultsMessage />
         )}
@@ -122,10 +165,10 @@ const SearchPage = () => {
       />
     );
   };
+
   return (
     <Layout isBackBtnExist>
       <SearchInputContainer>
-        {/* 검색 버튼 위치 잡아주는 컨테이너 역할 */}
         <SearchButtonWrap onClick={handleSearch}>
           <SearchButton
             buttonProps={{
@@ -134,17 +177,16 @@ const SearchPage = () => {
               hoverColor: 'orange',
               style: { display: keyword.length > 0 ? 'none' : 'flex' },
             }}
-          />{' '}
-          {/* 검색 버튼 클릭 시 검색 */}
+          />
         </SearchButtonWrap>
         <SearchInput
           type="text"
           placeholder="궁금한 레시피를 검색해 보세요!"
           value={keyword}
           onChange={handleInputChange}
-          onFocus={() => setIsSearchInputFocused(true)} // 인풋 포커스 시 상태 변경
-          onBlur={() => setIsSearchInputFocused(false)} // 인풋 블러 시 상태 변경
-          onKeyDown={handleKeyDown} // Enter 키 입력 처리 추가
+          onFocus={() => setIsSearchInputFocused(true)} // 입력 필드 포커스
+          onBlur={() => setIsSearchInputFocused(false)} // 입력 필드 블러
+          onKeyDown={handleKeyDown} // Enter 키 입력 처리
         />
         <ResetButton onClick={handleReset} show={keyword.length > 0}>
           <ClearIcon fontSize="small" />
@@ -234,7 +276,6 @@ const SearchResultContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
 
   // hasResults가 false일 때의 스타일
   ${(props) =>
