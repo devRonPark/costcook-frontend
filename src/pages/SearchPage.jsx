@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
@@ -60,19 +61,54 @@ const SearchPage = () => {
       setRecentKeywords(updatedKeywords);
 
       setLoading(true); // 로딩 시작
-
-      const res = await recipeAPI.searchRecipeList({ keyword, page: newPage });
-      if (res.status === 200) {
-        if (newPage === 1) {
-          setSearchedRecipes(res.data.recipes); // 첫 검색 시 레시피 초기화
+      try {
+        const res = await recipeAPI.searchRecipeList({
+          keyword,
+          page: newPage,
+        });
+        if (res.status === 200) {
+          if (newPage === 1) {
+            setSearchedRecipes(res.data.recipes); // 첫 검색 시 레시피 초기화
+          } else {
+            setSearchedRecipes((prev) => [...prev, ...res.data.recipes]); // 추가 검색 시 덧붙임
+          }
+          setTotalPages(res.data.totalPages); // 총 페이지 수 업데이트
+          saveSearchKeyword(keyword); // 검색어 로컬 스토리지에 저장
         } else {
-          setSearchedRecipes((prev) => [...prev, ...res.data.recipes]); // 추가 검색 시 덧붙임
+          showRetryToast(keyword, newPage);
         }
-        setTotalPages(res.data.totalPages); // 총 페이지 수 업데이트
-        saveSearchKeyword(keyword); // 검색어 로컬 스토리지에 저장
+      } catch (err) {
+        showRetryToast(keyword, newPage);
+      } finally {
+        setLoading(false); // 로딩 종료
       }
-      setLoading(false); // 로딩 종료
     }
+  };
+
+  // 레시피 검색 API 호출 실패 시 오류 메시지를 표시하는 사용자 정의 Toastify 알림 구현.
+  // 사용자에게 이전 검색어와 페이지 번호로 API 호출을 다시 시도할 수 있는 "재시도" 버튼 포함.
+  // 사용자 경험 향상을 위해 사용자가 알림을 닫을 때까지 toast 알림이 열려 있도록 설정.
+  const showRetryToast = (keyword, newPage) => {
+    toast.error(
+      <div>
+        <span>레시피 검색 중 문제가 발생했습니다. </span>
+        <button
+          onClick={() => handleSearch(keyword, newPage)}
+          style={{ marginLeft: '8px', cursor: 'pointer' }}
+        >
+          다시 시도
+        </button>
+      </div>,
+      {
+        position: 'top-right',
+        autoClose: false, // 사용자가 닫기 전까지 유지
+        hideProgressBar: true,
+        closeOnClick: false, // 클릭 시 자동 닫기 비활성화
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+      }
+    );
   };
 
   const handleKeyDown = (event) => {
