@@ -17,7 +17,7 @@ import { useAuth } from '../context/Auth/AuthContext';
 const RecipeDetail = () => {
   // 접속중 유저 정보
   const { state } = useAuth();
-  const userInfo = state?.user;
+  console.log('유저정보: ', state.user?.id);
   // const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
 
   const navigate = useNavigate();
