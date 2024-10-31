@@ -45,7 +45,7 @@ const AdminRecipeForm = () => {
 
 
   // [2] 상태 관리
-
+  
   const [currentState, setCurrentState] = useState(initialState);
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -129,6 +129,7 @@ const AdminRecipeForm = () => {
         changedFields[key] = currentState[key];
       }
     });
+    console.log(changedFields);
   
     return changedFields;
   };
@@ -161,11 +162,6 @@ const AdminRecipeForm = () => {
   const handleSubmit = async () => {
     // 서버에 전송할 FormData 객체를 생성함.
     const formData = createFormData();
-    
-    console.log("FormData before sending to the server:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
 
     // 모드에 따라 API URL, HTTP 메서드, 성공 메시지를 설정함.
     const [url, method] = isEditingRecipe
@@ -278,7 +274,7 @@ const AdminRecipeForm = () => {
           <SectionTitle>레시피 카테고리</SectionTitle>
           <SelectWrapper
             value={currentState.categoryId}
-            onChange={(e) => handleInputChange("selectedCategory", Number(e.target.value))}
+            onChange={(e) => handleInputChange("categoryId", Number(e.target.value))}
           >
             {menuData.map((menu) => (
               <option key={menu.id} value={menu.id}>
