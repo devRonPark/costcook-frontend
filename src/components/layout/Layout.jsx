@@ -29,6 +29,7 @@ const Layout = ({
   isBackBtnExist = false,
   isSearchBtnExist = false,
   pageName = '',
+  onBackClick = () => window.history.back(),
   onFilterClick = () => {},
   onShareClick = () => {},
   onLikeClick = () => {},
@@ -42,6 +43,7 @@ const Layout = ({
       isBackBtnExist={isBackBtnExist}
       isSearchBtnExist={isSearchBtnExist}
       pageName={pageName}
+      onBackClick={onBackClick}
       onFilterClick={onFilterClick}
       onShareClick={onShareClick}
       onLikeClick={onLikeClick}
