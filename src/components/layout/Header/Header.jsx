@@ -10,9 +10,10 @@ import LikeButton from '../../common/Button/LikeButton'; // 좋아요 버튼
 import DeleteButton from '../../common/Button/DeleteButton';
 
 const Header = ({
-  isBackBtnExist, // 뒤로가기 버튼 존재 여부
   isSearchBtnExist,
   pageName, // 현재 페이지 이름
+  isBackBtnExist, // 뒤로가기 버튼 존재 여부
+  onBackClick, // 뒤로 가기 버튼 클릭 이벤트 핸들러
   onFilterClick, // 필터 버튼 클릭 이벤트 핸들러
   onShareClick, // 공유 버튼 클릭 이벤트 핸들러
   onLikeClick, // 좋아요 버튼 클릭 이벤트 핸들러
@@ -24,7 +25,7 @@ const Header = ({
   <HeaderContainer>
     <IconWrapper>
       {isBackBtnExist ? (
-        <BackButton onClick={() => window.history.back()} /> // 이전 페이지로 이동
+        <BackButton onClick={onBackClick} /> // 이전 페이지로 이동
       ) : (
         <Link to="/">
           {' '}

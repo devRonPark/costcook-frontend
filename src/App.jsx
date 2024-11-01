@@ -27,7 +27,6 @@ import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
 import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
-import { useAuth } from './context/Auth/AuthContext';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
 import Activities from './pages/Activities';
@@ -36,8 +35,9 @@ import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
-import AdminIngredientList from './pages/admin/IngredientList';
+import AdminIngredientList from './pages/admin/AdminIngredientList';
 
+import MyReviewPage from './pages/MyReviewPage';
 
 function App() {
   const location = useLocation();
@@ -67,7 +67,7 @@ function App() {
             }
           />
           <Route
-            path="/recipeDetail"
+            path="/recipeDetail/:recipeId"
             element={
               <PageTransition>
                 <RecipeDetail />
@@ -152,32 +152,27 @@ function App() {
               </PageTransition>
             }
           />
+          <Route path="/my/reviews" element={<MyReviewPage />} />
 
           {/* 관리자만 접근 가능 */}
-          <Route 
-            path="/admin" 
-            element={<AdminHome />} 
+          <Route path="/admin" element={<AdminHome />} />
+          <Route
+            path="/admin/ingredient-form"
+            element={<AdminIngredientForm />}
           />
-          <Route 
-            path="/admin/ingredient-form" 
-            element={<AdminIngredientForm />} 
+          <Route
+            path="/admin/ingredient-list"
+            element={<AdminIngredientList />}
           />
-          <Route 
-            path="/admin/ingredient-list" 
-            element={<AdminIngredientList />} 
-          />
-          <Route 
-            path="/admin/recipe-form" 
-            element={<AdminRecipeForm />} 
-          />
+          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/ingredient" element={<AdminIngredientList />} />
+          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
           <Route
             path="/admin/recipe-ingredient"
             element={<RecipeIngredientPage />}
           />
-          <Route 
-            path="/admin/recipe-list" 
-            element={<AdminRecipeList />} 
-          />
+          <Route path="/admin/recipe-list" element={<AdminRecipeList />} />
           {/* 아직 명확하지 않은 페이지 */}
           <Route
             path="/list"

@@ -320,8 +320,8 @@ const MyPage = () => {
             </Link>
           </ButtonSplitBox>
           <ButtonSplitBox>
-            <Link to="../review">
-              <Button>리뷰 관리</Button>
+            <Link to="/my/reviews">
+              <Button>내가 쓴 리뷰</Button>
             </Link>
           </ButtonSplitBox>
         </ButtonContainer>
