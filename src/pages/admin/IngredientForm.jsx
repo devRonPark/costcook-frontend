@@ -27,13 +27,13 @@ const AdminIngredientForm = () => {
     name: editingIngredient?.name || '',
     categoryId: editingIngredient?.category?.id || '',
     unitId: editingIngredient?.unit?.id || '', 
-    price: editingIngredient?.price || 0
+    price: editingIngredient?.pricePerUnit || 0
   }
 
   // [2] 상태 관리
 
   const [currentState, setCurrentState] = useState(initialState);
-  const [isNameUnique, setIsNameUnique] = useState(false);
+  const [isNameUnique, setIsNameUnique] = useState(isEditingIngredient);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const textRef = useRef(null);
 
@@ -45,10 +45,10 @@ const AdminIngredientForm = () => {
 
   const handlePriceChange = (value) => {
     // 만개 번호는 유효성 검사를 수행함.
-    if (value === '' || (Number.isInteger(Number(value)) && Number(value) > 0)) {
+    if (value === '' || (Number.isInteger(Number(value)) && Number(value) >= 0)) {
       handleInputChange('price', String(Number(value)) || '');
     } else {
-      alert("고유번호는 자연수여야 합니다.");
+      alert("가격은 0 또는 자연수여야 합니다.");
     }
   };
 
@@ -70,8 +70,9 @@ const AdminIngredientForm = () => {
     return id !== null ? data.find((item) => item.id === id)?.name || defaultName : defaultName;
   };
 
-  // [5] 상단 
+  // [5] useEffect 
 
+  // 정보창에 글자가 너무 많아 한번에 모두 볼 수 없으면 이동 애니메이션을 부여함
   useEffect(() => {
     if (textRef.current) {
       const containerWidth = textRef.current.parentElement.offsetWidth;
@@ -80,11 +81,21 @@ const AdminIngredientForm = () => {
     }
   }, [currentState]);
 
+  // 수정 모드일 경우 다른 페이지에서 가져온 데이터를 초기 상태에 반영함
+  useEffect(() => {
+    if (isEditingIngredient) {
+      setCurrentState(initialState);
+    }
+  }, []);
+
+
+  // [6] 상단 버튼
+
   // "등록" 버튼 활성화 조건
-  const isRegisterEnabled = Boolean(isNameUnique) && Boolean(currentState.unitId) && Boolean(currentState.categoryId) && currentState.price > 0;
+  const isRegisterEnabled = Boolean(isNameUnique) && Boolean(currentState.unitId) && Boolean(currentState.categoryId) && currentState.price >= 0;
 
   // "Exit" 모달 활성화 조건
-  const isModified = Boolean(currentState.name) || Boolean(currentState.unitId) || Boolean(currentState.categoryId) || currentState.price > 0;
+  const isModified = Boolean(currentState.name) || Boolean(currentState.unitId) || Boolean(currentState.categoryId) || currentState.price >= 0;
 
   // 서버로 등록 요청
   const onSubmit = async () => {
@@ -118,7 +129,7 @@ const AdminIngredientForm = () => {
   return (
     <AdminLayout
       title="재료"
-      rightLabel="등록"
+      rightLabel={isEditingIngredient ? '수정' : '등록'}
       isRegisterEnabled={isRegisterEnabled}
       isModified={isModified} 
       onSubmit={onSubmit} 
@@ -139,6 +150,8 @@ const AdminIngredientForm = () => {
             queryParamName="ingredientName"
             placeholder="재료 이름을 입력하세요"
             onCheckDuplicate={handleCheckDuplicate}
+            isEditing={isEditingIngredient}
+            defaultValue={editingIngredient?.name || ''}
           />
         </Section>
 
@@ -146,6 +159,7 @@ const AdminIngredientForm = () => {
           <SectionTitle>재료 단위</SectionTitle>
           <ButtonContainer
             items={unitsData.map((unit) => ({ ...unit, type: 'unit' }))}
+            selectedId={currentState.unitId}
             onItemClick={(unit) => handleInputChange('unitId', unit?.id || null)} // 선택 해제 시 null 전달
           />
         </Section>
@@ -154,6 +168,7 @@ const AdminIngredientForm = () => {
           <SectionTitle>카테고리</SectionTitle>
           <ButtonContainer
             items={categoriesData.map((category) => ({ ...category, type: 'category' }))}
+            selectedId={currentState.categoryId}
             onItemClick={(category) => handleInputChange('categoryId', category?.id || null)} // 선택 해제 시 null 전달
           />
         </Section>

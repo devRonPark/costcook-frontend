@@ -41,8 +41,8 @@ const AdminIngredientList = () => {
     setCurrentPage(value);
   };
 
-  const handleEditIngredient = (ingredientId) => {
-    navigate(`/admin/ingredient-form`, { state: { ingredientId } });
+  const handleEditIngredient = (ingredient) => {
+    navigate(`/admin/ingredient-form`, { state: { ingredient } });
   };
 
   const handleDeleteIngredient = (ingredientId) => {
@@ -71,7 +71,7 @@ const AdminIngredientList = () => {
                 </IngredientInfo>
                 <ActionButtons>
                   <Tooltip title="수정">
-                    <IconButton onClick={() => handleEditIngredient(ingredient.id)}>
+                    <IconButton onClick={() => handleEditIngredient(ingredient)}>
                       <Edit style={{ fontSize: '22px', color: '#1976d2' }} />
                     </IconButton>
                   </Tooltip>
