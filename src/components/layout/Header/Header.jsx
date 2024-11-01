@@ -88,7 +88,10 @@ const SearchIconStyled = styled(SearchIcon)`
   font-size: 32px !important; // 아이콘 크기 조정
 `;
 
+// 헤더title
 const PageName = styled.h1`
+  font-family: 'STUNNING-Bd'; // 스터닝 산스
+
   flex: 1; /* 제목이 공간을 차지하게 함 */
   text-align: center; /* 가운데 정렬 */
   font-size: 1.5rem; /* 제목 크기 조정 */
