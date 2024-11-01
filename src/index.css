@@ -11,3 +11,84 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* toast(더이상 불러올 데이터가 없습니다 등) 스타일 */
+/* 예시) toast 사용할 파일 return() 에 입력 */
+/* <ToastContainer
+  toastClassName="custom-toast"
+  position="bottom-center"
+  closeOnClick // 클릭 시 닫기
+  /> */
+.custom-toast {
+  width: 300px;
+  padding: 16px;
+  font-size: 14px;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); */
+}
+
+/* 폰트 */
+/* 문경 감홍 사과 */
+@font-face {
+  font-family: 'Mungyeong-Gamhong-Apple';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410-2@1.0/Mungyeong-Gamhong-Apple.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 배민 주아체 */
+@font-face {
+  font-family: 'BMJUA';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 스터닝 산스 */
+@font-face {
+  font-family: 'STUNNING-Bd';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410-2@1.0/STUNNING-Bd.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 낭만있구미체 */
+@font-face {
+  font-family: 'GumiRomanceTTF';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410-1@1.0/GumiRomanceTTF.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 강원교육모두체 */
+@font-face {
+  font-family: 'GangwonEdu_OTFBoldA';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 강원교육튼튼체 */
+@font-face {
+  font-family: 'GangwonEduPowerExtraBoldA';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 지마켓 산스 */
+@font-face {
+  font-family: 'GmarketSansMedium';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}

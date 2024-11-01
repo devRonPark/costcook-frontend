@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import apiClient from '../../services/api';
+import { toast } from 'react-toastify';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ContentContainer from '../../components/admin/ContentContainer';
 import menuData from '../../assets/data/menus.json'; 
@@ -7,9 +10,7 @@ import IngredientTable from '../../components/admin/IngredientTable';
 import RecipeIngredientPage from './RecipeIngredientPage';
 import SelectWrapper from '../../components/admin/SelectWrapper';
 import ThumbnailUploader from '../../components/ThumbnailUploader';
-import styled from 'styled-components';
-import apiClient from '../../services/api';
-import { toast } from 'react-toastify';
+import DuplicateContainer from '../../components/admin/DuplicateContainer';
 
 const BASE_SERVER_URL = import.meta.env.VITE_BASE_SERVER_URL;
 
@@ -47,6 +48,7 @@ const AdminRecipeForm = () => {
   // [2] 상태 관리
   
   const [currentState, setCurrentState] = useState(initialState);
+  const [isTitleUnique, setIsTitleUnique] = useState(isEditingRecipe);
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -90,6 +92,17 @@ const AdminRecipeForm = () => {
     );
     // 변경된 재료 리스트를 상태에 반영
     handleInputChange('ingredients', updatedList);
+  };
+
+  const handleCheckDuplicate = (recipeTitle, isDuplicate) => {
+    if (!isDuplicate) {
+      handleInputChange('title', recipeTitle);
+      setIsTitleUnique(true);
+    } else {
+      alert('이미 존재하는 레시피입니다. 다른 이름을 입력해주세요.');
+      handleInputChange('title', '');
+      setIsTitleUnique(false);
+    }
   };
 
 
@@ -220,7 +233,7 @@ const AdminRecipeForm = () => {
 
   // [8] 조건 설정 
 
-  const isRegisterEnabled = Boolean(currentState.title) && currentState.ingredients.length > 0 && currentState.rcpSno !== '';
+  const isRegisterEnabled = Boolean(isTitleUnique) && currentState.ingredients.length > 0 && currentState.rcpSno !== '';
   const isModified = Boolean(currentState.title) || currentState.ingredients.length > 0 || Boolean(currentState.thumbnailFile) || currentState.rcpSno !== '';
 
 
@@ -238,13 +251,13 @@ const AdminRecipeForm = () => {
         {/* 레시피 이름 입력 섹션 */}
         <Section>
           <SectionTitle>레시피 이름</SectionTitle>
-          <StyledInput
-            type="text"
+          <DuplicateContainer
+            apiEndpoint="/admin/recipes/duplicate"
+            queryParamName="recipeTitle"
             placeholder="레시피 이름을 입력하세요"
-            value={currentState.title}
-            onChange={(e) => handleInputChange("title", e.target.value)}
-            disabled={isEditingRecipe}
-            style={{ backgroundColor: isEditingRecipe ? '#f0f0f0' : 'white' }} 
+            onCheckDuplicate={handleCheckDuplicate}
+            isEditing={isEditingRecipe}
+            defaultValue={editingRecipe?.title || ''}
           />
         </Section>
 

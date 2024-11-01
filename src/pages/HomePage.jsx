@@ -6,6 +6,7 @@ import Layout from '../components/layout/Layout';
 import axios from 'axios';
 import { budgetAPI } from '../services/budget.api';
 import AuthApi from '../services/auth.api';
+import { useAuth } from '../context/Auth/AuthContext';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -19,6 +20,7 @@ const getCurrentYearAndWeek = (date) => {
 };
 
 const HomePage = () => {
+  const { state } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(0); // 기본값 설정
   const [userId, setUserId] = useState(null); // 사용자 ID 상태 추가
@@ -63,6 +65,16 @@ const HomePage = () => {
     };
     fetchUserInfo();
     fetchWeeklyBudget();
+
+    // if (state.isAuthenticated) {
+    //   // 회원
+    //   fetchWeeklyBudget();
+    // } else {
+    //   // 비회원
+    //   if (sessionStorage.getItem("budget"))
+    //   setBudget(sessionStorage.getItem("budget"));
+    //   setIsDefaultBudget(true);
+    // }
   }, []);
 
   // DB에 사용자가 설정한 예산 등록
@@ -92,7 +104,7 @@ const HomePage = () => {
     if (isDefaultBudget) {
       openModal(); // 예산 설정 모달 열기
     } else {
-      navigate('/Recommend');
+      navigate('/Recommend', { state: { budget, year, week, userId } });
     }
   };
 

@@ -9,4 +9,8 @@ export const recipeAPI = {
     apiClient.get(`/recipes/${recipeId}/reviews?page=${page}`),
   searchRecipeList: ({ keyword, page }) =>
     apiClient.get(`/recipes/search?keyword=${keyword}&page=${page}`),
+  getRecipesByBudget: (minBudget, maxBudget) =>
+    apiClient.get(
+      `/recommendations/recipes?minBudget=${minBudget}&maxBudget=${maxBudget}`
+    ),
 };
