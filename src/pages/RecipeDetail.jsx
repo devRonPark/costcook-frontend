@@ -337,22 +337,3 @@ const RecipeDetail = () => {
 };
 
 export default RecipeDetail;
-
-// 만개의 레시피 조리방법 가져오기
-const ExternalContent = ({ rcpSno }) => {
-  const [content, setContent] = useState('');
-
-  const getExternalContent = async () => {
-    const res = await axios.get(
-      `${import.meta.env.VITE_REST_SERVER}/recipes/test?number=${rcpSno}`
-    );
-    // console.log("만개의레시피 크롤링 : ", res.data);
-    setContent(res.data);
-  };
-
-  useEffect(() => {
-    getExternalContent();
-  }, []);
-
-  return <HowToCooking dangerouslySetInnerHTML={{ __html: content }} />;
-};

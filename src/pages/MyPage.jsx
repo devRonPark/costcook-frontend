@@ -321,7 +321,7 @@ const MyPage = () => {
           </ButtonSplitBox>
           <ButtonSplitBox>
             <Link to="/my/reviews">
-              <Button>리뷰 관리</Button>
+              <Button>내가 쓴 리뷰</Button>
             </Link>
           </ButtonSplitBox>
         </ButtonContainer>

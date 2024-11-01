@@ -91,6 +91,7 @@ const SearchIconStyled = styled(SearchIcon)`
   font-size: 32px !important; // 아이콘 크기 조정
 `;
 
+// 헤더title
 const PageName = styled.h1`
   font-family: ${(props) =>
     props.isRecipeDetailPage ? 'Mungyeong-Gamhong-Apple' : 'STUNNING-Bd'};

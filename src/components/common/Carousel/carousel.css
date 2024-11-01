@@ -1,22 +1,21 @@
 .swiper-slide {
-  opacity: 0.5;
+  filter: blur(10px);
   z-index: 1;
 }
 .swiper-slide-prev,
 .swiper-slide-next {
-  opacity: 0.5;
+  filter: blur(3px);
   z-index: 50;
 }
 .swiper-slide-active {
-  opacity: 1;
+  filter: blur(0px);
   z-index: 100;
 }
 
 .mySwiper {
-  margin-left: -200px; /* 원하는 만큼 왼쪽으로 이동 */
-  padding-left: 100px;
+  margin-left: -150px;
 }
 
 .swiper-button-prev {
-  margin-left: 200px;
+  margin-left: 150px;
 }

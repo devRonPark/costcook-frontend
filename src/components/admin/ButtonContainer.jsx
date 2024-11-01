@@ -1,5 +1,5 @@
 // src/components/admin/ButtonContainer.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -13,6 +13,10 @@ const Container = styled.div`
 `;
 
 const Button = styled.button`
+  flex: 1 1 calc((100% - 30px) / 4);
+  max-width: calc((100% - 30px) / 4);
+
+  /* 나머지 스타일은 그대로 유지 */
   background-color: ${(props) => (props.selected ? '#ffc107' : '#007bff')};
   color: white;
   border: none;
@@ -20,8 +24,6 @@ const Button = styled.button`
   padding: 10px;
   font-size: 1rem;
   height: 60px;
-  flex: 1 1 calc(20% - 10px); /* 기본적으로 한 줄에 5개 */
-  max-width: calc(20% - 10px); /* 최대 5개 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,8 +34,8 @@ const Button = styled.button`
   text-overflow: ellipsis;
 
   @media (max-width: 768px) {
-    flex: 1 1 calc(25% - 10px); /* 화면이 줄어들면 한 줄에 4개 */
-    max-width: calc(25% - 10px); /* 최대 4개 */
+    flex: 1 1 calc((100% - 30px) / 4); 
+    max-width: calc((100% - 30px) / 4);
   }
 
   &:hover {
@@ -41,12 +43,17 @@ const Button = styled.button`
   }
 `;
 
-const ButtonContainer = ({ items, onItemClick }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
+const ButtonContainer = ({ items, selectedId, onItemClick }) => {
+  const [currentSelectedId, setCurrentSelectedId] = useState(selectedId || null);
+
+  useEffect(() => {
+    setCurrentSelectedId(selectedId);
+  }, [selectedId]);
 
   const handleItemClick = (item) => {
-    setSelectedItem(item.id === selectedItem ? null : item.id);
-    onItemClick(item);
+    const isSelected = item.id === currentSelectedId;
+    setCurrentSelectedId(isSelected ? null : item.id);
+    onItemClick(isSelected ? null : item);
   };
 
   return (
@@ -54,7 +61,7 @@ const ButtonContainer = ({ items, onItemClick }) => {
       {items.map((item) => (
         <Button
           key={item.id}
-          selected={selectedItem === item.id}
+          selected={currentSelectedId === item.id}
           onClick={() => handleItemClick(item)}
         >
           {item.name}

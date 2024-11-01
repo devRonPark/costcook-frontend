@@ -1,14 +1,15 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
 import Layout from '../components/layout/Layout';
 import { ORDER, SORT } from '../utils/sort';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import { StyledScrollbar } from '../components/display/ScrollbarStyle';
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
@@ -23,7 +24,6 @@ const RecipePage = () => {
     try {
       const res = await recipeAPI.getRecipeList(page, sort, order);
       if (res.data.recipes.length === 0) {
-        toast.info('더 이상 불러올 데이터가 없습니다.');
         setHasMore(false);
         return;
       }
@@ -130,7 +130,7 @@ const RecipePage = () => {
   };
 
   return (
-    <Layout isBackBtnExist pageName="레시피 전체 목록" isRecipeListPage>
+    <Layout isBackBtnExist pageName="레시피 전체 목록" isSearchBtnExist>
       <FilterListContainer>
         {/* 드롭다운 정렬버튼 */}
         <FilterDropdownButton handleSortChange={handleSortChange} />
@@ -140,14 +140,14 @@ const RecipePage = () => {
       <ListRowContainer>
         {recipeList.map((recipe) => (
           <List key={recipe.id}>
-            <a href={`/recipeDetail/${recipe.id}`}>
+            <Link to={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
                 <RecipeImage
                   alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                 />
               </RecipeImageBox>
-            </a>
+            </Link>
             <TitleText>{recipe.title}</TitleText>
             <PriceText>
               {formatPrice(recipe.price / recipe.servings)}원 (1인분)
@@ -157,7 +157,8 @@ const RecipePage = () => {
             </StarText>
           </List>
         ))}
-        <LoadingBox>{hasMore && <p ref={ref}>로딩 중...</p>}</LoadingBox>
+        {/* 데이터가 더 있으면 추가 로드 */}
+        {hasMore && <p ref={ref}></p>}
       </ListRowContainer>
     </Layout>
   );
@@ -172,19 +173,15 @@ const FilterListContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  border: 1px black solid;
-  /* border-radius: 10px 10px 0px 0px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); */
 `;
 
 // 레시피 목록 영역
-const ListRowContainer = styled.div`
+const ListRowContainer = styled(StyledScrollbar)`
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  border: 1px black solid;
   flex-wrap: wrap;
   max-height: 80vh;
   overflow-y: auto;
@@ -196,18 +193,16 @@ const List = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 5px;
-  /* border: 1px solid black; */
   height: 200px; // 220px에서 줄임
-  width: 120px;
+  width: 150px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 `;
 
 // 레시피 이미지 영역
 const RecipeImageBox = styled.div`
-  height: 120px;
-  width: 120px;
-  /* border-bottom: 1px black solid; */
+  height: 130px;
+  width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,7 +212,7 @@ const RecipeImageBox = styled.div`
 // 레시피 이미지
 const RecipeImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: 102%;
   object-fit: cover;
   border-radius: 10px 10px 0px 0px;
 `;
@@ -233,7 +228,11 @@ const TextBox = styled.div`
 
 // 레시피 이름
 const TitleText = styled.h3`
+  font-family: 'GumiRomanceTTF'; // 낭만있구미체
   font-size: 16px;
+  opacity: 0.8;
+  padding: 2px;
+  font-weight: 100;
   margin: 3px 0;
   text-align: center;
   white-space: nowrap; // 한줄 고정
@@ -243,20 +242,15 @@ const TitleText = styled.h3`
 `;
 
 // 가격
-const PriceText = styled.a`
+const PriceText = styled.p`
+  font-family: 'BMJUA'; // 배민 주아체
   font-size: 11px;
   margin: 3px 0;
 `;
 
 // 평점
-const StarText = styled.a`
+const StarText = styled.p`
+  font-family: 'BMJUA'; // 배민 주아체
   font-size: 12px;
   margin: 3px 0;
-`;
-
-// 데이터 추가 로드 시 하단 로딩 텍스트 영역
-const LoadingBox = styled.div`
-  width: 100%;
-  text-align: center;
-  margin: 10px;
 `;
