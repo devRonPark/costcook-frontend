@@ -31,7 +31,8 @@ const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f8f9fa;
+  background-color: #343a40;
+  color: #fff;
   height: 64px;
   position: fixed;
   top: 0;
@@ -42,9 +43,9 @@ const HeaderContainer = styled.header`
 
 const IconWrapper = styled.div`
   cursor: pointer;
-  color: #333;
+  color: #ffffff;
   &:hover {
-    color: #007bff;
+    color: #ffc107;
   }
 `;
 
@@ -56,7 +57,7 @@ const ArrowBackIconStyled = styled(ArrowBackIcon)`
 const Title = styled.h1`
   font-size: 1.25rem;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin: 0;
   text-align: center;
   flex-grow: 1;
