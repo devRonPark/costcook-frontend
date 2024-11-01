@@ -17,9 +17,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import RecentKeywords from '../components/RecentKeywords';
 import LoadingComponent from '../components/common/LoadingComponent';
 import { useInView } from 'react-intersection-observer'; // Intersection Observer 훅 추가
+import { useAuth } from '../context/Auth/AuthContext';
+import {
+  addFavoriteRecipeId,
+  getFavoriteRecipeIds,
+  removeFavoriteRecipeId,
+} from '../utils/sessionStorageUtil';
+import { favoriteAPI } from '../services/favorite.api';
 
 const SearchPage = () => {
   const navigate = useNavigate();
+  const { state } = useAuth();
   const [keyword, setKeyword] = useState(''); // 검색어 상태
   const [searchParams] = useSearchParams();
   const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // 포커스 상태
@@ -163,6 +171,39 @@ const SearchPage = () => {
     }
   }, [inView, loading, page, totalPages]); // inView와 loading 상태에 따라 의존성 변경
 
+  // @param recipe : 업데이트 대상 recipe 데이터
+  // @param favoriteToUpdate : true > 즐겨찾기 추가 요청, false > 즐겨찾기 삭제 요청
+  const handleToggleFavorite = async (recipe, favoriteToUpdate) => {
+    try {
+      if (state.isAuthenticated) {
+        if (favoriteToUpdate) {
+          // 회원 > 즐겨찾기 추가 요청
+          await favoriteAPI.addFavorite([recipe.id]);
+          addFavoriteRecipeId(recipe.id); // 세션 스토리지에 추가
+          toast.info('즐겨찾기에 성공적으로 추가되었습니다.');
+        } else {
+          // 회원 > 즐겨찾기 삭제 요청
+          await favoriteAPI.removeFavorite(recipe.id);
+          removeFavoriteRecipeId(recipe.id); // 세션 스토리지에서 제거
+          toast.info('즐겨찾기에서 성공적으로 제거되었습니다.');
+        }
+      } else {
+        if (favoriteToUpdate) {
+          addFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에 추가
+          toast.info('즐겨찾기에 추가되었습니다.');
+        } else {
+          removeFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에서 제거
+          toast.info('즐겨찾기에서 제거되었습니다.');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        '즐겨찾기 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      );
+    }
+  };
+
   const NoResultsMessage = () => (
     <div style={{ textAlign: 'center' }}>
       <img
@@ -182,15 +223,21 @@ const SearchPage = () => {
         {hasResults ? (
           <>
             {searchedRecipes.map((recipe, index) => {
+              // 비회원인 경우에만 즐겨찾기 여부 확인
+              const isFavorite =
+                !state.isAuthenticated &&
+                getFavoriteRecipeIds().includes(recipe.id);
               return (
                 <RecipeCard
                   key={recipe.id}
-                  recipe={recipe}
+                  recipe={{ favorite: isFavorite, ...recipe }} // isFavorite 여부를 recipe.favorite에 반영
                   ref={
                     index === searchedRecipes.length - 1
                       ? lastRecipeElementRef
                       : null
                   } // 마지막 카드에 ref 설정
+                  onToggleFavorite={handleToggleFavorite}
+                  showFavoriteIcon={true}
                 />
               );
             })}
