@@ -45,8 +45,9 @@ const ButtonContainer = ({ items, onItemClick }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleItemClick = (item) => {
-    setSelectedItem(item.id === selectedItem ? null : item.id);
-    onItemClick(item);
+    const isSelected = item.id === selectedItem;
+    setSelectedItem(isSelected ? null : item.id);
+    onItemClick(isSelected ? null : item);
   };
 
   return (

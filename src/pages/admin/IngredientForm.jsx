@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ButtonContainer from '../../components/admin/ButtonContainer';
 import DuplicateContainer from '../../components/admin/DuplicateContainer';
@@ -8,14 +8,69 @@ import categoriesData from '../../assets/data/categories.json';
 import unitsData from '../../assets/data/units.json';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
+import apiClient from '../../services/api';
 
 const AdminIngredientForm = () => {
-  const [selectedIngredient, setSelectedIngredient] = useState('');
-  const [selectedUnit, setSelectedUnit] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
 
+  // 다른 페이지로 이동하기 위한 함수
+  const navigate = useNavigate();
+  // 현재 위치 정보를 가져오기 위한 훅
+  const location = useLocation();
+  // 이전 페이지에서 전달된 재료 정보 (편집 모드에만 존재)
+  const editingIngredient = location.state?.ingredient;
+  // true이면 편집 모드, false이면 추가 모드
+  const isEditingIngredient = !!editingIngredient;
+
+  // [1] 초기 상태
+  
+  const initialState = {
+    name: editingIngredient?.name || '',
+    categoryId: editingIngredient?.category?.id || '',
+    unitId: editingIngredient?.unit?.id || '', 
+    price: editingIngredient?.price || 0
+  }
+
+  // [2] 상태 관리
+
+  const [currentState, setCurrentState] = useState(initialState);
+  const [isNameUnique, setIsNameUnique] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   const textRef = useRef(null);
+
+  // [3] 핸들러 함수
+
+  const handleInputChange = (key, value) => { 
+    setCurrentState((prevState) => ({ ...prevState, [key]: value }));
+  };
+
+  const handlePriceChange = (value) => {
+    // 만개 번호는 유효성 검사를 수행함.
+    if (value === '' || (Number.isInteger(Number(value)) && Number(value) > 0)) {
+      handleInputChange('price', String(Number(value)) || '');
+    } else {
+      alert("고유번호는 자연수여야 합니다.");
+    }
+  };
+
+  const handleCheckDuplicate = (ingredientName, isDuplicate) => {
+    if (!isDuplicate) {
+      handleInputChange('name', ingredientName);
+      setIsNameUnique(true);
+    } else {
+      alert('이미 존재하는 재료입니다. 다른 이름을 선택해주세요.');
+      handleInputChange('name', '');
+      setIsNameUnique(false);
+    }
+  };
+
+  // [4] 유틸리티 함수
+
+  const getNameById = (data, id) => {
+    const defaultName = '미선택';
+    return id !== null ? data.find((item) => item.id === id)?.name || defaultName : defaultName;
+  };
+
+  // [5] 상단 
 
   useEffect(() => {
     if (textRef.current) {
@@ -23,33 +78,17 @@ const AdminIngredientForm = () => {
       const textWidth = textRef.current.scrollWidth;
       setShouldAnimate(textWidth > containerWidth);
     }
-  }, [selectedIngredient, selectedUnit, selectedCategory]);
+  }, [currentState]);
 
-  const handleCheckDuplicate = (ingredientName, isDuplicate) => {
-    if (!isDuplicate) {
-      setSelectedIngredient(ingredientName);
-    } else {
-      alert('이미 존재하는 재료입니다. 다른 이름을 선택해주세요.');
-      setSelectedIngredient('');
-    }
-  };
+  // "등록" 버튼 활성화 조건
+  const isRegisterEnabled = Boolean(isNameUnique) && Boolean(currentState.unitId) && Boolean(currentState.categoryId) && currentState.price > 0;
 
-  const handleUnitSelect = (unit) => {
-    setSelectedUnit(selectedUnit === unit.id ? null : unit.id);
-  };
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(selectedCategory === category.id ? null : category.id);
-  };
-
-  // "등록" 버튼 활성화 여부 결정
-  const isRegisterEnabled = Boolean(selectedIngredient) && selectedUnit !== null && selectedCategory !== null;
-
-  // 하나 이상의 입력된 값이 있는지 여부 판단
-  const isModified = Boolean(selectedIngredient) || selectedUnit !== null || selectedCategory !== null;
+  // "Exit" 모달 활성화 조건
+  const isModified = Boolean(currentState.name) || Boolean(currentState.unitId) || Boolean(currentState.categoryId) || currentState.price > 0;
 
   // 서버로 등록 요청
   const onSubmit = async () => {
+    /*
     try {
       const requestData = {
         ingredient: selectedIngredient,
@@ -57,7 +96,7 @@ const AdminIngredientForm = () => {
         categoryId: selectedCategory,
       };
 
-      const response = await axios.post('/api/admin/ingredients', requestData);
+      const response = await apiClient.post('/api/admin/ingredients', requestData);
 
       if (response.status === 200) {
         alert('재료가 성공적으로 등록되었습니다!');
@@ -73,6 +112,7 @@ const AdminIngredientForm = () => {
         categoryId: selectedCategory,
       }, null, 2)}`);
     }
+      */
   };
 
   return (
@@ -80,17 +120,19 @@ const AdminIngredientForm = () => {
       title="재료"
       rightLabel="등록"
       isRegisterEnabled={isRegisterEnabled}
-      isModified={isModified} // 입력값 변경 여부 전달
-      onSubmit={onSubmit} // 등록 함수 전달
+      isModified={isModified} 
+      onSubmit={onSubmit} 
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
-          {[`[재료] ${selectedIngredient || '미입력'} / `,
-          `[단위] ${selectedUnit !== null ? `${unitsData.find((unit) => unit.id === selectedUnit)?.name}` : '미선택'} / `,
-          `[카테고리] ${selectedCategory !== null ? `${categoriesData.find((category) => category.id === selectedCategory)?.name}` : '미선택'}`].join('')}
+        {[`[재료] ${currentState.name || '미입력'} / `, 
+          `[단위] ${getNameById(unitsData, currentState.unitId)} / `, 
+          `[카테고리] ${getNameById(categoriesData, currentState.categoryId)}`]
+          .join('')
+        }
       </InfoContainer>
 
       <ContentContainer>
-        <Section>
+        <Section style={{marginTop: '80px'}}>
           <SectionTitle>재료 이름</SectionTitle>
           <DuplicateContainer
             apiEndpoint="/admin/ingredients/duplicate"
@@ -104,7 +146,7 @@ const AdminIngredientForm = () => {
           <SectionTitle>재료 단위</SectionTitle>
           <ButtonContainer
             items={unitsData.map((unit) => ({ ...unit, type: 'unit' }))}
-            onItemClick={handleUnitSelect}
+            onItemClick={(unit) => handleInputChange('unitId', unit?.id || null)} // 선택 해제 시 null 전달
           />
         </Section>
 
@@ -112,7 +154,17 @@ const AdminIngredientForm = () => {
           <SectionTitle>카테고리</SectionTitle>
           <ButtonContainer
             items={categoriesData.map((category) => ({ ...category, type: 'category' }))}
-            onItemClick={handleCategorySelect}
+            onItemClick={(category) => handleInputChange('categoryId', category?.id || null)} // 선택 해제 시 null 전달
+          />
+        </Section>
+
+        <Section>
+          <SectionTitle>가격</SectionTitle>
+          <StyledInput
+              type="number"
+              placeholder="가격"
+              value={currentState.price}
+              onChange={(e) => handlePriceChange(e.target.value)}
           />
         </Section>
       </ContentContainer>
@@ -128,4 +180,18 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin-bottom: 16px;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  height: 48px;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #aaa;
+  }
 `;
