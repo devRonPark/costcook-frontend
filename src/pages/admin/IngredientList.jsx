@@ -9,34 +9,46 @@ import ContentContainer from '../../components/admin/ContentContainer';
 import apiClient from '../../services/api';
 
 const AdminIngredientList = () => {
+  
   const navigate = useNavigate();
 
-  // 더미 데이터 설정
+  // [1] 상태 관리
   const [ingredientList, setIngredientList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // API 호출을 통해 재료 목록 가져오기
-
+  // [2] API 호출 함수
   const fetchIngredients = async () => {
     try {
-      const response = await apiClient.get('/admin/ingredients'); 
+      const response = await apiClient.get('/admin/ingredients');
       setIngredientList(response.data);
     } catch (error) {
       console.error('재료 목록을 불러오는 중 오류 발생:', error);
     }
   };
 
-  useEffect(() => {
-    fetchIngredients();
-  }, []);
+  const deleteIngredient = async (ingredientId) => {
+    try {
+      // 서버에 삭제 요청 보내기
+      await apiClient.delete(`/admin/ingredients/${ingredientId}`);
+      await fetchIngredients(); // 재료 목록 갱신
 
-  // 현재 페이지에 맞는 재료 목록
-  const currentIngredients = ingredientList.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+      // 현재 페이지의 재료 수 확인 후, 필요 시 페이지 이동
+      const newTotalItems = ingredientList.length - 1; // 삭제 후의 총 재료 개수
+      const newTotalPages = Math.ceil(newTotalItems / itemsPerPage);
 
+      // 현재 페이지가 새로운 총 페이지 수보다 크다면, 이전 페이지로 이동
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      } else if (newTotalPages === 0) {
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error(`재료 ID ${ingredientId} 삭제 중 오류 발생:`, error);
+    }
+  };
+
+  // [3] 이벤트 핸들러
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -48,9 +60,20 @@ const AdminIngredientList = () => {
   const handleDeleteIngredient = (ingredientId) => {
     const isConfirmed = window.confirm(`재료 ID: ${ingredientId}를 삭제하시겠습니까?`);
     if (isConfirmed) {
-      setIngredientList((prevList) => prevList.filter((ingredient) => ingredient.id !== ingredientId));
+      deleteIngredient(ingredientId);
     }
   };
+
+  // [4] useEffect로 데이터 불러오기
+  useEffect(() => {
+    fetchIngredients();
+  }, []);
+
+  // [5] 현재 페이지에 맞는 재료 목록 계산
+  const currentIngredients = ingredientList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <AdminLayout
