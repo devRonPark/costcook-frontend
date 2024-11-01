@@ -89,6 +89,7 @@ const SearchIconStyled = styled(SearchIcon)`
 `;
 
 const PageName = styled.h1`
+  font-family: '';
   flex: 1; /* 제목이 공간을 차지하게 함 */
   text-align: center; /* 가운데 정렬 */
   font-size: 1.5rem; /* 제목 크기 조정 */
