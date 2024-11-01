@@ -9,6 +9,7 @@ import unitsData from '../../assets/data/units.json';
 import InfoContainer from '../../components/admin/InfoContainer';
 import ContentContainer from '../../components/admin/ContentContainer';
 import apiClient from '../../services/api';
+import { toast } from 'react-toastify';
 
 const AdminIngredientForm = () => {
 
@@ -98,32 +99,65 @@ const AdminIngredientForm = () => {
   const isModified = Boolean(currentState.name) || Boolean(currentState.unitId) || Boolean(currentState.categoryId) || currentState.price >= 0;
 
   // 서버로 등록 요청
-  const onSubmit = async () => {
-    /*
+
+  const getChangedFields = () => {
+    // 변경된 필드들을 저장할 객체
+    const changedFields = {};
+  
+    // currentState의 필드들을 순회하여 초기 상태와 현재 상태의 값이 다른지 확인함.
+    // 둘이 다르면 changedFields 객체에 해당 필드를 추가함.
+    Object.keys(currentState).forEach((key) => {
+      if (initialState[key] !== currentState[key]) {
+        changedFields[key] = currentState[key];
+      }
+    });
+    console.log(changedFields);
+  
+    return changedFields;
+  };
+
+  const createFormData = () => {
+    const formData = new FormData();
+  
+    // 수정 모드일 때 변경된 데이터만 사용, 추가 모드에서는 전체 사용
+    const formFields = isEditingIngredient ? getChangedFields() : currentState;
+
+    // 다른 필드들도 FormData에 추가함
+    Object.entries(formFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+  
+    return formData;
+  };
+
+  const handleSubmit = async () => {
+    // 서버에 전송할 FormData 객체를 생성함.
+    const formData = createFormData();
+
+    // 모드에 따라 API URL, HTTP 메서드, 성공 메시지를 설정함.
+    const [url, method] = isEditingIngredient
+      ? [`/admin/ingredients/${editingIngredient.id}`, 'patch']
+      : ['/admin/ingredients', 'post'];
+
+    const [successMessage, errorMessage] = isEditingIngredient
+      ? ['재료가 수정되었습니다.', '재료 수정에 실패했습니다.']
+      : ['재료가 등록되었습니다.', '재료 등록에 실패했습니다.']
+  
     try {
-      const requestData = {
-        ingredient: selectedIngredient,
-        unitId: selectedUnit,
-        categoryId: selectedCategory,
-      };
-
-      const response = await apiClient.post('/api/admin/ingredients', requestData);
-
+      // 설정된 URL과 메서드로 API 요청을 전송함.
+      const response = await apiClient[method](url, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+  
+      // 요청 성공 시 레시피 목록 페이지로 이동함.
       if (response.status === 200) {
-        alert('재료가 성공적으로 등록되었습니다!');
-      } else {
-        alert('등록에 실패했습니다. 다시 시도해주세요.');
+        toast.info(successMessage);
+        navigate("/admin/ingredient-list");
       }
     } catch (error) {
       console.error('서버 통신 에러:', error);
-      // alert('서버와 통신 중 문제가 발생했습니다. 다시 시도해주세요.');
-      alert(`API: /api/admin/ingredients\n\n데이터: ${JSON.stringify({
-        ingredient: selectedIngredient,
-        unitId: selectedUnit,
-        categoryId: selectedCategory,
-      }, null, 2)}`);
+      toast.error(errorMessage);
     }
-      */
   };
 
   return (
@@ -132,7 +166,7 @@ const AdminIngredientForm = () => {
       rightLabel={isEditingIngredient ? '수정' : '등록'}
       isRegisterEnabled={isRegisterEnabled}
       isModified={isModified} 
-      onSubmit={onSubmit} 
+      onSubmit={handleSubmit}
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
         {[`[재료] ${currentState.name || '미입력'} / `, 
