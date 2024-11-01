@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import styled from 'styled-components';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Layout from '../components/layout/Layout';
@@ -10,9 +9,30 @@ import { formatPrice } from '../utils/formatData';
 import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
-import { CleaningServices } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../context/Auth/AuthContext';
+// 스타일 불러오기
+import {
+  ReceiptImage,
+  ScoreContainer,
+  ScoreSubContainer,
+  IngredientContainer,
+  IngredientDetailContainer,
+  IngredientDetailUl,
+  IngredientDetailLi,
+  IngredientDetailText,
+  IngredientDetailPrice,
+  TabListContainer,
+  TabList,
+  TabContent,
+  ReviewContainer,
+  ReviewTextContainer,
+  ReviewImage,
+  TitleText,
+  ContentText,
+  StarText,
+  HowToCooking,
+} from '../styles/RecipeDetail';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
@@ -176,77 +196,47 @@ const RecipeDetail = () => {
         </TabList>
         {activeTabs.includes('ingredients') && (
           <TabContent>
-            <div style={{ display: 'block', width: '100%' }}>
+            <IngredientContainer>
               {/* 왼쪽: 재료 */}
-              <div
-                style={{
-                  width: '50%',
-                  display: 'inline-block',
-                  textAlign: 'left',
-                  padding: '10px',
-                  verticalAlign: 'top',
-                }}
-              >
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
+              <IngredientDetailContainer>
+                <IngredientDetailUl>
                   {ingredientData
                     .filter((ingredient) => ingredient.categoryId !== 10)
                     .map((ingredient, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <span>
+                      <IngredientDetailLi key={index}>
+                        <IngredientDetailText>
                           {ingredient.name} {ingredient.quantity}
                           {ingredient.unit}
-                        </span>
+                        </IngredientDetailText>
                         {/* 가격정보 오른쪽정렬 */}
-                        <span style={{ textAlign: 'right' }}>
+                        <IngredientDetailPrice style={{ textAlign: 'right' }}>
                           {formatPrice(ingredient.price)}원
-                        </span>
-                      </li>
+                        </IngredientDetailPrice>
+                      </IngredientDetailLi>
                     ))}
-                </ul>
-              </div>
+                </IngredientDetailUl>
+              </IngredientDetailContainer>
 
               {/* 오른쪽: 양념(카테고리ID=10) */}
-              <div
-                style={{
-                  width: '50%',
-                  display: 'inline-block',
-                  textAlign: 'left',
-                  padding: '10px',
-                  verticalAlign: 'top',
-                }}
-              >
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
+              <IngredientDetailContainer>
+                <IngredientDetailUl>
                   {ingredientData
                     .filter((ingredient) => ingredient.categoryId === 10)
                     .map((ingredient, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <span>
+                      <IngredientDetailLi key={index}>
+                        <IngredientDetailText>
                           {ingredient.name} {ingredient.quantity}
                           {ingredient.unit}
-                        </span>
+                        </IngredientDetailText>
                         {/* 가격정보 오른쪽정렬 */}
-                        <span style={{ textAlign: 'right' }}>
+                        <IngredientDetailPrice style={{ textAlign: 'right' }}>
                           {formatPrice(ingredient.price)}원
-                        </span>
-                      </li>
+                        </IngredientDetailPrice>
+                      </IngredientDetailLi>
                     ))}
-                </ul>
-              </div>
-            </div>
+                </IngredientDetailUl>
+              </IngredientDetailContainer>
+            </IngredientContainer>
           </TabContent>
         )}
 
@@ -364,100 +354,5 @@ const ExternalContent = ({ rcpSno }) => {
     getExternalContent();
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: content }} />;
+  return <HowToCooking dangerouslySetInnerHTML={{ __html: content }} />;
 };
-
-const ReceiptImage = styled.div`
-  height: 300px;
-  width: 100%;
-  border-bottom: 1px black solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ScoreContainer = styled.div`
-  height: 50px;
-  width: 100%;
-  margin: 20px 0px;
-  border-bottom: 1px black solid;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const ScoreSubContainer = styled.div`
-  height: 50px;
-  width: 30%;
-  border: 1px black solid;
-  display: flex; /* Flexbox 사용 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: ${(props) =>
-    props.text || 'flex-start'}; /* 기본값은 'flex-start'로 설정 */
-`;
-
-const TabListContainer = styled.div`
-  width: 100%;
-  border: 1px black solid;
-`;
-
-const TabList = styled.div`
-  width: 100%;
-  height: 50px;
-  margin: 10px 0px;
-  border: 1px black solid;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center; /* 아이콘과 텍스트 세로 중앙 정렬 */
-  cursor: pointer; /* 클릭 가능하게 변경 */
-  padding-left: 10px;
-`;
-
-const TabContent = styled.div`
-  width: 100%;
-  // min-height: 200px;
-  min-height: 150px;
-  margin: 10px 0px;
-  border: 1px black solid;
-  display: flex;
-  align-items: center;
-  // justify-content: center;
-  flex-direction: column;
-`;
-
-const ReviewContainer = styled.div`
-  width: 90%;
-  height: 100px;
-  display: flex;
-  flex-direction: row;
-  border: 1px solid black;
-  margin-top: 10px;
-`;
-
-const ReviewTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ReviewImage = styled.div`
-  height: 100px;
-  width: 100px;
-  border-right: 1px black solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const TitleText = styled.h3`
-  margin: 3px 0 0 0;
-`;
-
-const ContentText = styled.a`
-  margin: 3px 0;
-`;
-
-const StarText = styled.a`
-  font-size: 13px;
-`;

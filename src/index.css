@@ -30,6 +30,7 @@ code {
 }
 
 /* 폰트 */
+/* 폰트별 특징 정리하기 */
 /* 문경 감홍 사과 */
 @font-face {
   font-family: 'Mungyeong-Gamhong-Apple';
@@ -89,6 +90,24 @@ code {
   font-family: 'GmarketSansMedium';
   src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff')
     format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 여기어때 잘난체 */
+@font-face {
+  font-family: 'yg-jalnan';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 수박양체 */
+@font-face {
+  font-family: 'RixXladywatermelonR';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-4@1.0/RixXladywatermelonR.woff2')
+    format('woff2');
   font-weight: normal;
   font-style: normal;
 }
