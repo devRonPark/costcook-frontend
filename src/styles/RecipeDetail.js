@@ -131,6 +131,9 @@ export const StarText = styled.p`
 export const HowToCooking = styled.div`
   list-style: none;
 
+  li {
+  }
+
   .step_list_num {
     font-weight: bold;
   }
@@ -139,18 +142,18 @@ export const HowToCooking = styled.div`
     font-size: 16px;
   }
 
-  .step_list_txt_pic li {
+  .step_list_txt_pic {
     display: flex;
     margin-bottom: 20px;
     border-radius: 8px;
     background-color: #f9f9f9;
     /* overflow: hidden; */
   }
-  img {
+  /* img {
     width: 100%;
     height: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 5px;
-  }
+  } */
 `;
