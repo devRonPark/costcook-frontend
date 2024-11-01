@@ -10,7 +10,6 @@ import { StarRating } from '../utils/StarRating';
 import { formatPrice } from '../utils/formatData';
 import { toast } from 'react-toastify';
 
-
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [page, setPage] = useState(1); // 현재 페이지
@@ -28,10 +27,10 @@ const RecipePage = () => {
         setHasMore(false);
         return;
       }
-      console.log("페이지 : ", page)
+      console.log('페이지 : ', page);
 
-      // 중복 데이터 삭제
       setRecipeList((prevRecipes) => {
+        const myFavorites = sessionStorage.getItem('');
         const newRecipes = res.data.recipes.filter(
           (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
         );
@@ -40,7 +39,6 @@ const RecipePage = () => {
       // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]);
 
       console.log(res.data.recipes);
-      
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
@@ -51,7 +49,7 @@ const RecipePage = () => {
     setPage(1);
     setHasMore(true);
   }, [sort, order]);
-  
+
   // 스크롤시 페이지 증가
   useEffect(() => {
     if (inView && hasMore) {
@@ -62,7 +60,7 @@ const RecipePage = () => {
   // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
-  }, [page]); 
+  }, [page]);
 
   // 정렬 기능 핸들러
   // 평점 높은 순
@@ -142,10 +140,8 @@ const RecipePage = () => {
       <ListRowContainer>
         {recipeList.map((recipe) => (
           <List key={recipe.id}>
-
             <a href={`/recipeDetail/${recipe.id}`}>
               <RecipeImageBox>
-
                 <RecipeImage
                   alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
@@ -153,21 +149,18 @@ const RecipePage = () => {
               </RecipeImageBox>
             </a>
             <TitleText>{recipe.title}</TitleText>
-            <PriceText>{formatPrice(recipe.price / recipe.servings)}원 (1인분기준)</PriceText>
+            <PriceText>
+              {formatPrice(recipe.price / recipe.servings)}원 (1인분기준)
+            </PriceText>
             <StarText>
               <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
             </StarText>
           </List>
         ))}
-        <LoadingBox>
-          {hasMore && (
-            <p ref={ref}>로딩 중...</p>
-          )}
-        </LoadingBox>
+        <LoadingBox>{hasMore && <p ref={ref}>로딩 중...</p>}</LoadingBox>
       </ListRowContainer>
     </Layout>
   );
-  
 };
 
 export default RecipePage;

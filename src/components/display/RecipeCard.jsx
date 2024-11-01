@@ -1,31 +1,56 @@
 import { useNavigate } from 'react-router-dom';
 import { formatNumberWithCommas, renderStars } from '../../utils/format';
 import styled from 'styled-components';
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-const RecipeCard = forwardRef(({ recipe }, ref) => {
-  const navigate = useNavigate();
-  return (
-    <CardContainer
-      onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
-      ref={ref}
-    >
-      <ThumbnailImageBox>
-        <Image
-          src={`${import.meta.env.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
-          alt={recipe.title} // alt 속성 추가
-        />
-      </ThumbnailImageBox>
-      <TextContainer>
-        <TitleText>{recipe.title}</TitleText>
-        <PriceText>{formatNumberWithCommas(recipe.price)}원 (1인분)</PriceText>
-        <StarText>
-          {renderStars(recipe.avgRatings)} {recipe.avgRatings}
-        </StarText>
-      </TextContainer>
-    </CardContainer>
-  );
-});
+const RecipeCard = forwardRef(
+  ({ recipe, onToggleFavorite, showFavoriteIcon = true }, ref) => {
+    const navigate = useNavigate();
+    const [favorite, setFavorite] = useState(recipe.favorite);
+
+    const handleFavoriteClick = (e) => {
+      e.stopPropagation(); // 카드 클릭과 즐겨찾기 클릭이 동시에 실행되지 않도록 막기
+      setFavorite(!favorite);
+      onToggleFavorite(recipe, !favorite);
+    };
+
+    return (
+      <CardContainer
+        onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
+        ref={ref}
+      >
+        {showFavoriteIcon && (
+          <FavoriteButton onClick={handleFavoriteClick}>
+            {favorite ? (
+              <FavoriteIcon style={{ color: 'red' }} />
+            ) : (
+              <FavoriteBorderIcon style={{ color: 'gray' }} />
+            )}
+          </FavoriteButton>
+        )}
+        <ThumbnailImageBox>
+          <Image
+            src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+              recipe.thumbnailUrl
+            }`}
+            alt={recipe.title} // alt 속성 추가
+          />
+        </ThumbnailImageBox>
+        <TextContainer>
+          <TitleText>{recipe.title}</TitleText>
+          <PriceText>
+            {formatNumberWithCommas(recipe.price)}원 (1인분)
+          </PriceText>
+          <StarText>
+            {renderStars(recipe.avgRatings)} {recipe.avgRatings}
+          </StarText>
+        </TextContainer>
+      </CardContainer>
+    );
+  }
+);
 
 export default RecipeCard;
 
@@ -41,10 +66,15 @@ const CardContainer = styled.div`
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // 그림자 효과 변경
   cursor: pointer;
-  transition: transform 0.2s; // 호버 시 애니메이션 효과
-  &:hover {
-    transform: scale(1.02); // 호버 시 확대 효과
-  }
+  position: relative;
+`;
+
+const FavoriteButton = styled.div`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1;
 `;
 
 // 레시피 이미지 영역
