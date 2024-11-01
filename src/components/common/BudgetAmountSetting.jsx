@@ -16,3 +16,12 @@ const StyledBudgetNumber = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+// 예시
+// id: 1,
+// useAmount: 88000,
+// budgetAmount: 100000,
+// cheapRecipe: 5000,
+// recipeAvg: 18000,
+// expensiveRecipe: 20000,
+// date: '2024-10-23',
