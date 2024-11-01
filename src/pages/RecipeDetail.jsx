@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-import RecipeEvaluation from '../components/Input/RecipeEvaluation';
+// import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
 import axios from 'axios';
@@ -140,19 +140,6 @@ const RecipeDetail = () => {
     fetchReviews();
   }, [page]);
 
-  // 조리 방법 경로 이동 (만개의 레시피)
-  // #obx_recipe_step_start : 조리방법 태그의 고유 ID
-  const handleButtonClick = () => {
-    if (typeof window !== 'undefined' && window.open) {
-      window.open(
-        `https://m.10000recipe.com/recipe/${recipe.rcpSno}#obx_recipe_step_start`,
-        '_blank'
-      );
-    } else {
-      console.error('window is not defined or window.open is not available.');
-    }
-  };
-
   return (
     <Layout isBackBtnExist pageName={recipe.title} isRecipeDetailPage>
       <ReceiptImage>
@@ -168,7 +155,7 @@ const RecipeDetail = () => {
 
       <ScoreContainer>
         <ScoreSubContainer text="center">
-          <StarRating ratings={recipe.avgRatings} />
+          <StarRating fontSize={'30px'} ratings={recipe.avgRatings} />
         </ScoreSubContainer>
         <ScoreSubContainer text="center">
           평점 {recipe.avgRatings}
@@ -250,25 +237,6 @@ const RecipeDetail = () => {
         </TabList>
         {activeTabs.includes('cookingMethod') && (
           <TabContent>
-            {/* 만개 레시피 경로이동 */}
-            <br />
-            <p>조리방법은 만개의 레시피에서 제공됩니다.</p>
-            <br />
-            <button
-              onClick={handleButtonClick}
-              style={{
-                backgroundColor: '#28a745',
-                color: 'white',
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              만개의레시피 조리 방법 보기
-            </button>
-
             {recipe?.rcpSno && ( // 없는 경우 빈 객체 반환
               <ExternalContent rcpSno={recipe.rcpSno} />
             )}
@@ -286,11 +254,11 @@ const RecipeDetail = () => {
         {activeTabs.includes('recipeEvaluation') && (
           // 레시피 평가 컴포넌트 가져오기
           <TabContent>
-            <RecipeEvaluation
+            {/* <RecipeEvaluation
               // setRecipeList={setRecipeList} // 리뷰 목록 상태 제어 함수
               recipeId={recipeId} // 레시피ID
               isLoggedIn={state.isAuthenticated}
-            />
+            /> */}
             <p>레시피를 평가해주세요.</p>
           </TabContent>
         )}
@@ -337,3 +305,22 @@ const RecipeDetail = () => {
 };
 
 export default RecipeDetail;
+
+// 만개의 레시피 조리방법 가져오기
+const ExternalContent = ({ rcpSno }) => {
+  const [content, setContent] = useState('');
+
+  const getExternalContent = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_REST_SERVER}/recipes/test?number=${rcpSno}`
+    );
+    // console.log("만개의레시피 크롤링 : ", res.data);
+    setContent(res.data);
+  };
+
+  useEffect(() => {
+    getExternalContent();
+  }, []);
+
+  return <HowToCooking dangerouslySetInnerHTML={{ __html: content }} />;
+};
