@@ -316,7 +316,7 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {userInfo != null ? (
+            {state.user?.id != null ? (
               <p>내가 작성한 리뷰 영역 </p>
             ) : (
               <p>유저 정보 없음</p>
@@ -338,7 +338,7 @@ const RecipeDetail = () => {
             ))}
             {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
             {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
-            <LoadingBox>{hasMore && <p ref={ref}>로딩 중...</p>}</LoadingBox>
+            {hasMore && <p ref={ref}>.</p>}
           </TabContent>
         )}
       </TabListContainer>
@@ -460,11 +460,4 @@ const ContentText = styled.a`
 
 const StarText = styled.a`
   font-size: 13px;
-`;
-
-// 데이터 추가 로드 시 하단 로딩 텍스트 영역
-const LoadingBox = styled.div`
-  width: 100%;
-  text-align: center;
-  margin: 10px;
 `;
