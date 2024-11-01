@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home'; // 홈 아이콘
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CalculateIcon from '@mui/icons-material/Calculate'; // 계산기 아이콘
-import StarIcon from '@mui/icons-material/Star'; // 별 아이콘
 import PersonIcon from '@mui/icons-material/Person'; // 사람 아이콘
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import LoginModal from '../common/LoginModal';
@@ -67,8 +67,8 @@ const Footer = () => {
           isActive={location.pathname === '/favorite'}
           onClick={() => handleNavigate('/favorite')}
         >
-          <StarIconStyled />
-          <Text>북마크</Text>
+          <FavoriteIconStyled />
+          <Text>즐겨찾기</Text>
         </IconWrapper>
         <IconWrapper
           isActive={location.pathname === '/my'}
@@ -129,7 +129,7 @@ const CalculateIconStyled = styled(CalculateIcon)`
   font-size: 32px !important; /* 아이콘 크기 조정 */
 `;
 
-const StarIconStyled = styled(StarIcon)`
+const FavoriteIconStyled = styled(FavoriteIcon)`
   /* 민혁: 아이콘 크기 수정 시, 기본 크기 덮어써야함 (width, height 동작 안함) */
   font-size: 32px !important; /* 아이콘 크기 조정 */
 `;

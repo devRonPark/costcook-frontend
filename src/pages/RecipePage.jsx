@@ -29,8 +29,8 @@ const RecipePage = () => {
       }
       console.log('페이지 : ', page);
 
-      // 중복 데이터 삭제
       setRecipeList((prevRecipes) => {
+        const myFavorites = sessionStorage.getItem('');
         const newRecipes = res.data.recipes.filter(
           (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
         );
