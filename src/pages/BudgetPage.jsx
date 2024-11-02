@@ -117,7 +117,7 @@ const BudgetPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout pageName="예산관리">
       <DateContainer>
         <SplitData>
           <ArrowButton onClick={handleDecreaseWeek}>

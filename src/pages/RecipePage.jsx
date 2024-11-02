@@ -7,8 +7,7 @@ import { FilterDropdownButton } from '../components/common/Button/FilterDropdown
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-import { toast, ToastContainer } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { StyledScrollbar } from '../components/display/ScrollbarStyle';
 
 const RecipePage = () => {
@@ -16,8 +15,9 @@ const RecipePage = () => {
   const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
-  const [sort, setSort] = useState(SORT.CREATED_AT); // 디폴트 sort : 생성일
-  const [order, setOrder] = useState(ORDER.DESC); // 디폴트 order : 내림차순
+  const location = useLocation(); // 현재 url 정보
+  const [sort, setSort] = useState(SORT.CREATED_AT); // 정렬 기준 (기본: 생성일)
+  const [order, setOrder] = useState(ORDER.DESC); // 정렬 순서 (기본: 내림차순)
 
   // 데이터 가져오는 메소드
   const fetchData = async () => {
@@ -44,6 +44,17 @@ const RecipePage = () => {
     }
   };
 
+  // 홈페이지 '더보기'버튼
+  useEffect(() => {
+    // '/recipe' 경로이면서, 쿼리 파라미터에 fromMore가 포함된 경우
+    if (
+      location.pathname === '/recipe' &&
+      location.search.includes('fromMore')
+    ) {
+      handleViewCountSortDesc(); // 조회수 높은순 정렬
+    }
+  }, [location]);
+
   // 정렬 시 데이터 초기화
   useEffect(() => {
     setPage(1);
@@ -60,7 +71,7 @@ const RecipePage = () => {
   // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, sort, order]);
 
   // 정렬 기능 핸들러
   // 평점 높은 순
@@ -144,7 +155,9 @@ const RecipePage = () => {
               <RecipeImageBox>
                 <RecipeImage
                   alt={recipe.title}
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+                  src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                    recipe.thumbnailUrl
+                  }`}
                 />
               </RecipeImageBox>
             </Link>

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Modal, Slider } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import axios from 'axios';
 import { budgetAPI } from '../services/budget.api';
 import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
@@ -24,6 +23,7 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(0); // 기본값 설정
   const [userId, setUserId] = useState(null); // 사용자 ID 상태 추가
+  const navigete = useNavigate(); // 더보기 -> 정렬 정보를 담아 레시피 목록 페이지 이동
 
   const navigate = useNavigate();
   const openModal = () => setIsModalOpen(true);
@@ -59,6 +59,7 @@ const HomePage = () => {
       try {
         const response = await AuthApi.getMyInfo();
         setUserId(response.data.id); // 사용자 ID 설정
+        console.log(response.data.id);
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
       }
@@ -108,8 +109,13 @@ const HomePage = () => {
     }
   };
 
+  // 더보기 -> 레시피 목록 이동, 쿼리에 fromMore=true 추가
+  const handleMoreClick = () => {
+    navigate('/recipe?fromMore=true');
+  };
+
   return (
-    <Layout isSearchBtnExist>
+    <Layout isSearchBtnExist pageName="Cost Cook">
       <SettingContainer>
         <h3>추천 설정</h3>
         <MoneyContainerWrapper>
@@ -158,7 +164,7 @@ const HomePage = () => {
       <UpcommingReceiptContainer>
         <UpcommingReceiptHeader>
           <h3>인기레시피</h3>
-          <RightText href="#">더보기</RightText>
+          <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
           <List>
@@ -296,7 +302,7 @@ const List = styled.div`
   width: 120px;
 `;
 
-const RightText = styled.a`
+const RightText = styled(Button)`
   margin-right: 8px;
   font-size: 12px;
   text-align: right;
