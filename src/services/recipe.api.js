@@ -13,4 +13,7 @@ export const recipeAPI = {
     apiClient.get(
       `/recommendations/recipes?minBudget=${minBudget}&maxBudget=${maxBudget}`
     ),
+  // HomePage [더보기] -> RecipeList
+  getMoreRecipeList: () =>
+    apiClient.get(`/recipes?page=1&size=9&sort=viewCount&order=desc`),
 };

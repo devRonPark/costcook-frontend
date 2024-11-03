@@ -15,9 +15,9 @@ const RecipePage = () => {
   const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
-  const location = useLocation(); // 현재 url 정보
   const [sort, setSort] = useState(SORT.CREATED_AT); // 정렬 기준 (기본: 생성일)
   const [order, setOrder] = useState(ORDER.DESC); // 정렬 순서 (기본: 내림차순)
+  const location = useLocation(); // 현재 url 정보
 
   // 데이터 가져오는 메소드
   const fetchData = async () => {
@@ -46,12 +46,13 @@ const RecipePage = () => {
 
   // 홈페이지 '더보기'버튼
   useEffect(() => {
-    // '/recipe' 경로이면서, 쿼리 파라미터에 fromMore가 포함된 경우
-    if (
-      location.pathname === '/recipe' &&
-      location.search.includes('fromMore')
-    ) {
-      handleViewCountSortDesc(); // 조회수 높은순 정렬
+    // 홈페이지에서 넘어온 데이터가 있다면 그 데이터로 초기화
+    if (location.state?.fromMore && location.state?.recipeData) {
+      setRecipeList(location.state.recipeData);
+      console.log('더보기 정렬 기준 : ', location.state.recipeData);
+    } else {
+      // 그렇지 않다면 기존 데이터를 불러옴
+      fetchData();
     }
   }, [location]);
 

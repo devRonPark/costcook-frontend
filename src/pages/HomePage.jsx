@@ -6,6 +6,7 @@ import Layout from '../components/layout/Layout';
 import { budgetAPI } from '../services/budget.api';
 import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
+import { recipeAPI } from '../services/recipe.api';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -109,9 +110,16 @@ const HomePage = () => {
     }
   };
 
-  // 더보기 -> 레시피 목록 이동, 쿼리에 fromMore=true 추가
-  const handleMoreClick = () => {
-    navigate('/recipe?fromMore=true');
+  // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
+  const handleMoreClick = async () => {
+    try {
+      const res = await recipeAPI.getMoreRecipeList();
+      navigate('/recipe', {
+        state: { recipeData: res.data.recipes, fromMore: true },
+      });
+    } catch (error) {
+      console.error('더보기 API 호출 중 오류 발생:', error);
+    }
   };
 
   return (
