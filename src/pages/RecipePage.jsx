@@ -7,17 +7,26 @@ import { FilterDropdownButton } from '../components/common/Button/FilterDropdown
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-import { toast, ToastContainer } from 'react-toastify';
-import { Link } from 'react-router-dom';
-import { StyledScrollbar } from '../components/display/ScrollbarStyle';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  FilterListContainer,
+  ListRowContainer,
+  List,
+  RecipeImageBox,
+  RecipeImage,
+  TitleText,
+  PriceText,
+  StarText,
+} from '../components/display/RecipeListStyle';
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
-  const [sort, setSort] = useState(SORT.CREATED_AT); // 디폴트 sort : 생성일
-  const [order, setOrder] = useState(ORDER.DESC); // 디폴트 order : 내림차순
+  const [sort, setSort] = useState(SORT.CREATED_AT); // 정렬 기준 (기본: 생성일)
+  const [order, setOrder] = useState(ORDER.DESC); // 정렬 순서 (기본: 내림차순)
+  const location = useLocation(); // 현재 url 정보
 
   // 데이터 가져오는 메소드
   const fetchData = async () => {
@@ -44,6 +53,17 @@ const RecipePage = () => {
     }
   };
 
+  // 홈페이지에서 넘어온 데이터가 있다면 그 데이터로 초기화
+  useEffect(() => {
+    if (location.state?.fromMore && location.state?.recipeData) {
+      setRecipeList(location.state.recipeData);
+      console.log('더보기 정렬 기준 : ', location.state.recipeData);
+    } else {
+      // 그렇지 않다면 기존 데이터를 불러옴
+      fetchData();
+    }
+  }, [location]);
+
   // 정렬 시 데이터 초기화
   useEffect(() => {
     setPage(1);
@@ -60,7 +80,7 @@ const RecipePage = () => {
   // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, sort, order]);
 
   // 정렬 기능 핸들러
   // 평점 높은 순
@@ -144,7 +164,9 @@ const RecipePage = () => {
               <RecipeImageBox>
                 <RecipeImage
                   alt={recipe.title}
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+                  src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                    recipe.thumbnailUrl
+                  }`}
                 />
               </RecipeImageBox>
             </Link>
@@ -165,92 +187,3 @@ const RecipePage = () => {
 };
 
 export default RecipePage;
-
-// 정렬 버튼 영역
-const FilterListContainer = styled.div`
-  width: 100%;
-  height: 40px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-`;
-
-// 레시피 목록 영역
-const ListRowContainer = styled(StyledScrollbar)`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  max-height: 80vh;
-  overflow-y: auto;
-`;
-
-// 레시피 하나 영역
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 5px;
-  height: 200px; // 220px에서 줄임
-  width: 150px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-`;
-
-// 레시피 이미지 영역
-const RecipeImageBox = styled.div`
-  height: 130px;
-  width: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-`;
-
-// 레시피 이미지
-const RecipeImage = styled.img`
-  width: 100%;
-  height: 102%;
-  object-fit: cover;
-  border-radius: 10px 10px 0px 0px;
-`;
-
-const TextBox = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 3px 5px;
-  text-align: left;
-`;
-
-// 레시피 이름
-const TitleText = styled.h3`
-  font-family: 'GumiRomanceTTF'; // 낭만있구미체
-  font-size: 16px;
-  opacity: 0.8;
-  padding: 2px;
-  font-weight: 100;
-  margin: 3px 0;
-  text-align: center;
-  white-space: nowrap; // 한줄 고정
-  overflow: hidden; // 넘치면 숨김
-  text-overflow: ellipsis; // 넘친 부분 ... 표시
-  width: 100%;
-`;
-
-// 가격
-const PriceText = styled.p`
-  font-family: 'BMJUA'; // 배민 주아체
-  font-size: 11px;
-  margin: 3px 0;
-`;
-
-// 평점
-const StarText = styled.p`
-  font-family: 'BMJUA'; // 배민 주아체
-  font-size: 12px;
-  margin: 3px 0;
-`;

@@ -16,9 +16,9 @@ import { useAuth } from '../context/Auth/AuthContext';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
-  // const { state } = useAuth();
-  // console.log('유저정보: ', state.user?.id);
-  // const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
+  const { state } = useAuth();
+  console.log('유저정보: ', state.user?.id);
+  const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
 
   const navigate = useNavigate();
   // 레시피 & 재료
@@ -316,7 +316,7 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {userInfo != null ? (
+            {state.user?.id != null ? (
               <p>내가 작성한 리뷰 영역 </p>
             ) : (
               <p>유저 정보 없음</p>
