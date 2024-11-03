@@ -2,7 +2,7 @@
 //  ★☆☆☆☆
 import React from 'react';
 
-export const StarRating = ({ ratings }) => {
+export const StarRating = ({ ratings, fontSize = '16px' }) => {
   let stars = [];
   // 4.5 이상이면 별 5개
   if (ratings >= 4.5) {
@@ -15,5 +15,16 @@ export const StarRating = ({ ratings }) => {
       ...Array.from({ length: 5 - intStars }, () => '☆'), // 빈 별
     ];
   }
-  return <span>{stars.join('')}</span>; // 배열을 문자열로 결합
+  return (
+    <span style={{ fontSize }}>
+      {stars.map((star, index) => (
+        <span
+          key={index}
+          style={{ color: star === '★' ? 'gold' : 'inherit' }} // 채워진 별에만 gold 색상 적용
+        >
+          {star}
+        </span>
+      ))}
+    </span>
+  );
 };

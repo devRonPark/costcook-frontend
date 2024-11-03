@@ -1,8 +1,7 @@
 // 숫자 쉼표 표기 (1000 -> 1,000)
 export const formatPrice = (number) => {
-  return Math.round(number)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const price = Math.round(number);
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 // 1천(k), 1백만(M) 표기

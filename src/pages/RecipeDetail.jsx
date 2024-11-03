@@ -1,18 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import styled from 'styled-components';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Layout from '../components/layout/Layout';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-import RecipeEvaluation from '../components/Input/RecipeEvaluation';
+// import RecipeEvaluation from '../components/Input/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
-import { CleaningServices } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../context/Auth/AuthContext';
+// 스타일 불러오기
+import {
+  ReceiptImage,
+  ScoreContainer,
+  ScoreSubContainer,
+  IngredientContainer,
+  IngredientDetailContainer,
+  IngredientDetailUl,
+  IngredientDetailLi,
+  IngredientDetailText,
+  IngredientDetailPrice,
+  TabListContainer,
+  TabList,
+  TabContent,
+  ReviewContainer,
+  ReviewTextContainer,
+  ReviewImage,
+  TitleText,
+  ContentText,
+  StarText,
+  HowToCooking,
+} from '../styles/RecipeDetail';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
@@ -120,19 +140,6 @@ const RecipeDetail = () => {
     fetchReviews();
   }, [page]);
 
-  // 조리 방법 경로 이동 (만개의 레시피)
-  // #obx_recipe_step_start : 조리방법 태그의 고유 ID
-  const handleButtonClick = () => {
-    if (typeof window !== 'undefined' && window.open) {
-      window.open(
-        `https://m.10000recipe.com/recipe/${recipe.rcpSno}#obx_recipe_step_start`,
-        '_blank'
-      );
-    } else {
-      console.error('window is not defined or window.open is not available.');
-    }
-  };
-
   return (
     <Layout isBackBtnExist pageName={recipe.title} isRecipeDetailPage>
       <ReceiptImage>
@@ -148,7 +155,7 @@ const RecipeDetail = () => {
 
       <ScoreContainer>
         <ScoreSubContainer text="center">
-          <StarRating ratings={recipe.avgRatings} />
+          <StarRating fontSize={'30px'} ratings={recipe.avgRatings} />
         </ScoreSubContainer>
         <ScoreSubContainer text="center">
           평점 {recipe.avgRatings}
@@ -176,77 +183,47 @@ const RecipeDetail = () => {
         </TabList>
         {activeTabs.includes('ingredients') && (
           <TabContent>
-            <div style={{ display: 'block', width: '100%' }}>
+            <IngredientContainer>
               {/* 왼쪽: 재료 */}
-              <div
-                style={{
-                  width: '50%',
-                  display: 'inline-block',
-                  textAlign: 'left',
-                  padding: '10px',
-                  verticalAlign: 'top',
-                }}
-              >
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
+              <IngredientDetailContainer>
+                <IngredientDetailUl>
                   {ingredientData
                     .filter((ingredient) => ingredient.categoryId !== 10)
                     .map((ingredient, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <span>
+                      <IngredientDetailLi key={index}>
+                        <IngredientDetailText>
                           {ingredient.name} {ingredient.quantity}
                           {ingredient.unit}
-                        </span>
+                        </IngredientDetailText>
                         {/* 가격정보 오른쪽정렬 */}
-                        <span style={{ textAlign: 'right' }}>
+                        <IngredientDetailPrice style={{ textAlign: 'right' }}>
                           {formatPrice(ingredient.price)}원
-                        </span>
-                      </li>
+                        </IngredientDetailPrice>
+                      </IngredientDetailLi>
                     ))}
-                </ul>
-              </div>
+                </IngredientDetailUl>
+              </IngredientDetailContainer>
 
               {/* 오른쪽: 양념(카테고리ID=10) */}
-              <div
-                style={{
-                  width: '50%',
-                  display: 'inline-block',
-                  textAlign: 'left',
-                  padding: '10px',
-                  verticalAlign: 'top',
-                }}
-              >
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
+              <IngredientDetailContainer>
+                <IngredientDetailUl>
                   {ingredientData
                     .filter((ingredient) => ingredient.categoryId === 10)
                     .map((ingredient, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <span>
+                      <IngredientDetailLi key={index}>
+                        <IngredientDetailText>
                           {ingredient.name} {ingredient.quantity}
                           {ingredient.unit}
-                        </span>
+                        </IngredientDetailText>
                         {/* 가격정보 오른쪽정렬 */}
-                        <span style={{ textAlign: 'right' }}>
+                        <IngredientDetailPrice style={{ textAlign: 'right' }}>
                           {formatPrice(ingredient.price)}원
-                        </span>
-                      </li>
+                        </IngredientDetailPrice>
+                      </IngredientDetailLi>
                     ))}
-                </ul>
-              </div>
-            </div>
+                </IngredientDetailUl>
+              </IngredientDetailContainer>
+            </IngredientContainer>
           </TabContent>
         )}
 
@@ -260,25 +237,6 @@ const RecipeDetail = () => {
         </TabList>
         {activeTabs.includes('cookingMethod') && (
           <TabContent>
-            {/* 만개 레시피 경로이동 */}
-            <br />
-            <p>조리방법은 만개의 레시피에서 제공됩니다.</p>
-            <br />
-            <button
-              onClick={handleButtonClick}
-              style={{
-                backgroundColor: '#28a745',
-                color: 'white',
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              만개의레시피 조리 방법 보기
-            </button>
-
             {recipe?.rcpSno && ( // 없는 경우 빈 객체 반환
               <ExternalContent rcpSno={recipe.rcpSno} />
             )}
@@ -296,11 +254,11 @@ const RecipeDetail = () => {
         {activeTabs.includes('recipeEvaluation') && (
           // 레시피 평가 컴포넌트 가져오기
           <TabContent>
-            <RecipeEvaluation
+            {/* <RecipeEvaluation
               // setRecipeList={setRecipeList} // 리뷰 목록 상태 제어 함수
               recipeId={recipeId} // 레시피ID
               isLoggedIn={state.isAuthenticated}
-            />
+            /> */}
             <p>레시피를 평가해주세요.</p>
           </TabContent>
         )}
@@ -338,7 +296,7 @@ const RecipeDetail = () => {
             ))}
             {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
             {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
-            <LoadingBox>{hasMore && <p ref={ref}>로딩 중...</p>}</LoadingBox>
+            {hasMore && <p ref={ref}>.</p>}
           </TabContent>
         )}
       </TabListContainer>
@@ -364,107 +322,5 @@ const ExternalContent = ({ rcpSno }) => {
     getExternalContent();
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: content }} />;
+  return <HowToCooking dangerouslySetInnerHTML={{ __html: content }} />;
 };
-
-const ReceiptImage = styled.div`
-  height: 300px;
-  width: 100%;
-  border-bottom: 1px black solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ScoreContainer = styled.div`
-  height: 50px;
-  width: 100%;
-  margin: 20px 0px;
-  border-bottom: 1px black solid;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const ScoreSubContainer = styled.div`
-  height: 50px;
-  width: 30%;
-  border: 1px black solid;
-  display: flex; /* Flexbox 사용 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: ${(props) =>
-    props.text || 'flex-start'}; /* 기본값은 'flex-start'로 설정 */
-`;
-
-const TabListContainer = styled.div`
-  width: 100%;
-  border: 1px black solid;
-`;
-
-const TabList = styled.div`
-  width: 100%;
-  height: 50px;
-  margin: 10px 0px;
-  border: 1px black solid;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center; /* 아이콘과 텍스트 세로 중앙 정렬 */
-  cursor: pointer; /* 클릭 가능하게 변경 */
-  padding-left: 10px;
-`;
-
-const TabContent = styled.div`
-  width: 100%;
-  // min-height: 200px;
-  min-height: 150px;
-  margin: 10px 0px;
-  border: 1px black solid;
-  display: flex;
-  align-items: center;
-  // justify-content: center;
-  flex-direction: column;
-`;
-
-const ReviewContainer = styled.div`
-  width: 90%;
-  height: 100px;
-  display: flex;
-  flex-direction: row;
-  border: 1px solid black;
-  margin-top: 10px;
-`;
-
-const ReviewTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ReviewImage = styled.div`
-  height: 100px;
-  width: 100px;
-  border-right: 1px black solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const TitleText = styled.h3`
-  margin: 3px 0 0 0;
-`;
-
-const ContentText = styled.a`
-  margin: 3px 0;
-`;
-
-const StarText = styled.a`
-  font-size: 13px;
-`;
-
-// 데이터 추가 로드 시 하단 로딩 텍스트 영역
-const LoadingBox = styled.div`
-  width: 100%;
-  text-align: center;
-  margin: 10px;
-`;
