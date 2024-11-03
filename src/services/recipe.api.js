@@ -13,7 +13,7 @@ export const recipeAPI = {
     apiClient.get(
       `/recommendations/recipes?minBudget=${minBudget}&maxBudget=${maxBudget}`
     ),
-  // HomePage [더보기] -> RecipeList
-  getMoreRecipeList: () =>
-    apiClient.get(`/recipes?page=1&size=9&sort=viewCount&order=desc`),
+  // HomePage 조회수 높은 순 레시피 가져오기 (인기레시피, 더보기 -> RecipeList)
+  getMoreRecipeList: (size) =>
+    apiClient.get(`/recipes?page=1&size=${size}&sort=viewCount&order=desc`),
 };
