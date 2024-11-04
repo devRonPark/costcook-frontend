@@ -1,23 +1,22 @@
-import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Layout from '../components/layout/Layout';
-import { ORDER, SORT } from '../utils/sort';
+import { useInView } from 'react-intersection-observer';
+import { Link } from 'react-router-dom';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
-import { recipeAPI } from '../services/recipe.api';
-import { StarRating } from '../components/StarRating';
-import { formatPrice } from '../utils/formatData';
-import { Link, useLocation } from 'react-router-dom';
 import {
   FilterListContainer,
-  ListRowContainer,
   List,
-  RecipeImageBox,
-  RecipeImage,
-  TitleText,
+  ListRowContainer,
   PriceText,
+  RecipeImage,
+  RecipeImageBox,
   StarText,
+  TitleText,
 } from '../components/display/RecipeListStyle';
+import Layout from '../components/layout/Layout';
+import { StarRating } from '../components/StarRating';
+import { recipeAPI } from '../services/recipe.api';
+import { formatPrice } from '../utils/formatData';
+import { ORDER, SORT } from '../utils/sort';
 
 const RecipePage = () => {
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
@@ -26,7 +25,6 @@ const RecipePage = () => {
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
   const [sort, setSort] = useState(SORT.CREATED_AT); // 정렬 기준 (기본: 생성일)
   const [order, setOrder] = useState(ORDER.DESC); // 정렬 순서 (기본: 내림차순)
-  const location = useLocation(); // 현재 url 정보
 
   // 데이터 가져오는 메소드
   const fetchData = async () => {
@@ -37,7 +35,9 @@ const RecipePage = () => {
         return;
       }
       console.log('페이지 : ', page);
-
+      if (page === 1) {
+        setRecipeList(res.data.recipes);
+      }
       setRecipeList((prevRecipes) => {
         const myFavorites = sessionStorage.getItem('');
         const newRecipes = res.data.recipes.filter(
@@ -46,30 +46,10 @@ const RecipePage = () => {
         return [...prevRecipes, ...newRecipes];
       });
       // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]);
-
-      console.log(res.data.recipes);
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
   };
-
-  // 홈페이지에서 넘어온 데이터가 있다면 그 데이터로 초기화
-  useEffect(() => {
-    if (location.state?.fromMore && location.state?.recipeData) {
-      setRecipeList(location.state.recipeData);
-      console.log('더보기 정렬 기준 : ', location.state.recipeData);
-    } else {
-      // 그렇지 않다면 기존 데이터를 불러옴
-      fetchData();
-    }
-  }, [location]);
-
-  // 정렬 시 데이터 초기화
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-  }, [sort, order]);
-
   // 스크롤시 페이지 증가
   useEffect(() => {
     if (inView && hasMore) {
@@ -84,65 +64,31 @@ const RecipePage = () => {
 
   // 정렬 기능 핸들러
   // 평점 높은 순
-  const handleAvgRatingsDesc = () => {
-    setSort(SORT.AVG_RATINGS);
-    setOrder(ORDER.DESC);
+  const handleSort = (sort, order) => {
+    setSort(sort);
+    setOrder(order);
     setPage(1);
     setRecipeList([]);
   };
-  // 평점 낮은 순
-  const handleAvgRatingsAsc = () => {
-    setSort(SORT.AVG_RATINGS);
-    setOrder(ORDER.ASC);
-    setPage(1);
-    setRecipeList([]);
-  };
-  // 조회수 높은 순
-  const handleViewCountSortDesc = () => {
-    setSort(SORT.VIEW_COUNT);
-    setOrder(ORDER.DESC);
-    setPage(1);
-    setRecipeList([]);
-  };
-  // 조회수 낮은 순
-  const handleViewCountSortAsc = () => {
-    setSort(SORT.VIEW_COUNT);
-    setOrder(ORDER.ASC);
-    setPage(1);
-    setRecipeList([]);
-  };
-  // 초기화 (생성일, 내림차순)
-  const handleResetSort = () => {
-    setSort(SORT.CREATED_AT);
-    setOrder(ORDER.DESC);
-    setPage(1);
-    setRecipeList([]);
-    console.log('정렬 초기화');
-  };
-  // 정렬 콘솔 로그 출력
-  useEffect(() => {
-    console.log('정렬 기준 : ', sort, order);
-  }, [sort, order]);
 
   // 정렬 드롭다운 버튼 핸들러
   const handleSortChange = (e) => {
     const selectedValue = e.target.value;
-
     switch (selectedValue) {
       case 'createdAt':
-        handleResetSort();
+        handleSort(SORT.CREATED_AT, ORDER.DESC);
         break;
       case 'avgRatingsDesc':
-        handleAvgRatingsDesc();
+        handleSort(SORT.AVG_RATINGS, ORDER.DESC);
         break;
       case 'avgRatingsAsc':
-        handleAvgRatingsAsc();
+        handleSort(SORT.AVG_RATINGS, ORDER.ASC);
         break;
       case 'viewCountDesc':
-        handleViewCountSortDesc();
+        handleSort(SORT.VIEW_COUNT, ORDER.DESC);
         break;
       case 'viewCountAsc':
-        handleViewCountSortAsc();
+        handleSort(SORT.VIEW_COUNT, ORDER.ASC);
         break;
       default:
         break;
@@ -164,9 +110,7 @@ const RecipePage = () => {
               <RecipeImageBox>
                 <RecipeImage
                   alt={recipe.title}
-                  src={`${import.meta.env.VITE_BASE_SERVER_URL}${
-                    recipe.thumbnailUrl
-                  }`}
+                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                 />
               </RecipeImageBox>
             </Link>
