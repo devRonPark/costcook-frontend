@@ -59,6 +59,10 @@ const BudgetPage = () => {
   const [highestPrice, setHighestPrice] = useState(0); // 가장 비싼 레시피 가격
   const [lowestPrice, setLowestPrice] = useState(0); // 가장 저렴한 레시피 가격
   const [averagePrice, setAveragePrice] = useState(0); // 평균 레시피 가격
+  const [highestPriceTitle, setHighestPriceTitle] = useState(''); // 가장 비싼 레시피 제목
+  const [lowestPriceTitle, setLowestPriceTitle] = useState(''); // 가장 싼 레시피 제목
+  const [highestRecipeId, setHighestRecipeId] = useState(null); // 가장 비싼 레시피 ID
+  const [lowestRecipeId, setLowestRecipeId] = useState(null); // 가장 저렴한 레시피 ID
 
   // 사용 예산 및 레시피 정보 가져오기
   const getUsedWeeklyBudget = async () => {
@@ -93,6 +97,12 @@ const BudgetPage = () => {
     setHighestPrice(highest);
     setLowestPrice(lowest);
     setAveragePrice(average);
+    const highestRecipe = recipes.find((recipe) => recipe.price === highest); // 가장 비싼 레시피이름
+    const lowestRecipe = recipes.find((recipe) => recipe.price === lowest); // 가장 싼 레시피 이름
+    setHighestPriceTitle(highestRecipe ? highestRecipe.title : '');
+    setLowestPriceTitle(lowestRecipe ? lowestRecipe.title : '');
+    setHighestRecipeId(highestRecipe.id); // 가장 비싼 레시피 ID
+    setLowestRecipeId(lowestRecipe.id); // 가장 저렴한 레시피 ID
   };
 
   useEffect(() => {
@@ -135,15 +145,17 @@ const BudgetPage = () => {
   const handleDecreaseWeek = () => handleWeekChange(-1);
   const handleIncreaseWeek = () => handleWeekChange(1);
 
-  // 주차 변경 시 가격 리셋
+  // 주차 변경 시 데이터 리셋
   const resetPriceData = () => {
     setHighestPrice(0);
     setLowestPrice(0);
     setAveragePrice(0);
+    setHighestPriceTitle('');
+    setLowestPriceTitle('');
   };
 
   return (
-    <Layout pageName="예산관리">
+    <Layout pageName="예산관리" isSearchBtnExist>
       <DateContainer>
         <SplitData>
           <ArrowButton onClick={handleDecreaseWeek}>
@@ -185,6 +197,8 @@ const BudgetPage = () => {
             <BudgetAmountSetting
               id="cheapRecipe"
               amount={lowestPrice}
+              title={lowestPriceTitle}
+              recipeId={lowestRecipeId}
             ></BudgetAmountSetting>
             <BudgetAmountSetting
               id="recipeAvg"
@@ -193,6 +207,8 @@ const BudgetPage = () => {
             <BudgetAmountSetting
               id="expensiveRecipe"
               amount={highestPrice}
+              title={highestPriceTitle}
+              recipeId={highestRecipeId}
             ></BudgetAmountSetting>
           </BudgetNumberContainer>
         </BudgetSettingContainer>
@@ -209,7 +225,6 @@ export default BudgetPage;
 const DateContainer = styled.div`
   height: 80px;
   width: 100%;
-  border-bottom: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -226,7 +241,6 @@ const SplitData = styled.div`
 const BudgetContainer = styled.div`
   height: 300px;
   width: 100%;
-  border-bottom: 1px black solid;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -237,7 +251,6 @@ const BudgetContainer = styled.div`
 const BudgetSettingContainer = styled.div`
   height: 100px;
   width: 100%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -246,24 +259,25 @@ const BudgetSettingContainer = styled.div`
 const BudgetTextContainer = styled.div`
   height: 30px;
   width: 100%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: row;
   align-items: center;
 `;
 const BudgetText = styled.div`
+  font-family: 'GangwonEdu_OTFBoldA';
+  font-size: 18px;
   height: 30px;
   width: 50%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 const BudgetNumberContainer = styled.div`
+  font-family: 'BMJUA';
+  font-size: 18px;
   height: 50px;
   width: 100%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: row;
@@ -289,15 +303,4 @@ const ProgressContainer = styled.div`
   height: 60px;
   border-radius: 10px;
   overflow: hidden;
-`;
-
-const ProgressBarTextBox = styled.div`
-  height: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const ProgressBarText = styled.div`
-  height: 10px;
 `;
