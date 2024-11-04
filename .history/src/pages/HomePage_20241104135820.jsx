@@ -159,7 +159,7 @@ const HomePage = () => {
       setSize(9);
       const res = await recipeAPI.getMoreRecipeList(9);
       navigate('/recipe', {
-        state: { more: 'viewCountDesc' },
+        state: { more },
       });
     } catch (error) {
       console.error('더보기 API 호출 중 오류 발생:', error);

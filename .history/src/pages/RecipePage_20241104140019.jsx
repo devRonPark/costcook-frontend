@@ -21,6 +21,7 @@ import { ORDER, SORT } from '../utils/sort';
 const RecipePage = () => {
   const location = useLocation();
   const { more } = location.state || {};
+  console.log('전달값:', more);
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
@@ -62,6 +63,7 @@ const RecipePage = () => {
   // page 변경될 때마다 호출
   useEffect(() => {
     fetchData();
+    console.log('현재 정렬 상태: ', sort);
   }, [page, sort, order]);
 
   // 정렬 기능 핸들러

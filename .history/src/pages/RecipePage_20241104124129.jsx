@@ -20,12 +20,12 @@ import { ORDER, SORT } from '../utils/sort';
 
 const RecipePage = () => {
   const location = useLocation();
-  const { more } = location.state || {};
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [page, setPage] = useState(1); // 현재 페이지
   const { ref, inView } = useInView(); // 로딩 감지용 useRef
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 확인
   const [sort, setSort] = useState(SORT.CREATED_AT); // 정렬 기준 (기본: 생성일)
+  const { sort: stateSort } = location.state || {};
   const [order, setOrder] = useState(ORDER.DESC); // 정렬 순서 (기본: 내림차순)
 
   // 데이터 가져오는 메소드
@@ -95,13 +95,6 @@ const RecipePage = () => {
         break;
     }
   };
-
-  // 더보기 전달값 적용
-  useEffect(() => {
-    if (more) {
-      handleSort(more === 'viewCountDesc' ? SORT.VIEW_COUNT : more, ORDER.DESC);
-    }
-  }, [more]);
 
   return (
     <Layout isBackBtnExist pageName="레시피 전체 목록" isSearchBtnExist>
