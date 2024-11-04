@@ -227,7 +227,7 @@ const HomePage = () => {
                   <RecipeImageBox>
                     <RecipeImage
                       alt={recipe.title}
-                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                      src={`${import.meta.env.VITE_SERVER}${
                         recipe.thumbnailUrl
                       }`}
                     />
