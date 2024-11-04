@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { Button, Modal, Slider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -8,8 +7,6 @@ import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
-import { ORDER, SORT } from '../utils/sort';
-
 import { formatPrice } from '../utils/formatData';
 import {
   SettingContainer,
@@ -143,7 +140,6 @@ const HomePage = () => {
         return;
       }
       setRecipeList(res.data.recipes);
-      console.log('홈페이지 인기레시피 : ', res.data.recipes);
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
