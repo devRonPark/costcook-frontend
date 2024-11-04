@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';  // Recipe 아이콘
@@ -14,6 +14,17 @@ const AdminDrawer = ({ isOpen, onClose, onMenuItemClick }) => {
   const handleMenuClick = (path) => {
     onMenuItemClick(path);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -68,9 +79,9 @@ const Overlay = styled.div`
 
 const DrawerContainer = styled.div`
   position: absolute;
-  top: 0;
+  top: ${(props) => window.scrollY}px;  // 현재 스크롤된 위치만큼 드로어의 위치를 동적으로 조정
   left: 0;
-  height: 100%;
+  height: 100vh;
   width: 350px;
   max-width: 70%;
   background-color: #ffffff;
@@ -169,3 +180,4 @@ const ReviewIcon = styled(CommentIcon)`
   font-size: 1.6rem;
   color: inherit;
 `;
+
