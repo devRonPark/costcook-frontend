@@ -161,7 +161,7 @@ const BudgetPage = () => {
           <ArrowButton onClick={handleDecreaseWeek}>
             <KeyboardArrowLeftIcon fontSize="large" />
           </ArrowButton>
-          <h2>
+          <h2 style={{ fontFamily: 'yg-jalnan' }}>
             {currentMonth} {weekNumber}주차
           </h2>
           <ArrowButton onClick={handleIncreaseWeek}>
@@ -225,10 +225,12 @@ export default BudgetPage;
 const DateContainer = styled.div`
   height: 80px;
   width: 100%;
+  border-bottom: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 10px;
   padding: 0 20px;
 `;
 
