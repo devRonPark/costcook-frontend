@@ -4,8 +4,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';  // Recipe 아이콘
 import RiceBowlIcon from '@mui/icons-material/RiceBowl';  // Ingredient 아이콘
 import CommentIcon from '@mui/icons-material/Comment'; // Review 아이콘
+import { useLocation } from 'react-router-dom';
 
 const AdminDrawer = ({ isOpen, onClose, onMenuItemClick }) => {
+
+  const location = useLocation();
+  const isPathActive = (path) => location.pathname === path;
+
   const handleMenuClick = (path) => {
     onMenuItemClick(path);
   };
@@ -21,13 +26,24 @@ const AdminDrawer = ({ isOpen, onClose, onMenuItemClick }) => {
           </CloseButton>
         </DrawerHeader>
         <DrawerContent>
-          <MenuItem onClick={() => handleMenuClick('/admin/recipe-list')}>
+          <MenuItem
+            onClick={() => handleMenuClick('/admin/recipe-list')}
+            className={isPathActive('/admin/recipe-list') ? 'active' : ''}
+          >
             <RecipeIcon /> 레시피
           </MenuItem>
-          <MenuItem onClick={() => handleMenuClick('/admin/ingredient-list')}>
+
+          <MenuItem
+            onClick={() => handleMenuClick('/admin/ingredient-list')}
+            className={isPathActive('/admin/ingredient-list') ? 'active' : ''}
+          >
             <IngredientIcon /> 재료
           </MenuItem>
-          <MenuItem onClick={() => handleMenuClick('/admin/review-list')}>
+
+          <MenuItem
+            onClick={() => handleMenuClick('/admin/review-list')}
+            className={isPathActive('/admin/review-list') ? 'active' : ''}
+          >
             <ReviewIcon /> 리뷰
           </MenuItem>
         </DrawerContent>
@@ -122,12 +138,17 @@ const MenuItem = styled.div`
 
   &:hover {
     background-color: #f0f0f5;
-    color: #007bff;
+    color: #343a40;
   }
 
   &.active {
     background-color: #e0e7ff;
     color: #007bff;
+  }
+
+  &.active:hover {
+    background-color: #f0f0f5;
+    color: #343a40;
   }
 `;
 
