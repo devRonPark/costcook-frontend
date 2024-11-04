@@ -6,7 +6,19 @@ import Layout from '../components/layout/Layout';
 import ProgressBar from '../components/common/ProgressBar';
 import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 import WeeklyCalendar from './WeeklyCalendar';
+import { useAuth } from '../context/Auth/AuthContext';
+import { budgetAPI } from '../services/budget.api';
 
+// 연 단위 주차 계산( 예: 45차 )
+const getCurrentYearAndWeek = (date) => {
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  const diffInMilliseconds = date - startOfYear;
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+  const currentWeek = Math.ceil((diffInDays + startOfYear.getDay() + 1) / 7);
+  return { year: date.getFullYear(), week: currentWeek };
+};
+
+// 캘린더 날짜 계산
 const getWeekAndFirstSundayDate = (date) => {
   // 오늘 날짜 : date
   const currentYear = date.getFullYear(); // 년
@@ -33,49 +45,52 @@ const getWeekAndFirstSundayDate = (date) => {
   return { week: weekOffset + 1, firstSundayDate: sundayDate };
 };
 
-// progressBar 부분
-
-const budgetData = [
-  {
-    id: 1,
-    useAmount: 88000,
-    budgetAmount: 100000,
-    cheapRecipe: 5000,
-    recipeAvg: 18000,
-    expensiveRecipe: 20000,
-    date: '2024-10-23',
-  },
-  {
-    id: 2,
-    useAmount: 50000,
-    budgetAmount: 80000,
-    date: '2024-10-30',
-  },
-];
-
+// 예산 집계
 const BudgetPage = () => {
-  const [useAmount, setUseAmount] = useState(0);
-  const [budgetAmount, setBudgetAmount] = useState(0);
+  const [budgetData, setbudgetData] = useState(null);
+  const [budgetAmount, setBudgetAmount] = useState(0); // 설정한 예산
+  const [useAmount, setUseAmount] = useState(0); // 사용한 예산
+  const [remainingBudget, setRemainingBudget] = useState(0); // 남은 예산
   const [progress, setProgress] = useState(0);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [weekNumber, setWeekNumber] = useState(0);
+  const [firstSundayDateString, setFirstSundayDateString] = useState('');
+  const [currentMonth, setCurrentMonth] = useState('');
+  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
+  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
+  console.log('연: ', year);
+  console.log('주차: ', week);
+
+  // 사용 예산 및 레시피 정보 가져오기
+  const getUsedWeeklyBudget = async () => {
+    try {
+      const res = await budgetAPI.getUsedWeeklyBudget(year, week);
+      const weeklyBudget = res.data.weeklyBudget; // 설정 예산
+      const usedBudget = res.data.usedBudget; // 사용 예산
+      const remainingBudget = res.data.remainingBudget; // 남은 예산
+      const recipes = res.data.recipes; // 레시피 정보
+      console.log('출력 데이터: ', res.data);
+      console.log('설정 예산: ', weeklyBudget);
+      console.log('사용 예산: ', usedBudget);
+      console.log('남은 예산: ', remainingBudget);
+      console.log('레시피 정보: ', recipes);
+      setbudgetData(res.data);
+      setBudgetAmount(weeklyBudget);
+      setUseAmount(usedBudget);
+    } catch (error) {
+      console.error('사용 예산 데이터 출력 중 오류 발생', error);
+    }
+  };
 
   useEffect(() => {
-    // 구조 분해 할당 시 다른 변수 이름 사용
-    const { useAmount: initialUse, budgetAmount: initialBudget } =
-      budgetData[0];
-    setUseAmount(initialUse);
-    setBudgetAmount(initialBudget);
-  }, []);
+    getUsedWeeklyBudget();
+  }, [year, week]);
 
   // useAmount와 budgetAmount에 따른 진행률 계산
   useEffect(() => {
     const newProgress = (useAmount / budgetAmount) * 100;
     setProgress(newProgress);
   }, [useAmount, budgetAmount]);
-
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [weekNumber, setWeekNumber] = useState(0);
-  const [firstSundayDateString, setFirstSundayDateString] = useState('');
-  const [currentMonth, setCurrentMonth] = useState('');
 
   useEffect(() => {
     const { week, firstSundayDate } = getWeekAndFirstSundayDate(currentDate);
@@ -100,6 +115,7 @@ const BudgetPage = () => {
     setCurrentMonth(monthNames[firstSundayDate.getMonth()]); // 일요일 기준으로 현재 월을 설정
   }, [currentDate]);
 
+  // 주차 빼기
   const handleDecreaseWeek = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() - 7); // 1주일 빼기
@@ -107,7 +123,7 @@ const BudgetPage = () => {
     sundayDate.setDate(newDate.getDate() - newDate.getDay());
     setCurrentDate(sundayDate);
   };
-
+  // 주차 더하기
   const handleIncreaseWeek = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + 7); // 1주일 더하기
@@ -138,21 +154,15 @@ const BudgetPage = () => {
             <BudgetText>예산</BudgetText>
           </BudgetTextContainer>
           <BudgetNumberContainer>
-            <BudgetAmountSetting
-              id="useAmount"
-              amount={budgetData[0].useAmount}
-            />
-            <BudgetAmountSetting
-              id="budgetAmount"
-              amount={budgetData[0].budgetAmount}
-            />
+            <BudgetAmountSetting id="useAmount" amount={useAmount} />
+            <BudgetAmountSetting id="budgetAmount" amount={budgetAmount} />
           </BudgetNumberContainer>
         </BudgetSettingContainer>
         <ProgressContainer>
           <ProgressBar useAmount={useAmount} budgetAmount={budgetAmount} />
           <ProgressBarTextBox>
             <ProgressBarText>0</ProgressBarText>
-            <ProgressBarText>{budgetData[0].budgetAmount}</ProgressBarText>
+            {/* <ProgressBarText>{budgetData[0].budgetAmount}</ProgressBarText> */}
           </ProgressBarTextBox>
         </ProgressContainer>
 
@@ -165,15 +175,15 @@ const BudgetPage = () => {
           <BudgetNumberContainer>
             <BudgetAmountSetting
               id="cheapRecipe"
-              amount={budgetData[0].cheapRecipe}
+              // amount={budgetData[0].cheapRecipe}
             ></BudgetAmountSetting>
             <BudgetAmountSetting
               id="recipeAvg"
-              amount={budgetData[0].recipeAvg}
+              // amount={budgetData[0].recipeAvg}
             ></BudgetAmountSetting>
             <BudgetAmountSetting
               id="expensiveRecipe"
-              amount={budgetData[0].expensiveRecipe}
+              // amount={budgetData[0].expensiveRecipe}
             ></BudgetAmountSetting>
           </BudgetNumberContainer>
         </BudgetSettingContainer>

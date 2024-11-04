@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { formatPrice } from '../../utils/formatData';
 
 const BudgetAmountSetting = ({ id, amount }) => {
-  return <StyledBudgetNumber id={id}>{amount}</StyledBudgetNumber>;
+  return <StyledBudgetNumber id={id}>{formatPrice(amount)}</StyledBudgetNumber>;
 };
 
 export default BudgetAmountSetting;
