@@ -1,0 +1,10 @@
+.swiper-slide {
+  z-index: 1;
+}
+.swiper-slide-prev,
+.swiper-slide-next {
+  z-index: 50;
+}
+.swiper-slide-active {
+  z-index: 100;
+}

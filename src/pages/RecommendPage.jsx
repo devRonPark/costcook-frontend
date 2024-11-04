@@ -15,8 +15,23 @@ const RecommendPage = () => {
   const [selectedRecipes, setSelectedRecipes] = useState([]);
   const [remainingBudget, setRemainingBudget] = useState(budget);
 
-  console.log(year);
-  console.log(week);
+  useEffect(() => {
+    const fetchRecommendedRecipes = async () => {
+      try {
+        const response = await recommendAPI.getRecommendedRecipes(year, week);
+        if (response.data) {
+          // 선택된 레시피 목록을 상태에 설정
+
+          setSelectedRecipes(response.data.recipes);
+          updateRemainingBudget(response.data.recipes);
+        }
+      } catch (error) {
+        console.error('Error fetching recommended recipes:', error);
+      }
+    };
+
+    fetchRecommendedRecipes();
+  }, [year, week]); // year와 week가 변경될 때마다 호출
 
   // 선택된 레시피 가격의 합을 계산하여 남은 예산을 업데이트하는 함수
   const updateRemainingBudget = (newSelectedRecipes) => {
@@ -91,7 +106,7 @@ const RecommendPage = () => {
                 onClick={() => handleRemoveSelectRecipe(recipe)}
               >
                 <SelectedImage
-                  src={`http://localhost:8080${recipe.thumbnailUrl}`}
+                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
                   alt={recipe.title}
                 />
                 <SelectedText>{recipe.title}</SelectedText>

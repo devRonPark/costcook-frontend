@@ -156,6 +156,7 @@ export const ListContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 `;
 
 export const RightText = styled(Button)`
