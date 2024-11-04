@@ -23,9 +23,6 @@ import OAuthVerification from './pages/OAuthVerification';
 import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
-import AdminIngredientForm from './pages/admin/IngredientForm';
-import AdminRecipeForm from './pages/admin/RecipeForm';
-import AdminRecipeList from './pages/admin/RecipeList';
 import PageTransition from './components/common/PageTransition';
 import UserInfo from './pages/UserInfo';
 import ItemList from './pages/ItemList';
@@ -36,7 +33,10 @@ import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
 import AdminIngredientList from './pages/admin/AdminIngredientList';
-
+import AdminIngredientForm from './pages/admin/IngredientForm';
+import AdminRecipeForm from './pages/admin/RecipeForm';
+import AdminRecipeList from './pages/admin/RecipeList';
+import AdminReviewList from './pages/admin/ReviewList';
 import MyReviewPage from './pages/MyReviewPage';
 
 function App() {
@@ -164,15 +164,22 @@ function App() {
             path="/admin/ingredient-list"
             element={<AdminIngredientList />}
           />
-          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
-          <Route path="/admin" element={<AdminHome />} />
-          <Route path="/admin/ingredient" element={<AdminIngredientList />} />
-          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
-          <Route
-            path="/admin/recipe-ingredient"
-            element={<RecipeIngredientPage />}
+          <Route 
+            path="/admin/recipe-form" 
+            element={<AdminRecipeForm />} 
           />
-          <Route path="/admin/recipe-list" element={<AdminRecipeList />} />
+          <Route 
+            path="/admin/recipe-ingredient" 
+            element={<RecipeIngredientPage />} 
+          />
+          <Route 
+            path="/admin/recipe-list" 
+            element={<AdminRecipeList />} 
+          />
+          <Route
+            path="/admin/review-list"
+            element={<AdminReviewList/>}
+          />
           {/* 아직 명확하지 않은 페이지 */}
           <Route
             path="/list"

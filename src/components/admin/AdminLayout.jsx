@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import ExitModal from './ExitModal';
 import AdminHeader from './AdminHeader';
+import AdminDrawer from './AdminDrawer';
+import { useNavigate } from 'react-router-dom';
 
 const AdminLayout = ({
   children,
@@ -12,32 +14,48 @@ const AdminLayout = ({
   onSubmit,
   onBack
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 뒤로 가기 클릭 핸들러
-  const handleBackClick = () => {
+  const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
+  const [pendingNavigationPath, setPendingNavigationPath] = useState(null);
+
+  // 드로어 열기
+  const handleDrawerOpen = () => {
+    setIsDrawerOpen(true);
+  };
+
+  // 드로어 닫기
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+
+  // 메뉴 아이템 클릭 핸들러
+  const handleMenuItemClick = (path) => {
     if (isModified) {
+      setPendingNavigationPath(path);
       setIsModalOpen(true);
-    } else if (onBack) {
-      onBack(); 
     } else {
-      window.history.back(); 
+      handleDrawerClose();
+      navigate(path);
     }
   };
 
   // 모달에서 "예"를 클릭했을 때 동작
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    if (onBack) {
-      onBack();
-    } else {
-      window.history.back(); 
+    if (pendingNavigationPath) {
+      handleDrawerClose();
+      navigate(pendingNavigationPath);
+      setPendingNavigationPath(null);
     }
   };
 
   // 모달에서 "아니요"를 클릭했을 때 동작
   const handleModalCancel = () => {
-    setIsModalOpen(false); // 모달 닫기
+    setIsModalOpen(false);
+    setPendingNavigationPath(null);
   };
 
   return (
@@ -47,13 +65,17 @@ const AdminLayout = ({
           title={title}
           rightLabel={rightLabel}
           isRegisterEnabled={isRegisterEnabled}
-          onBackClick={handleBackClick}
-          onSubmit={onSubmit} // 등록 버튼 클릭 시 호출할 함수 전달
+          onMenuClick={handleDrawerOpen}
+          onSubmit={onSubmit}
         />
       </FixedHeader>
+      <AdminDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
+        onMenuItemClick={handleMenuItemClick}
+      />
       <Content>{children}</Content>
 
-      {/* ExitModal 컴포넌트 사용 */}
       <ExitModal
         isOpen={isModalOpen}
         onConfirm={handleModalConfirm}
@@ -78,6 +100,7 @@ const Container = styled.div`
   border: 1px solid rgb(224, 224, 224);
   border-radius: 8px;
   background-color: white;
+  overflow: hidden;
 `;
 
 const FixedHeader = styled.div`

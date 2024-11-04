@@ -10,11 +10,9 @@ const ExitModal = ({ isOpen, onConfirm, onCancel }) => {
   return (
     <ModalOverlay>
       <ModalContent>
-        <ModalText>변경사항이 있습니다. 정말로 나가시겠습니까?</ModalText>
+        <ModalText>현재 편집 중입니다. 정말로 나가시겠습니까?</ModalText>
         <ModalButtons>
-          <ModalButton onClick={onConfirm} primary>
-            예
-          </ModalButton>
+          <ModalButton onClick={onConfirm} primary>예</ModalButton>
           <ModalButton onClick={onCancel}>아니요</ModalButton>
         </ModalButtons>
       </ModalContent>
