@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import { formatPrice } from '../../utils/formatData';
 
 const BudgetAmountSetting = ({ id, amount }) => {
-  return <StyledBudgetNumber id={id}>{formatPrice(amount)}</StyledBudgetNumber>;
+  return (
+    <StyledBudgetNumber id={id}>{formatPrice(amount)} 원</StyledBudgetNumber>
+  );
 };
 
 export default BudgetAmountSetting;

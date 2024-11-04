@@ -6,7 +6,6 @@ import Layout from '../components/layout/Layout';
 import ProgressBar from '../components/common/ProgressBar';
 import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 import WeeklyCalendar from './WeeklyCalendar';
-import { useAuth } from '../context/Auth/AuthContext';
 import { budgetAPI } from '../services/budget.api';
 
 // 연 단위 주차 계산( 예: 45차 )
@@ -47,50 +46,58 @@ const getWeekAndFirstSundayDate = (date) => {
 
 // 예산 집계
 const BudgetPage = () => {
-  const [budgetData, setbudgetData] = useState(null);
   const [budgetAmount, setBudgetAmount] = useState(0); // 설정한 예산
   const [useAmount, setUseAmount] = useState(0); // 사용한 예산
   const [remainingBudget, setRemainingBudget] = useState(0); // 남은 예산
-  const [progress, setProgress] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(0);
   const [firstSundayDateString, setFirstSundayDateString] = useState('');
   const [currentMonth, setCurrentMonth] = useState('');
   const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
   const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
-  console.log('연: ', year);
-  console.log('주차: ', week);
+  const [recipes, setRecipes] = useState([]);
+  const [highestPrice, setHighestPrice] = useState(0); // 가장 비싼 레시피 가격
+  const [lowestPrice, setLowestPrice] = useState(0); // 가장 저렴한 레시피 가격
+  const [averagePrice, setAveragePrice] = useState(0); // 평균 레시피 가격
 
   // 사용 예산 및 레시피 정보 가져오기
   const getUsedWeeklyBudget = async () => {
     try {
       const res = await budgetAPI.getUsedWeeklyBudget(year, week);
-      const weeklyBudget = res.data.weeklyBudget; // 설정 예산
-      const usedBudget = res.data.usedBudget; // 사용 예산
-      const remainingBudget = res.data.remainingBudget; // 남은 예산
-      const recipes = res.data.recipes; // 레시피 정보
-      console.log('출력 데이터: ', res.data);
-      console.log('설정 예산: ', weeklyBudget);
-      console.log('사용 예산: ', usedBudget);
-      console.log('남은 예산: ', remainingBudget);
-      console.log('레시피 정보: ', recipes);
-      setbudgetData(res.data);
+      const weeklyBudget = res.data.weeklyBudget || 0; // 설정 예산
+      const usedBudget = res.data.usedBudget || 0; // 사용 예산
+      const remainingBudget = weeklyBudget - usedBudget; // 남은 예산
+      const recipes = res.data.recipes || []; // 레시피 정보
       setBudgetAmount(weeklyBudget);
       setUseAmount(usedBudget);
+      setRemainingBudget(remainingBudget);
+      setRecipes(recipes);
+      resetPriceData();
+      calculatePrices(recipes); // 함수에 recipes를 보냄
     } catch (error) {
       console.error('사용 예산 데이터 출력 중 오류 발생', error);
     }
+  };
+  // 레시피 가격 통계
+  const calculatePrices = (recipes) => {
+    if (recipes.length === 0) {
+      console.log('레시피 정보 없음');
+      return;
+    }
+    const prices = recipes.map((recipe) => recipe.price);
+    const highest = Math.max(...prices);
+    const lowest = Math.min(...prices);
+    const average =
+      prices.reduce((acc, price) => acc + price, 0) / prices.length;
+
+    setHighestPrice(highest);
+    setLowestPrice(lowest);
+    setAveragePrice(average);
   };
 
   useEffect(() => {
     getUsedWeeklyBudget();
   }, [year, week]);
-
-  // useAmount와 budgetAmount에 따른 진행률 계산
-  useEffect(() => {
-    const newProgress = (useAmount / budgetAmount) * 100;
-    setProgress(newProgress);
-  }, [useAmount, budgetAmount]);
 
   useEffect(() => {
     const { week, firstSundayDate } = getWeekAndFirstSundayDate(currentDate);
@@ -115,21 +122,24 @@ const BudgetPage = () => {
     setCurrentMonth(monthNames[firstSundayDate.getMonth()]); // 일요일 기준으로 현재 월을 설정
   }, [currentDate]);
 
-  // 주차 빼기
-  const handleDecreaseWeek = () => {
+  // 주차 변경 버튼 함수
+  const handleWeekChange = (delta) => {
     const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() - 7); // 1주일 빼기
-    const sundayDate = new Date(newDate);
-    sundayDate.setDate(newDate.getDate() - newDate.getDay());
-    setCurrentDate(sundayDate);
+    newDate.setDate(newDate.getDate() + delta * 7); // 1주일 더하기 또는 빼기
+    const { year: newYear, week: newWeek } = getCurrentYearAndWeek(newDate);
+    setCurrentDate(newDate);
+    setYear(newYear);
+    setWeek(newWeek);
   };
-  // 주차 더하기
-  const handleIncreaseWeek = () => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + 7); // 1주일 더하기
-    const sundayDate = new Date(newDate);
-    sundayDate.setDate(newDate.getDate() - newDate.getDay());
-    setCurrentDate(sundayDate);
+  // 주차 변경 버튼 클릭 핸들러
+  const handleDecreaseWeek = () => handleWeekChange(-1);
+  const handleIncreaseWeek = () => handleWeekChange(1);
+
+  // 주차 변경 시 가격 리셋
+  const resetPriceData = () => {
+    setHighestPrice(0);
+    setLowestPrice(0);
+    setAveragePrice(0);
   };
 
   return (
@@ -151,19 +161,18 @@ const BudgetPage = () => {
         <BudgetSettingContainer>
           <BudgetTextContainer>
             <BudgetText>사용금액</BudgetText>
-            <BudgetText>예산</BudgetText>
+            <BudgetText>남은예산</BudgetText>
           </BudgetTextContainer>
           <BudgetNumberContainer>
             <BudgetAmountSetting id="useAmount" amount={useAmount} />
-            <BudgetAmountSetting id="budgetAmount" amount={budgetAmount} />
+            <BudgetAmountSetting
+              id="remainingBudget"
+              amount={remainingBudget}
+            />
           </BudgetNumberContainer>
         </BudgetSettingContainer>
         <ProgressContainer>
           <ProgressBar useAmount={useAmount} budgetAmount={budgetAmount} />
-          <ProgressBarTextBox>
-            <ProgressBarText>0</ProgressBarText>
-            {/* <ProgressBarText>{budgetData[0].budgetAmount}</ProgressBarText> */}
-          </ProgressBarTextBox>
         </ProgressContainer>
 
         <BudgetSettingContainer>
@@ -175,15 +184,15 @@ const BudgetPage = () => {
           <BudgetNumberContainer>
             <BudgetAmountSetting
               id="cheapRecipe"
-              // amount={budgetData[0].cheapRecipe}
+              amount={lowestPrice}
             ></BudgetAmountSetting>
             <BudgetAmountSetting
               id="recipeAvg"
-              // amount={budgetData[0].recipeAvg}
+              amount={averagePrice}
             ></BudgetAmountSetting>
             <BudgetAmountSetting
               id="expensiveRecipe"
-              // amount={budgetData[0].expensiveRecipe}
+              amount={highestPrice}
             ></BudgetAmountSetting>
           </BudgetNumberContainer>
         </BudgetSettingContainer>
