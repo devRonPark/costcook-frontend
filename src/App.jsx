@@ -38,6 +38,7 @@ import AdminHome from './pages/admin/AdminHome';
 import AdminIngredientList from './pages/admin/AdminIngredientList';
 
 import MyReviewPage from './pages/MyReviewPage';
+import WeeklyDetail from './pages/WeeklyDetail';
 
 function App() {
   const location = useLocation();
@@ -153,6 +154,7 @@ function App() {
             }
           />
           <Route path="/my/reviews" element={<MyReviewPage />} />
+          <Route path="/weeklyDetail/:year/:week" element={<WeeklyDetail />} />
 
           {/* 관리자만 접근 가능 */}
           <Route path="/admin" element={<AdminHome />} />

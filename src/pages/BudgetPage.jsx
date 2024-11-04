@@ -7,6 +7,7 @@ import ProgressBar from '../components/common/ProgressBar';
 import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 import WeeklyCalendar from './WeeklyCalendar';
 import { budgetAPI } from '../services/budget.api';
+import { useNavigate } from 'react-router-dom';
 
 // 연 단위 주차 계산( 예: 45차 )
 const getCurrentYearAndWeek = (date) => {
@@ -63,6 +64,7 @@ const BudgetPage = () => {
   const [lowestPriceTitle, setLowestPriceTitle] = useState(''); // 가장 싼 레시피 제목
   const [highestRecipeId, setHighestRecipeId] = useState(null); // 가장 비싼 레시피 ID
   const [lowestRecipeId, setLowestRecipeId] = useState(null); // 가장 저렴한 레시피 ID
+  const navigate = useNavigate();
 
   // 사용 예산 및 레시피 정보 가져오기
   const getUsedWeeklyBudget = async () => {
@@ -154,6 +156,14 @@ const BudgetPage = () => {
     setLowestPriceTitle('');
   };
 
+  // 달력 클릭 시 주차 상세 페이지 이동
+  const handleCalendarClick = () => {
+    const confirmNavigation = window.confirm('주간 상세 페이지로 이동합니다.');
+    if (confirmNavigation) {
+      navigate(`/weeklyDetail/${year}/${week}`);
+    }
+  };
+
   return (
     <Layout pageName="예산관리" isSearchBtnExist>
       <DateContainer>
@@ -213,7 +223,7 @@ const BudgetPage = () => {
           </BudgetNumberContainer>
         </BudgetSettingContainer>
       </BudgetContainer>
-      <CalendarContainer>
+      <CalendarContainer onClick={handleCalendarClick}>
         <WeeklyCalendar currentDate={currentDate}>달력</WeeklyCalendar>
       </CalendarContainer>
     </Layout>
