@@ -274,7 +274,7 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {state.user?.id != null ? (
+            {state.user != null ? (
               <p>내가 작성한 리뷰 영역 </p>
             ) : (
               <p>유저 정보 없음</p>

@@ -46,6 +46,13 @@ function App() {
     <AuthProvider>
       <ToastContainer
         position="bottom-center" // 위치 설정
+        autoClose={1500} // 1.5초 동안 표시
+        hideProgressBar={true} // 진행 바 숨기기 (필요시 추가)
+        closeOnClick // 클릭 시 닫기
+        pauseOnHover // 호버 시 일시 정지
+        draggable // 드래그 가능
+        draggablePercent={60} // 드래그 가능한 비율
+        theme="light" // 테마 설정 (light 또는 dark)
       />
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <AnimatePresence mode="wait">
