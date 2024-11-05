@@ -1,12 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { Button, Modal, Slider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import axios from 'axios';
 import { budgetAPI } from '../services/budget.api';
 import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
+import { recipeAPI } from '../services/recipe.api';
+import { StarRating } from '../components/StarRating';
+import { formatPrice } from '../utils/formatData';
+import {
+  SettingContainer,
+  MoneyContainerWrapper,
+  MoneyButton,
+  ModalContainer,
+  RecommendContainer,
+  UpcommingReceiptContainer,
+  UpcommingReceiptHeader,
+  ListContainer,
+  List,
+  RightText,
+  RecipeImage,
+  RecipeImageBox,
+  TextBox,
+  TitleText,
+  PriceText,
+  StarText,
+  ListRowContainer,
+} from '../components/display/RecipeListStyle';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -24,6 +44,8 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(0); // 기본값 설정
   const [userId, setUserId] = useState(null); // 사용자 ID 상태 추가
+  const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
+  const [size, setSize] = useState(3); // 3개만 보여주기
 
   const navigate = useNavigate();
   const openModal = () => setIsModalOpen(true);
@@ -43,6 +65,7 @@ const HomePage = () => {
       const response = await budgetAPI.getWeeklyBudget(year, week);
       if (response.data.message === '기본값 설정') {
         setIsDefaultBudget(true);
+        console.log(response.data);
       }
       setBudget(response.data.budget);
     } catch (error) {
@@ -59,6 +82,7 @@ const HomePage = () => {
       try {
         const response = await AuthApi.getMyInfo();
         setUserId(response.data.id); // 사용자 ID 설정
+        console.log(response.data.id);
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
       }
@@ -108,8 +132,39 @@ const HomePage = () => {
     }
   };
 
+  // 인기레시피 데이터 가져오기(조회수 높은 정렬)
+  const fetchData = async () => {
+    try {
+      const res = await recipeAPI.getMoreRecipeList(3);
+      if (res.data.recipes.length === 0) {
+        console.log('레시피가 존재하지 않습니다.');
+        return;
+      }
+      setRecipeList(res.data.recipes);
+    } catch (error) {
+      console.error('페이지를 찾을 수 없습니다.', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(size);
+  }, [size]);
+
+  // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
+  const handleMoreClick = async () => {
+    try {
+      setSize(9);
+      const res = await recipeAPI.getMoreRecipeList(9);
+      navigate('/recipe', {
+        state: { more: 'viewCountDesc' },
+      });
+    } catch (error) {
+      console.error('더보기 API 호출 중 오류 발생:', error);
+    }
+  };
+
   return (
-    <Layout isSearchBtnExist>
+    <Layout isSearchBtnExist pageName="Cost Cook">
       <SettingContainer>
         <h3>추천 설정</h3>
         <MoneyContainerWrapper>
@@ -121,7 +176,9 @@ const HomePage = () => {
       <RecommendContainer>
         <ListContainer>
           <List>
-            <ReceiptImage>
+            {/* 로직 구현 시 실제 이미지 넣기 */}
+            {/* 로직 구현 시 실제 데이터 넣기 */}
+            <RecipeImageBox>
               <Button
                 onClick={() => {
                   checkIsDefaultBudget();
@@ -129,7 +186,7 @@ const HomePage = () => {
               >
                 추천받기
               </Button>
-            </ReceiptImage>
+            </RecipeImageBox>
             <TextBox>
               <TitleText>김치볶음밥</TitleText>
               <PriceText>4300원</PriceText>
@@ -138,7 +195,7 @@ const HomePage = () => {
           </List>
 
           <List>
-            <ReceiptImage>이미지</ReceiptImage>
+            <RecipeImageBox>이미지</RecipeImageBox>
             <TextBox>
               <TitleText>김치볶음밥</TitleText>
               <PriceText>4300원</PriceText>
@@ -146,7 +203,7 @@ const HomePage = () => {
             </TextBox>
           </List>
           <List>
-            <ReceiptImage>이미지</ReceiptImage>
+            <RecipeImageBox>이미지</RecipeImageBox>
             <TextBox>
               <TitleText>김치볶음밥</TitleText>
               <PriceText>4300원</PriceText>
@@ -158,33 +215,33 @@ const HomePage = () => {
       <UpcommingReceiptContainer>
         <UpcommingReceiptHeader>
           <h3>인기레시피</h3>
-          <RightText href="#">더보기</RightText>
+          <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <List>
-            <ReceiptImage>이미지</ReceiptImage>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-          <List>
-            <ReceiptImage>이미지</ReceiptImage>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-          <List>
-            <ReceiptImage>이미지</ReceiptImage>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
+          <ListRowContainer>
+            {recipeList.map((recipe) => (
+              <List key={recipe.id}>
+                <Link to={`/recipeDetail/${recipe.id}`}>
+                  <RecipeImageBox>
+                    <RecipeImage
+                      alt={recipe.title}
+                      src={`${import.meta.env.VITE_SERVER}${
+                        recipe.thumbnailUrl
+                      }`}
+                    />
+                  </RecipeImageBox>
+                </Link>
+                <TitleText>{recipe.title}</TitleText>
+                <PriceText>
+                  {formatPrice(recipe.price / recipe.servings)}원 (1인분)
+                </PriceText>
+                <StarText>
+                  <StarRating ratings={recipe.avgRatings} /> (
+                  {recipe.avgRatings})
+                </StarText>
+              </List>
+            ))}
+          </ListRowContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 
@@ -209,125 +266,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-const SettingContainer = styled.div`
-  width: 100%;
-  border: 1px black solid;
-`;
-
-const MoneyContainerWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin: 10px 0;
-  border: 1px black solid;
-`;
-
-const MoneyButton = styled.button`
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: left;
-  border: 1px solid black;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  &:hover {
-    background-color: #e0e0e0;
-  }
-`;
-
-const ModalContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  background-color: white;
-  border: 2px solid #000;
-  padding: 16px;
-  box-shadow: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const RecommendContainer = styled.div`
-  flex: 1;
-  width: 100%;
-  border: 1px solid black;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const UpcommingReceiptContainer = styled.div`
-  width: 100%;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-const UpcommingReceiptHeader = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ListContainer = styled.div`
-  padding: 10px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid black;
-`;
-
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px;
-  border: 1px solid black;
-  height: 220px;
-  width: 120px;
-`;
-
-const RightText = styled.a`
-  margin-right: 8px;
-  font-size: 12px;
-  text-align: right;
-`;
-
-const ReceiptImage = styled.div`
-  height: 120px;
-  width: 120px;
-  border-bottom: 1px black solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const TextBox = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 3px 5px;
-  text-align: left;
-`;
-
-const TitleText = styled.h3`
-  margin: 3px 0;
-`;
-
-const PriceText = styled.a`
-  margin: 3px 0;
-`;
-
-const StarText = styled.a`
-  margin: 3px 0;
-`;

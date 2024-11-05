@@ -34,13 +34,16 @@ const Header = ({
         </Link>
       )}
     </IconWrapper>
-    {pageName && <PageName>{pageName}</PageName>} {/* 페이지 이름 표시 */}
+    {pageName && (
+      <PageName isRecipeDetailPage={isRecipeDetailPage}>{pageName}</PageName> // 레시피 상세 페이지는 레시피 이름 폰트
+    )}{' '}
+    {/* 페이지 이름 표시 */}
     <IconWrapper>
       {isRecipeListPage && <FilterButton onClick={onFilterClick} />}{' '}
       {/* 필터 버튼 */}
       {isRecipeDetailPage && ( // 레시피 상세 페이지일 때
         <>
-          <ShareButton onClick={onShareClick} /> {/* 공유 버튼 */}
+          <ShareButton handleShareOpen={onShareClick} /> {/* 공유 버튼 */}
           <LikeButton onClick={onLikeClick} /> {/* 좋아요 버튼 */}
         </>
       )}
@@ -90,8 +93,9 @@ const SearchIconStyled = styled(SearchIcon)`
 
 // 헤더title
 const PageName = styled.h1`
-  font-family: 'STUNNING-Bd'; // 스터닝 산스
-
+  font-family: ${(props) =>
+    props.isRecipeDetailPage ? 'Mungyeong-Gamhong-Apple' : 'STUNNING-Bd'};
+  font-weight: ${(props) => (props.isRecipeDetailPage ? 100 : 'normal')};
   flex: 1; /* 제목이 공간을 차지하게 함 */
   text-align: center; /* 가운데 정렬 */
   font-size: 1.5rem; /* 제목 크기 조정 */

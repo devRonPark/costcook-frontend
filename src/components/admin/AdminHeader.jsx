@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmit }) => (
+const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubmit }) => (
   <HeaderContainer>
-    <IconWrapper onClick={onBackClick}>
-      <ArrowBackIconStyled />
+    <IconWrapper onClick={onMenuClick}>
+      <MenuIconStyled />
     </IconWrapper>
     <Title>{title}</Title>
     <RightWrapper>
@@ -31,7 +31,8 @@ const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f8f9fa;
+  background-color: #343a40;
+  color: #fff;
   height: 64px;
   position: fixed;
   top: 0;
@@ -42,13 +43,13 @@ const HeaderContainer = styled.header`
 
 const IconWrapper = styled.div`
   cursor: pointer;
-  color: #333;
+  color: #ffffff;
   &:hover {
-    color: #007bff;
+    color: #ffc107;
   }
 `;
 
-const ArrowBackIconStyled = styled(ArrowBackIcon)`
+const MenuIconStyled = styled(MenuIcon)`
   width: 24px;
   height: 24px;
 `;
@@ -56,7 +57,7 @@ const ArrowBackIconStyled = styled(ArrowBackIcon)`
 const Title = styled.h1`
   font-size: 1.25rem;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin: 0;
   text-align: center;
   flex-grow: 1;
