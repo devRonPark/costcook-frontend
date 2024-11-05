@@ -39,6 +39,7 @@ import LoginModal from '../components/common/LoginModal';
 import ReviewApi from '../services/review.api';
 import { toast } from 'react-toastify';
 import UserApi from '../services/user.api';
+import RecipeReviewCard from '../components/RecipeReviewCard';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
@@ -73,6 +74,9 @@ const RecipeDetail = () => {
     'review',
   ]); // 초기값은 전부다 열려있는 상태
 
+  // 레시피 로드 상태
+  const [isRecipeLoaded, setIsRecipeLoaded] = useState(false);
+
   // 공유하기 모달창 열기 및 닫기 함수
   const handleShareModalOpen = () => setIsShareModalOpen(true);
   const handleShareModalClose = () => setIsShareModalOpen(false);
@@ -97,16 +101,15 @@ const RecipeDetail = () => {
     // 로그인 후 대기 중인 리뷰 정보 확인
     const pendingReview = JSON.parse(sessionStorage.getItem('pendingReview'));
 
-    if (pendingReview && pendingReview.isReviewing) {
+    if (pendingReview && pendingReview.isReviewing && isRecipeLoaded) {
       // 세션 스토리지에서 대기 중인 리뷰 정보를 제거
       sessionStorage.removeItem('pendingReview');
-
       // 리뷰 작성 위치로 스크롤
       scrollToReview();
       // 리뷰 모달 열기
       setIsReviewModalOpen(true);
     }
-  }, [navigate, activeTabs]);
+  }, [isRecipeLoaded, navigate, activeTabs]);
 
   // 레시피 상세 정보 가져오기
   const getRecipeById = async () => {
@@ -128,6 +131,7 @@ const RecipeDetail = () => {
       }));
       setIngredientData(ingredients);
       console.log('재료 정보 : ', ingredients);
+      setIsRecipeLoaded(true); // 레시피가 로드되었음을 설정
     } catch (error) {
       console.log('레시피를 불러올 수 없음', error);
     }
@@ -135,11 +139,12 @@ const RecipeDetail = () => {
   // 가져온 정보 보여주기
   useEffect(() => {
     getRecipeById();
-  }, []);
+  }, [recipeId]);
 
   // 로그인 모달창 관련 메소드
   const handleLoginModalOpen = () => setIsLoginModalOpen(true);
   const handleLoginModalClose = () => setIsLoginModalOpen(false);
+  // 로그인 모달창 > 로그인 클릭 시 동작
   const handleLoginConfirm = () => {
     // 로그인 전 리뷰 작성 중이었다는 걸 기억.
     sessionStorage.setItem(
@@ -395,25 +400,8 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {state.user != null ? (
-              <p>내가 작성한 리뷰 영역 </p>
-            ) : (
-              <p>유저 정보 없음</p>
-            )}
-
             {reviewList.map((review) => (
-              <ReviewContainer key={review.id} review={review}>
-                <ReviewImage>
-                  <img src="" alt="리뷰이미지" />
-                </ReviewImage>
-                <ReviewTextContainer>
-                  <span>{review.updatedAt}</span>
-
-                  <TitleText>{review.user.nickname}</TitleText>
-                  <StarText>{'★'.repeat(review.score)}</StarText>
-                  <ContentText>{review.comment}</ContentText>
-                </ReviewTextContainer>
-              </ReviewContainer>
+              <RecipeReviewCard key={review.id} review={review} />
             ))}
             {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
             {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
