@@ -8,6 +8,7 @@ const RoundedButton = ({
   width = '400px',
   border = '1px solid black',
   isDisabled = false,
+  style = {}, // style props 추가
 }) => {
   return (
     <RoundedButtonContainer
@@ -17,6 +18,7 @@ const RoundedButton = ({
       width={width}
       border={border}
       disabled={isDisabled}
+      style={style} // style props 전달
     >
       {text}
     </RoundedButtonContainer>
@@ -39,6 +41,6 @@ const RoundedButtonContainer = styled.button`
 
   &:hover {
     background-color: ${(props) =>
-      !props.disabled && '#FFD700'}; // hover 시 진한 노란색
+      !props.disabled && props.hoverBackgroundColor}; // hover 시 색상 적용
   }
 `;

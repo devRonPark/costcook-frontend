@@ -13,6 +13,9 @@ export const recipeAPI = {
     apiClient.get(
       `/recommendations/recipes?minBudget=${minBudget}&maxBudget=${maxBudget}`
     ),
+  // 비회원이 즐겨찾기에 추가한 레시피 목록 정보 불러오기
+  getRecipeListByIds: (recipeIds) =>
+    apiClient.get(`/recipes?ids=${recipeIds.join('&ids=')}`),
   // HomePage 조회수 높은 순 레시피 가져오기 (인기레시피, 더보기 -> RecipeList)
   getMoreRecipeList: (size) =>
     apiClient.get(`/recipes?page=1&size=${size}&sort=viewCount&order=desc`),
