@@ -9,4 +9,8 @@ export const budgetAPI = {
 
   modifyWeeklyBudget: (budgetRequest) =>
     apiClient.patch('/users/budget', budgetRequest),
+
+  // 사용 예산 및 레시피 정보 가져오기
+  getUsedWeeklyBudget: (year, week) =>
+    apiClient.get('/users/budget/used', { params: { year, weekNumber: week } }),
 };

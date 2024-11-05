@@ -65,6 +65,7 @@ const HomePage = () => {
       const response = await budgetAPI.getWeeklyBudget(year, week);
       if (response.data.message === '기본값 설정') {
         setIsDefaultBudget(true);
+        console.log(response.data);
       }
       setBudget(response.data.budget);
     } catch (error) {
