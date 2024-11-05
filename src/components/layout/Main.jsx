@@ -18,6 +18,7 @@ const MainContainer = styled.main`
   justify-content: flex-start; /* 조정: 중앙 정렬이 아닌 시작점 정렬 */
   background-color: #fff;
   overflow-y: scroll; /* 세로 스크롤을 추가 */
+  position: relative;
 
   /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {

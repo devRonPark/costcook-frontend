@@ -13,4 +13,7 @@ export const recipeAPI = {
     apiClient.get(
       `/recommendations/recipes?minBudget=${minBudget}&maxBudget=${maxBudget}`
     ),
+  // 비회원이 즐겨찾기에 추가한 레시피 목록 정보 불러오기
+  getRecipeListByIds: (recipeIds) =>
+    apiClient.get(`/recipes?ids=${recipeIds.join('&ids=')}`),
 };
