@@ -1,64 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import Pagination from '@mui/material/Pagination';
+import { FaStar, FaEye, FaEyeSlash } from 'react-icons/fa';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ReviewDetailModal from '../../components/admin/ReviewDetailModal';
-import styled from 'styled-components';
-import { FaStar, FaEye, FaEyeSlash } from 'react-icons/fa';
+import apiClient from '../../services/api';
 
 const AdminReviewList = () => {
   const [selectedReview, setSelectedReview] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
 
-  const reviews = [
-    {
-      recipeName: '토마토 파스타',
-      author: '요리사A',
-      rating: 5,
-      comment: '정말 맛있어요! 다음에 또 만들고 싶어요.',
-      createdAt: '2024-11-01',
-      updatedAt: '2024-11-01',
-      status: '공개',
-      deletedAt: null,
-    },
-    {
-      recipeName: '닭갈비',
-      author: '식객B',
-      rating: 3,
-      comment: '좀 짰어요.',
-      createdAt: '2024-10-30',
-      updatedAt: '2024-11-01',
-      status: '비공개',
-      deletedAt: '2024-11-01',
-    },
-    {
-      recipeName: '감자전',
-      author: '요리왕C',
-      rating: 4,
-      comment: '바삭하고 간단한 레시피네요!',
-      createdAt: '2024-11-02',
-      updatedAt: '2024-11-02',
-      status: '공개',
-      deletedAt: null,
-    },
-    {
-      recipeName: '된장찌개',
-      author: '맛객D',
-      rating: 2,
-      comment: '된장 맛이 조금 약한 것 같아요.',
-      createdAt: '2024-11-03',
-      updatedAt: '2024-11-03',
-      status: '비공개',
-      deletedAt: '2024-11-04',
-    },
-    {
-      recipeName: '불고기',
-      author: '소믈리에E',
-      rating: 5,
-      comment: '고기의 부드러움과 양념이 완벽해요!',
-      createdAt: '2024-11-04',
-      updatedAt: '2024-11-04',
-      status: '공개',
-      deletedAt: null,
-    },
-  ];
+  const fetchReviews = async (currentPage) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/admin/reviews', {
+        params: { page: currentPage, size: itemsPerPage },
+      });
+      if (response.status === 200) {
+        const formattedReviews = response.data.reviews.map((review) => ({
+          ...review, id: review.id,
+        }));
+        setReviews(formattedReviews);
+        setTotalPages(response.data.totalPages);
+      }
+    } catch (error) {
+      console.error('리뷰 리스트 가져오기 실패:', error);
+      setError('리뷰를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchReviews(page);
+  }, [page]);
 
   const handleReviewClick = (review) => {
     setSelectedReview(review);
@@ -68,25 +48,21 @@ const AdminReviewList = () => {
     setSelectedReview(null);
   };
 
-  const renderStars = (rating) => {
-    const totalStars = 5;
-    return [...Array(totalStars)].map((_, index) => (
-      <FaStar
-        key={index}
-        color={index < rating ? '#ffc107' : '#e4e5e9'}
-        size={20}
-        style={{ marginRight: '2px' }}
-      />
-    ));
-  };
-
   const renderStatusIcon = (status) => {
-    return status === '공개' ? (
-      <FaEye color="#b0b0b0" size={20} />
+    return status === false ? (
+      <FaEye color="#b0b0b0" size={20} style={{ verticalAlign: 'middle' }} />
     ) : (
-      <FaEyeSlash color="#b0b0b0" size={20} />
+      <FaEyeSlash color="#ff0000" size={20} style={{ verticalAlign: 'middle' }} />
     );
   };
+
+  if (loading) {
+    return <LoadingWrapper>리뷰를 불러오는 중입니다...</LoadingWrapper>;
+  }
+
+  if (error) {
+    return <ErrorWrapper>{error}</ErrorWrapper>;
+  }
 
   return (
     <AdminLayout title="리뷰">
@@ -103,15 +79,28 @@ const AdminReviewList = () => {
           <tbody>
             {reviews.map((review, index) => (
               <tr key={index} onClick={() => handleReviewClick(review)}>
-                <td>{review.recipeName}</td>
-                <td>{review.author}</td>
-                <td>{renderStars(review.rating)}</td>
+                <td>{review.recipe.title}</td>
+                <td>{review.user.nickname}</td>
+                <td>
+                  <FaStar color="#ffc107" size={16} style={{ margin: '2.5px 5px -2.5px 0px'}} /> 
+                  {review.score}
+                </td>
                 <td>{renderStatusIcon(review.status)}</td>
               </tr>
             ))}
           </tbody>
         </Table>
       </TableWrapper>
+
+      <PaginationWrapper>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+          shape="rounded"
+        />
+      </PaginationWrapper>
 
       {/* 모달 컴포넌트 사용 */}
       {selectedReview && (
@@ -155,4 +144,48 @@ const Table = styled.table`
   tr:hover {
     background-color: #f9f9f9;
   }
+
+  td {
+    display: 'flex';
+    alignItems: 'center';
+  }
+  
+  th:nth-child(1), td:nth-child(1) {
+    width: 40%;
+  }
+
+  th:nth-child(2), td:nth-child(2) {
+    width: 30%;
+  }
+
+  th:nth-child(3), td:nth-child(3) {
+    width: 15%;
+  }
+
+  th:nth-child(4), td:nth-child(4) {
+    width: 20%;
+  }
+`;
+
+const PaginationWrapper = styled.div`
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2em;
+`;
+
+const ErrorWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2em;
+  color: red;
 `;
