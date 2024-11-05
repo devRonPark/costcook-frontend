@@ -33,12 +33,18 @@ import {
   StarText,
   HowToCooking,
 } from '../styles/RecipeDetail';
+import ShareModal from '../components/modal/ShareModal';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
   const { state } = useAuth();
   console.log('유저정보: ', state.user?.id);
   const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
+
+  // 공유하기 모달창 열기 및 닫기 함수
+  const handleShareModalOpen = () => setIsShareModalOpen(true);
+  const handleShareModalClose = () => setIsShareModalOpen(false);
 
   const navigate = useNavigate();
   // 레시피 & 재료
@@ -141,7 +147,12 @@ const RecipeDetail = () => {
   }, [page]);
 
   return (
-    <Layout isBackBtnExist pageName={recipe.title} isRecipeDetailPage>
+    <Layout
+      isBackBtnExist
+      pageName={recipe.title}
+      isRecipeDetailPage
+      onShareClick={handleShareModalOpen}
+    >
       <ReceiptImage>
         <ImageDisplay
           objectFit={'cover'}
@@ -300,6 +311,13 @@ const RecipeDetail = () => {
           </TabContent>
         )}
       </TabListContainer>
+      {isShareModalOpen && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={handleShareModalClose}
+          shareUrl={window.location.href}
+        />
+      )}
     </Layout>
   );
 };
