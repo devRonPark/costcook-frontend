@@ -8,42 +8,10 @@ import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 import WeeklyCalendar from './WeeklyCalendar';
 import { budgetAPI } from '../services/budget.api';
 import { useNavigate } from 'react-router-dom';
-
-// 연 단위 주차 계산( 예: 45차 )
-const getCurrentYearAndWeek = (date) => {
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const diffInMilliseconds = date - startOfYear;
-  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
-  const currentWeek = Math.ceil((diffInDays + startOfYear.getDay() + 1) / 7);
-  return { year: date.getFullYear(), week: currentWeek };
-};
-
-// 캘린더 날짜 계산
-const getWeekAndFirstSundayDate = (date) => {
-  // 오늘 날짜 : date
-  const currentYear = date.getFullYear(); // 년
-  const currentMonth = date.getMonth(); // 월
-  const currentDay = date.getDate(); // 일
-  const dayOfWeek = date.getDay(); // 요일 0: 일요일, 1: 월요일, ..., 6: 토요일
-
-  // 해당 날짜의 주의 일요일을 찾는다
-  const sundayDate = new Date(date);
-  sundayDate.setDate(currentDay - dayOfWeek); // 주의 첫 날인 일요일로 이동
-
-  // 일요일 기준으로 주차 계산
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const firstSunday = new Date(firstDayOfMonth);
-  firstSunday.setDate(
-    firstDayOfMonth.getDate() + ((7 - firstDayOfMonth.getDay()) % 7)
-  );
-
-  // 일요일을 기준으로 몇 번째 주인지 계산
-  const weekOffset = Math.floor(
-    (sundayDate.getDate() + sundayDate.getDay()) / 7
-  );
-
-  return { week: weekOffset + 1, firstSundayDate: sundayDate };
-};
+import {
+  getCurrentYearAndWeek,
+  getWeekAndFirstSundayDate,
+} from '../utils/dateUtil';
 
 // 예산 집계
 const BudgetPage = () => {
@@ -78,7 +46,7 @@ const BudgetPage = () => {
       setUseAmount(usedBudget);
       setRemainingBudget(remainingBudget);
       setRecipes(recipes);
-      resetPriceData();
+      resetData();
       calculatePrices(recipes); // 함수에 recipes를 보냄
     } catch (error) {
       console.error('사용 예산 데이터 출력 중 오류 발생', error);
@@ -109,6 +77,8 @@ const BudgetPage = () => {
 
   useEffect(() => {
     getUsedWeeklyBudget();
+    console.log(year);
+    console.log(week);
   }, [year, week]);
 
   useEffect(() => {
@@ -148,7 +118,7 @@ const BudgetPage = () => {
   const handleIncreaseWeek = () => handleWeekChange(1);
 
   // 주차 변경 시 데이터 리셋
-  const resetPriceData = () => {
+  const resetData = () => {
     setHighestPrice(0);
     setLowestPrice(0);
     setAveragePrice(0);
