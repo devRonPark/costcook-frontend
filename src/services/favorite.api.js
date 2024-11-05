@@ -11,4 +11,7 @@ export const favoriteAPI = {
   // 여러 개의 즐겨찾기 삭제 요청 (옵션)
   removeFavorites: (recipeIds) =>
     apiClient.delete(`/favorites?recipeIds=${recipeIds.join(',')}`),
+
+  // 즐겨찾기 목록 조회 요청
+  getFavorites: (page) => apiClient.get(`/favorites?page=${page}`),
 };
