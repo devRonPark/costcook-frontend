@@ -99,6 +99,7 @@ const RecipePage = () => {
   // 더보기 전달값 적용
   useEffect(() => {
     if (more) {
+      set;
       handleSort(more === 'viewCountDesc' ? SORT.VIEW_COUNT : more, ORDER.DESC);
     }
   }, [more]);

@@ -9,7 +9,9 @@ import {
   getCurrentYearAndWeek,
   getWeekAndFirstSundayDate,
 } from '../utils/dateUtil';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { RecipeSlide } from '../components/display/RecipeSlide';
+import { recommendAPI } from '../services/recommend.api';
 
 // 날짜 계산 (헤더에 날짜 표시)
 
@@ -22,17 +24,32 @@ const WeeklyDetail = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(0);
   const [firstSundayDateString, setFirstSundayDateString] = useState('');
-  const [recipes, setRecipes] = useState([]);
+  const [usedRecipes, setUsedRecipes] = useState([]); // 사용 레시피
+  const [recommendedRecipes, setRecommendedRecipes] = useState([]); // 추천받은 레시피
   console.log('유저 정보: ', state?.user);
 
-  // 요리한 레시피 정보 가져오기
+  // 추천받은 레시피 정보 가져오기(is_used 무관)
+  const getRecommendedRecipes = async () => {
+    try {
+      const recommendedRes = await recommendAPI.getRecommendedRecipes(
+        year,
+        week
+      );
+      const recommendedRecipes = recommendedRes.data.recipes || [];
+      setRecommendedRecipes(recommendedRecipes);
+      console.log('추천받은 레시피 정보 : ', recommendedRecipes);
+    } catch (error) {
+      console.log('데이터 출력 중 오류 발생', error);
+    }
+  };
+
+  // 요리한 레시피 정보 가져오기(is_used = 1)
   const getUsedRecipes = async () => {
     try {
-      const res = await budgetAPI.getUsedWeeklyBudget(year, week);
-      const recipes = res.data.recipes || [];
-      setRecipes(recipes);
-      resetData();
-      console.log('사용 레시피 정보: ', recipes);
+      const usedRes = await budgetAPI.getUsedWeeklyBudget(year, week);
+      const usedRecipes = usedRes.data.recipes || [];
+      setUsedRecipes(usedRecipes);
+      console.log('사용 레시피 정보: ', usedRecipes);
     } catch (error) {
       console.error('데이터 출력 중 오류 발생', error);
     }
@@ -44,6 +61,7 @@ const WeeklyDetail = () => {
     console.log('연', year);
     console.log('주차', week);
     getUsedRecipes();
+    getRecommendedRecipes();
   }, [year, week]);
 
   useEffect(() => {
@@ -79,44 +97,39 @@ const WeeklyDetail = () => {
     setWeek(newWeek);
     console.log('newYear:', newYear);
     console.log('newWeek:', newWeek);
-    navigate(`/weeklyDetail/${newYear}/${newWeek}`);
   };
 
   // 주차 변경 버튼 클릭 핸들러
   const handleDecreaseWeek = () => handleWeekChange(-1);
   const handleIncreaseWeek = () => handleWeekChange(1);
 
-  // 주차 변경 시 데이터 리셋
-  const resetData = () => {
-    setLowestPriceTitle('');
-  };
-
   return (
     <Layout pageName={'주 간 활동'} isBackBtnExist isSearchBtnExist>
+      <DateContainer>
+        <SplitData>
+          <ArrowButton onClick={handleDecreaseWeek}>
+            <KeyboardArrowLeftIcon fontSize="large" />
+          </ArrowButton>
+          <h2 style={{ fontFamily: 'yg-jalnan' }}>
+            {currentMonth} {weekNumber}주차
+          </h2>
+          <ArrowButton onClick={handleIncreaseWeek}>
+            <KeyboardArrowRightIcon fontSize="large" />
+          </ArrowButton>
+        </SplitData>
+      </DateContainer>
+      <div>{state.user?.nickname}님의 주간 활동</div>
+      <div>추천받은 레시피</div>
       <div>
-        <DateContainer>
-          <SplitData>
-            <ArrowButton onClick={handleDecreaseWeek}>
-              <KeyboardArrowLeftIcon fontSize="large" />
-            </ArrowButton>
-            <h2 style={{ fontFamily: 'yg-jalnan' }}>
-              {currentMonth} {weekNumber}주차
-            </h2>
-            <ArrowButton onClick={handleIncreaseWeek}>
-              <KeyboardArrowRightIcon fontSize="large" />
-            </ArrowButton>
-          </SplitData>
-        </DateContainer>
-        <div>{state.user?.nickname}님의 주간 활동</div>
-        <div>요리한 레시피</div>
-        <div>
-          요리한 레시피 목록(is_used = 1)
-          <br />
-          (getUsedWeeklyBudget 에서 레시피 목록 가져오기)
-        </div>
-        <div>추천받은 레시피</div>
-        <div>추천받은 레시피 목록(is_used 무관)</div>
+        <RecipeSlide recipes={recommendedRecipes} />
       </div>
+      <br />
+      <br />
+      <br />
+      <br />
+
+      <div>요리한 레시피</div>
+      <RecipeSlide recipes={usedRecipes} />
     </Layout>
   );
 };

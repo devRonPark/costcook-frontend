@@ -154,7 +154,7 @@ function App() {
             }
           />
           <Route path="/my/reviews" element={<MyReviewPage />} />
-          <Route path="/weeklyDetail/:year/:week" element={<WeeklyDetail />} />
+          <Route path="/weeklyDetail" element={<WeeklyDetail />} />
 
           {/* 관리자만 접근 가능 */}
           <Route path="/admin" element={<AdminHome />} />
@@ -166,22 +166,13 @@ function App() {
             path="/admin/ingredient-list"
             element={<AdminIngredientList />}
           />
-          <Route 
-            path="/admin/recipe-form" 
-            element={<AdminRecipeForm />} 
-          />
-          <Route 
-            path="/admin/recipe-ingredient" 
-            element={<RecipeIngredientPage />} 
-          />
-          <Route 
-            path="/admin/recipe-list" 
-            element={<AdminRecipeList />} 
-          />
+          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
           <Route
-            path="/admin/review-list"
-            element={<AdminReviewList/>}
+            path="/admin/recipe-ingredient"
+            element={<RecipeIngredientPage />}
           />
+          <Route path="/admin/recipe-list" element={<AdminRecipeList />} />
+          <Route path="/admin/review-list" element={<AdminReviewList />} />
           {/* 아직 명확하지 않은 페이지 */}
           <Route
             path="/list"
