@@ -16,25 +16,44 @@ const AdminReviewList = () => {
   const [error, setError] = useState(null); // 에러 상태
   const [page, setPage] = useState(1); // 현재 페이지
   const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
+  const [inputKeyword, setInputKeyword] = useState(''); // 폼에 입력된 검색 키워드 상태
+  const [serverKeyword, setServerKeyword] = useState(''); // 서버에 적용된 검색 키워드 상태
+  const [categories] = useState(['레시피', '작성자']); // 카테고리 목록 (고정값)
+  const [inputCategory, setInputCategory] = useState(''); // 폼에 선택된 카테고리
+  const [serverCategory, setServerCategory] = useState(''); // 서버에 적용된 카테고리
   const itemsPerPage = 5; // 페이지당 항목 수
 
   // 리뷰 데이터 가져오기 함수
-  const fetchReviews = async (currentPage) => {
+  const fetchReviews = async (currentPage, keyword, category) => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/admin/reviews', {
-        params: {
-          page: currentPage,
-          size: itemsPerPage,
-          sortBy: sortConfig.key, // 정렬 기준
-          direction: sortConfig.direction, // 정렬 방향 (오름차순/내림차순)
-        },
-      });
+
+      // params 객체를 맵처럼 구성
+      const params = {
+        page: currentPage - 1,
+        size: itemsPerPage,
+        sortBy: sortConfig.key,
+        direction: sortConfig.direction,
+      };
+
+      // 검색어가 있을 경우 params에 추가
+      if(keyword) {
+        params.query = keyword;
+      }
+
+      // 선택된 카테고리가 있을 경우 params에 추가
+      if(category) {
+        params.category = category;
+      }
+
+      // 요청을 보낼 때 params 객체 전달
+      const response = await apiClient.get('/admin/reviews', { params });
 
       // 성공적으로 데이터를 가져오면 리뷰 목록과 총 페이지 수를 업데이트
-      if (response.status === 200) {
+      if(response.status === 200) {
         const formattedReviews = response.data.reviews.map((review) => ({
-          ...review, id: review.id,
+          ...review,
+          id: review.id,
         }));
         setReviews(formattedReviews);
         setTotalPages(response.data.totalPages);
@@ -48,10 +67,10 @@ const AdminReviewList = () => {
     }
   };
 
-  // 컴포넌트 마운트 시 또는 페이지/정렬 변경 시 데이터 가져오기
+  // 컴포넌트 마운트 및 정렬, 페이지 변경 시 데이터 가져오기
   useEffect(() => {
-    fetchReviews(page);
-  }, [page, sortConfig]);
+    fetchReviews(page, serverKeyword, serverCategory);
+  }, [page, sortConfig, serverKeyword, serverCategory]);
 
   // 리뷰 클릭 시 리뷰 모달 표시
   const handleReviewClick = (review) => {
@@ -71,6 +90,10 @@ const AdminReviewList = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+
+    // 정렬 시 폼의 값들을 서버에 적용된 값으로 리셋
+    setInputKeyword(serverKeyword);  // 폼 검색어를 서버 검색어로 리셋
+    setInputCategory(serverCategory);  // 폼 카테고리를 서버 카테고리로 리셋
   };
 
   // 정렬 아이콘을 설정하는 함수
@@ -94,22 +117,40 @@ const AdminReviewList = () => {
     );
   };
 
+  // 검색어 변경 핸들러
+  const handleKeywordChange = (e) => {
+    setInputKeyword(e.target.value);
+  };
+
+  // 검색 실행 함수 (검색 버튼 클릭 시)
+  const handleSearchSubmit = (e) => {
+    e.preventDefault(); // 기본 동작 방지
+    setPage(1); // 검색할 때 페이지를 첫 번째로 설정
+    setServerKeyword(inputKeyword); // 적용된 검색어 업데이트
+    setServerCategory(inputCategory); // 적용된 카테고리 업데이트
+  };
+
+  // 카테고리 변경 핸들러
+  const handleCategoryChange = (e) => {
+    setInputCategory(e.target.value); // 선택된 카테고리 업데이트
+  };
+
   // 로딩 상태일 때의 화면
   if (loading) {
     return (
       <AdminLayout title="리뷰">
-        <LoadingWrapper>리뷰를 불러오는 중입니다...</LoadingWrapper>;
+        <LoadingWrapper>리뷰를 불러오는 중입니다...</LoadingWrapper>
       </AdminLayout>
-    ) 
+    ); 
   }
 
   // 에러 발생 시의 화면
   if (error) {
     return (
       <AdminLayout title="리뷰">
-        <ErrorWrapper>{error}</ErrorWrapper>;
+        <ErrorWrapper>{error}</ErrorWrapper>
       </AdminLayout>
-    )
+    );
   }
 
   // 실제 화면 렌더링
@@ -139,7 +180,7 @@ const AdminReviewList = () => {
                 <td>{review.recipe.title}</td>
                 <td>{review.user.nickname}</td>
                 <td>
-                  <FaStar color="#ffc107" size={16} style={{ margin: '2.5px 5px -2.5px 0px'}} /> 
+                  <FaStar color="#ffc107" size={16} style={{ margin: '2.5px 5px -2.5px 0px' }} />
                   {review.score}
                 </td>
                 <td>{renderStatusIcon(review.status)}</td>
@@ -160,9 +201,28 @@ const AdminReviewList = () => {
           siblingCount={2}
           boundaryCount={0}
           showFirstButton
-          showLastButton 
+          showLastButton
         />
       </PaginationWrapper>
+      <SearchForm onSubmit={handleSearchSubmit}>
+        {/* 카테고리 드롭다운 컴포넌트 */}
+        <CategorySelect value={inputCategory} onChange={handleCategoryChange}>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </CategorySelect>
+
+        {/* 검색창 컴포넌트 */}
+        <SearchInput
+          type="text"
+          value={inputKeyword}
+          onChange={handleKeywordChange}
+          placeholder="검색어를 입력하세요..."
+        />
+        <SearchButton type="submit">검색</SearchButton>
+      </SearchForm>
 
       {/* 리뷰 모달 컴포넌트 */}
       {selectedReview && (
@@ -180,7 +240,7 @@ export default AdminReviewList;
 // 스타일 정의
 const TableWrapper = styled.div`
   overflow-x: auto;
-  margin-top: 60px;
+  margin-top: 80px;
 `;
 
 const Table = styled.table`
@@ -232,9 +292,53 @@ const Table = styled.table`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
+`;
+
+const SearchForm = styled.form`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+`;
+
+const CategorySelect = styled.select`
+  padding: 10px 7px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  width: 80px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23555"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
+  background-color: white;
+  background-size: 20px;
+`;
+
+const SearchInput = styled.input`
+  width: 260px; 
+  padding: 12px; 
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+`;
+
+const SearchButton = styled.button`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 const LoadingWrapper = styled.div`
