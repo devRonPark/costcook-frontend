@@ -12,6 +12,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { RecipeSlide } from '../components/display/RecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
+import { Button } from '@mui/material';
 
 // 날짜 계산 (헤더에 날짜 표시)
 
@@ -104,7 +105,15 @@ const WeeklyDetail = () => {
   const handleIncreaseWeek = () => handleWeekChange(1);
 
   return (
-    <Layout pageName={'주 간 활동'} isBackBtnExist isSearchBtnExist>
+    <Layout
+      pageName={`${
+        state.user?.nickname
+          ? `${state.user?.nickname} 님의 주간 활동`
+          : '주간 활동'
+      }`}
+      isBackBtnExist
+      isSearchBtnExist
+    >
       <DateContainer>
         <SplitData>
           <ArrowButton onClick={handleDecreaseWeek}>
@@ -118,18 +127,43 @@ const WeeklyDetail = () => {
           </ArrowButton>
         </SplitData>
       </DateContainer>
-      <div>{state.user?.nickname}님의 주간 활동</div>
-      <div>추천받은 레시피</div>
-      <div>
-        <RecipeSlide recipes={recommendedRecipes} />
-      </div>
+      <RecipeListBox>
+        {recommendedRecipes.length > 0 ? (
+          <>
+            <RecipeListText>추천받은 레시피</RecipeListText>
+            <div style={{ width: '100%' }}>
+              <RecipeSlide recipes={recommendedRecipes} />
+            </div>
+          </>
+        ) : (
+          <>
+            <RecipeListText>추천받은 레시피가 없습니다.</RecipeListText>
+            <ButtonBox>
+              <GoHomeButton>추천받으러 가기</GoHomeButton>
+            </ButtonBox>
+          </>
+        )}
+      </RecipeListBox>
       <br />
       <br />
       <br />
-      <br />
-
-      <div>요리한 레시피</div>
-      <RecipeSlide recipes={usedRecipes} />
+      <RecipeListBox>
+        {usedRecipes.length > 0 ? (
+          <>
+            <RecipeListText>요리한 레시피</RecipeListText>
+            <div style={{ width: '100%' }}>
+              <RecipeSlide recipes={usedRecipes} />
+            </div>
+          </>
+        ) : (
+          <>
+            <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
+            <ButtonBox>
+              <GoHomeButton>요리하러 가기</GoHomeButton>
+            </ButtonBox>
+          </>
+        )}
+      </RecipeListBox>
     </Layout>
   );
 };
@@ -139,7 +173,6 @@ export default WeeklyDetail;
 const DateContainer = styled.div`
   height: 80px;
   width: 100%;
-  border-bottom: 1px black solid;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -156,4 +189,28 @@ const SplitData = styled.div`
 
 const ArrowButton = styled.div`
   cursor: pointer;
+`;
+
+const RecipeListBox = styled.div`
+  width: 95%;
+  margin-bottom: 10px;
+  text-align: right;
+`;
+const RecipeListText = styled.div`
+  font-family: 'yg-jalnan';
+  font-size: 18px;
+  text-align: right;
+  margin-bottom: 10px;
+`;
+
+const ButtonBox = styled.div`
+  margin-top: 10px;
+  text-align: center;
+`;
+
+const GoHomeButton = styled(Link)`
+  color: black;
+  border: none;
+  border-radius: 10px;
+  background-color: blue;
 `;

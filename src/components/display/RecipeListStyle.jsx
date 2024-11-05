@@ -88,6 +88,8 @@ export const StarText = styled.p`
 
 // Hompage.jsx
 export const SettingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100%;
 `;
 
@@ -96,6 +98,12 @@ export const MoneyContainerWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
   margin: 10px 0;
+`;
+export const RowTextContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 export const MoneyButton = styled.button`
@@ -156,6 +164,7 @@ export const ListContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 `;
 
 export const RightText = styled(Button)`

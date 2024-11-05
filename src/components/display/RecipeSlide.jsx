@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { StarRating } from '../StarRating';
@@ -7,85 +7,80 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
+import { PriceText, StarText, TitleText } from './RecipeListStyle';
 
 export const RecipeSlide = ({ recipes }) => {
+  // 랜덤 출력 (데이터에 0 ~ 1 랜덤 부여 후 0.5와 비교)
+  const shuffledRecipes = [...recipes].sort(() => 0.5 - Math.random());
+
   return (
-    <SlideContainer style={{ display: 'flex' }}>
-      {recipes.map((recipe) => (
-        <div key={recipe.id} style={{ width: '200px', marginRight: '10px' }}>
-          <RecipeCard>
-            <Link to={`/recipeDetail/${recipe.id}`}>
-              <ImageContainer>
+    <Swiper
+      loop={recipes.length > 1}
+      // slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
+      slidesPerView={3}
+      centeredSlides={true}
+      spaceBetween={10}
+      navigation={false}
+      pagination={recipes.length > 1 ? { clickable: true } : false}
+      modules={[Navigation, Pagination]}
+      style={{ paddingBottom: '30px' }}
+    >
+      {shuffledRecipes.map((recipe) => (
+        <SwiperSlide key={recipe.id}>
+          <Link to={`/recipeDetail/${recipe.id}`}>
+            <List>
+              <RecipeImageBox>
                 <RecipeImage
-                  alt={recipe.title}
                   src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+                  alt={recipe.title}
                 />
-              </ImageContainer>
-            </Link>
-            <RecipeTitle>{recipe.title}</RecipeTitle>
-            <RecipePrice>
-              {formatPrice(recipe.price / recipe.servings)}원 (1인분)
-            </RecipePrice>
-            <StarText>
-              <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
-            </StarText>
-          </RecipeCard>
-        </div>
+              </RecipeImageBox>
+              <TextBox>
+                <TitleText>{recipe.title}</TitleText>
+                <PriceText>
+                  {formatPrice(recipe.price / recipe.servings)}원 (1인분)
+                </PriceText>
+                <StarText>
+                  <StarRating ratings={recipe.avgRatings} /> (
+                  {recipe.avgRatings})
+                </StarText>
+              </TextBox>
+            </List>
+          </Link>
+        </SwiperSlide>
       ))}
-    </SlideContainer>
+    </Swiper>
   );
 };
 
-// 스타일 컴포넌트
-const SlideContainer = styled.div`
+const List = styled.div`
   display: flex;
-  overflow-x: auto;
-  height: 200px;
-  align-items: flex-start;
-`;
-
-const RecipeCard = styled.div`
-  background-color: #ffffff;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  height: 220px;
+  width: 200px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 `;
 
-const ImageContainer = styled.div`
-  /* position: relative; */
-  overflow: hidden;
-  width: 100%;
+const RecipeImageBox = styled.div`
   height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 `;
 
 const RecipeImage = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 102%;
   object-fit: cover;
+  border-radius: 10px 10px 0px 0px;
 `;
 
-const RecipeTitle = styled.div`
-  font-family: 'GumiRomanceTTF';
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin: 10px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 5px;
-`;
-
-const RecipePrice = styled.div`
-  font-family: 'BMJUA';
-  font-size: 1rem;
-  color: #666;
-  margin: 5px 0;
-`;
-
-const StarText = styled.div`
-  font-family: 'BMJUA';
-  font-size: 1rem;
-  color: #ffb400;
-  margin: 5px 0;
+const TextBox = styled.div`
+  width: 100%;
+  text-align: center;
 `;

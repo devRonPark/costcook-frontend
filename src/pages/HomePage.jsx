@@ -21,12 +21,14 @@ import {
   RightText,
   RecipeImage,
   RecipeImageBox,
-  TextBox,
+  RowTextContainer,
   TitleText,
   PriceText,
   StarText,
   ListRowContainer,
 } from '../components/display/RecipeListStyle';
+import { recommendAPI } from '../services/recommend.api';
+import Carousel from '../components/common/Carousel/MainPageCarousel';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -40,24 +42,26 @@ const getCurrentYearAndWeek = (date) => {
 };
 
 const HomePage = () => {
+  const [status, setStatus] = useState(1); // 기본값을 1로 설정 (첫 번째 추천)
   const { state } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(0); // 기본값 설정
   const [userId, setUserId] = useState(null); // 사용자 ID 상태 추가
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [size, setSize] = useState(3); // 3개만 보여주기
-
+  const [recipes, setRecipes] = useState([]);
+  const [totalPricePerServing, setTotalPricePerServing] = useState(0); // 총 합계를 저장할 상태 변수
   const navigate = useNavigate();
+  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
+  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
+  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const [autoIncrementing, setAutoIncrementing] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
   const handleBudgetChange = (event, newValue) => {
     setBudget(newValue);
   };
-
-  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
-  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
-
-  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
 
   // 예산 가져오기
   const fetchWeeklyBudget = async () => {
@@ -73,6 +77,38 @@ const HomePage = () => {
     }
   };
 
+  //
+
+  // 예산 랜덤 설정
+  const startAutoIncrement = () => {
+    setAutoIncrementing(true);
+
+    const incrementBudget = () => {
+      setBudget((prevBudget) => {
+        if (prevBudget < 100000) {
+          return prevBudget + 1000;
+        } else {
+          return 10000; // 예산이 100,000 이상이 되면 10,000으로 설정
+        }
+      });
+
+      // 0.01초(10ms)에서 0.1초(100ms) 사이의 랜덤 지연 시간 설정
+      const randomDelay = Math.random(); // 10ms에서 100ms 사이
+      const id = setTimeout(incrementBudget, randomDelay); // timeout ID 저장
+      setTimeoutId(id); // 상태에 저장
+    };
+
+    incrementBudget(); // 최초 호출
+  };
+
+  const stopAutoIncrement = () => {
+    clearTimeout(timeoutId); // 이전 timeout 취소
+    setAutoIncrementing(false);
+    setWeeklyBudget(); // 주간 예산 설정 함수 호출
+  };
+
+  //
+
   useEffect(() => {
     setYear(year);
     setWeek(week);
@@ -82,24 +118,31 @@ const HomePage = () => {
       try {
         const response = await AuthApi.getMyInfo();
         setUserId(response.data.id); // 사용자 ID 설정
-        console.log(response.data.id);
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
       }
     };
     fetchUserInfo();
     fetchWeeklyBudget();
-
-    // if (state.isAuthenticated) {
-    //   // 회원
-    //   fetchWeeklyBudget();
-    // } else {
-    //   // 비회원
-    //   if (sessionStorage.getItem("budget"))
-    //   setBudget(sessionStorage.getItem("budget"));
-    //   setIsDefaultBudget(true);
-    // }
+    getRecommendedRecipes();
   }, []);
+
+  // 추천 받은 레시피 가져오기
+
+  const getRecommendedRecipes = async () => {
+    try {
+      const response = await recommendAPI.getRecommendedRecipes(year, week);
+      setRecipes(response.data.recipes);
+
+      const totalPrice = response.data.recipes.reduce((sum, recipe) => {
+        return sum + recipe.price / recipe.servings;
+      }, 0);
+
+      setTotalPricePerServing(totalPrice);
+    } catch (error) {
+      console.error('추천 레시피를 불러오는 중 오류 발생:', error);
+    }
+  };
 
   // DB에 사용자가 설정한 예산 등록
   const setWeeklyBudget = async () => {
@@ -166,50 +209,44 @@ const HomePage = () => {
   return (
     <Layout isSearchBtnExist pageName="Cost Cook">
       <SettingContainer>
-        <h3>추천 설정</h3>
+        <h2>추천 설정</h2>
         <MoneyContainerWrapper>
-          <MoneyButton onClick={openModal}>
-            예산 : {budget.toLocaleString()}원
-          </MoneyButton>
+          {recipes.length === 0 ? (
+            <MoneyButton onClick={openModal}>
+              예산 : {budget.toLocaleString()}원
+            </MoneyButton>
+          ) : (
+            <RowTextContainer>
+              <h4>
+                이번주 설정 예산 :{' '}
+                {Math.floor(totalPricePerServing).toLocaleString()} /{' '}
+                {budget.toLocaleString()}원
+              </h4>
+              <Button
+                onClick={() => {
+                  setStatus(2);
+                  checkIsDefaultBudget();
+                }}
+              >
+                다시 추천받기
+              </Button>
+            </RowTextContainer>
+          )}
         </MoneyContainerWrapper>
       </SettingContainer>
       <RecommendContainer>
         <ListContainer>
-          <List>
-            {/* 로직 구현 시 실제 이미지 넣기 */}
-            {/* 로직 구현 시 실제 데이터 넣기 */}
-            <RecipeImageBox>
-              <Button
-                onClick={() => {
-                  checkIsDefaultBudget();
-                }}
-              >
-                추천받기
-              </Button>
-            </RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-
-          <List>
-            <RecipeImageBox>이미지</RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-          <List>
-            <RecipeImageBox>이미지</RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
+          {recipes.length === 0 ? (
+            <Button
+              onClick={() => {
+                checkIsDefaultBudget();
+              }}
+            >
+              추천받기
+            </Button>
+          ) : (
+            <Carousel recipes={recipes} year={year} week={week} />
+          )}
         </ListContainer>
       </RecommendContainer>
       <UpcommingReceiptContainer>
@@ -258,6 +295,12 @@ const HomePage = () => {
             valueLabelDisplay="auto"
           />
           <p>선택된 예산: {budget.toLocaleString()}원</p>
+          <Button
+            onMouseDown={startAutoIncrement}
+            onMouseUp={stopAutoIncrement}
+          >
+            꾹 누르기
+          </Button>
           <Button onClick={() => setWeeklyBudget()}>확인</Button>
         </ModalContainer>
       </Modal>
