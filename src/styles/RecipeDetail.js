@@ -85,7 +85,6 @@ export const TabList = styled.div`
 
 export const TabContent = styled.div`
   width: 100%;
-  min-height: 150px;
   margin: 10px 0px;
   display: flex;
   align-items: center;

@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
 import { formatPrice } from '../utils/formatData';
-// import RecipeEvaluation from '../components/Input/RecipeEvaluation';
+import RecipeEvaluation from '../components/RecipeEvaluation';
 import { useInView } from 'react-intersection-observer';
 import ImageDisplay from '../components/display/ImageDisplay';
 import { useAuth } from '../context/Auth/AuthContext';
@@ -36,10 +36,14 @@ import RecipeInstructions from '../components/RecipeInstructions';
 import ReviewEditModal from '../components/ReviewEditModal';
 import { Star, StarOutline } from '@mui/icons-material';
 import LoginModal from '../components/common/LoginModal';
+import ReviewApi from '../services/review.api';
+import { toast } from 'react-toastify';
+import UserApi from '../services/user.api';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
   const { state } = useAuth();
+  const [isMyReviewExist, setIsMyReviewExist] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
 
   const navigate = useNavigate();
@@ -148,7 +152,9 @@ const RecipeDetail = () => {
   // 리뷰 관련 메소드
   // 리뷰 작성 모달 내 인풋 변경 시
   const resetReview = () => setReviewState({ score: 0, comment: '' });
-  const handleReviewModalOpen = () => setIsReviewModalOpen(true);
+  const handleReviewModalOpen = () => {
+    setIsReviewModalOpen(true);
+  };
   const handleReviewModalClose = () => {
     setIsReviewModalOpen(false);
     resetReview();
@@ -166,12 +172,44 @@ const RecipeDetail = () => {
       // 로그인 모달 띄우기
       handleLoginModalOpen();
     } else {
+      if (isMyReviewExist) {
+        toast.info('이 레시피에 대한 리뷰는 이미 작성하셨습니다.');
+        return;
+      }
       handleReviewModalOpen();
       handleReviewChange('score', newScore);
     }
   };
-  const handleReviewSubmit = async () => {
-    alert('리뷰 등록');
+
+  const createReview = async () => {
+    try {
+      const form = {
+        recipeId: parseInt(recipeId),
+        ...reviewState,
+      };
+      console.log(form);
+      const res = await ReviewApi.createReview(form);
+      if (res.status === 201) {
+        console.log(res.data);
+        toast.success('리뷰가 성공적으로 등록되었습니다!'); // 성공 메시지
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMessage =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message // 서버에서 반환된 메시지 사용
+          : '리뷰 등록에 실패했습니다. 다시 시도해 주세요.'; // 기본 메시지
+
+      toast.error(errorMessage); // 에러 메시지 표시
+    }
+  };
+  // 리뷰 등록, 수정에서 범용적으로 사용됨.
+  const handleReviewSubmit = () => {
+    // 리뷰 등록
+    if (!isReviewEditMode) {
+      createReview();
+      resetReview();
+    }
   };
   // 이 레시피에 내가 작성한 리뷰 가져오기
 
@@ -192,6 +230,21 @@ const RecipeDetail = () => {
       console.error('리뷰 불러오기 오류', error);
     }
   };
+
+  useEffect(() => {
+    const fetchMyReview = async () => {
+      try {
+        const res = await UserApi.getMyReviewWithRecipeId(recipeId);
+        console.log(res.data);
+        setIsMyReviewExist(!!res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (state.isAuthenticated && state.user != null) {
+      fetchMyReview();
+    }
+  }, [recipeId, state]);
 
   // 스크롤 시 페이지 증가
   useEffect(() => {
@@ -322,38 +375,12 @@ const RecipeDetail = () => {
           )}
         </TabList>
         {activeTabs.includes('recipeEvaluation') && (
-          // 레시피 평가 컴포넌트 가져오기
           <TabContent>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '10px',
-                width: '300px',
-              }}
-            >
-              {Array(5)
-                .fill()
-                .map((_, index) => {
-                  const isFilled = index < reviewState.score;
-                  return (
-                    <span
-                      key={index}
-                      onClick={() => handleStarClick(index)}
-                      style={{ cursor: 'pointer', marginRight: '2px' }}
-                    >
-                      {isFilled ? (
-                        <Star style={{ color: 'gold', fontSize: '24px' }} />
-                      ) : (
-                        <StarOutline
-                          style={{ color: 'gold', fontSize: '24px' }}
-                        />
-                      )}
-                    </span>
-                  );
-                })}
-            </div>
-            <p>레시피를 평가해주세요.</p>
+            <RecipeEvaluation
+              isMyReviewExist={isMyReviewExist}
+              reviewState={reviewState}
+              handleStarClick={handleStarClick}
+            />
           </TabContent>
         )}
 
