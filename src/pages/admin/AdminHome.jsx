@@ -19,7 +19,7 @@ const AdminHome = () => {
       <BoxContainer>
         <Box onClick={() => navigate('/admin/recipe-list')}>레시피</Box>
         <Box onClick={() => navigate('/admin/ingredient-list')}>재료</Box>
-        <Box onClick={() => handleAlert("3번")}>페이지 3</Box>
+        <Box onClick={() => navigate('/admin/review-list')}>리뷰</Box>
         <Box onClick={() => handleAlert("4번")}>페이지 4</Box>
       </BoxContainer>
     </AdminLayout>

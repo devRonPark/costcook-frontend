@@ -160,8 +160,10 @@ export const ListContainer = styled.div`
 `;
 
 export const RightText = styled(Button)`
+  font-family: 'BMJUA' !important;
+  color: black !important;
   margin-right: 8px;
-  font-size: 12px;
+  font-size: 14px;
   text-align: right;
 `;
 
