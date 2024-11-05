@@ -229,6 +229,7 @@ const SearchPage = () => {
                 getFavoriteRecipeIds().includes(recipe.id);
               return (
                 <RecipeCard
+                  layoutType="search"
                   key={recipe.id}
                   recipe={{ favorite: isFavorite, ...recipe }} // isFavorite 여부를 recipe.favorite에 반영
                   ref={

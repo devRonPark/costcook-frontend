@@ -2,24 +2,23 @@ import { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Link, useLocation } from 'react-router-dom';
 import { FilterDropdownButton } from '../components/common/Button/FilterDropdownButton';
-import {
-  FilterListContainer,
-  List,
-  ListRowContainer,
-  PriceText,
-  RecipeImage,
-  RecipeImageBox,
-  StarText,
-  TitleText,
-} from '../components/display/RecipeListStyle';
+import { FilterListContainer } from '../components/display/RecipeListStyle';
 import Layout from '../components/layout/Layout';
-import { StarRating } from '../components/StarRating';
 import { recipeAPI } from '../services/recipe.api';
-import { formatPrice } from '../utils/formatData';
 import { ORDER, SORT } from '../utils/sort';
+import RecipeCard from '../components/display/RecipeCard';
+import { toast } from 'react-toastify';
+import { useAuth } from '../context/Auth/AuthContext';
+import {
+  addFavoriteRecipeId,
+  removeFavoriteRecipeId,
+} from '../utils/sessionStorageUtil';
+import { favoriteAPI } from '../services/favorite.api';
+import CardListContainer from '../components/CardListContainer';
 
 const RecipePage = () => {
   const location = useLocation();
+  const { state } = useAuth();
   const { more } = location.state || {};
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [page, setPage] = useState(1); // 현재 페이지
@@ -38,16 +37,14 @@ const RecipePage = () => {
       }
       if (page === 1) {
         setRecipeList(res.data.recipes);
+      } else {
+        setRecipeList((prevRecipes) => {
+          const newRecipes = res.data.recipes.filter(
+            (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
+          );
+          return [...prevRecipes, ...newRecipes];
+        });
       }
-      setRecipeList((prevRecipes) => {
-        const myFavorites = sessionStorage.getItem('');
-        const newRecipes = res.data.recipes.filter(
-          (newRecipe) => !prevRecipes.some((prev) => prev.id === newRecipe.id)
-        );
-        return [...prevRecipes, ...newRecipes];
-      });
-      // setRecipeList((prevRecipes) => [...res.data.recipes, ...prevRecipes]);
-      console.log('출력된 데이터 : ', res.data.recipes);
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
@@ -96,6 +93,39 @@ const RecipePage = () => {
     }
   };
 
+  // @param recipe : 업데이트 대상 recipe 데이터
+  // @param favoriteToUpdate : true > 즐겨찾기 추가 요청, false > 즐겨찾기 삭제 요청
+  const handleToggleFavorite = async (recipe, favoriteToUpdate) => {
+    try {
+      if (state.isAuthenticated) {
+        if (favoriteToUpdate) {
+          // 회원 > 즐겨찾기 추가 요청
+          await favoriteAPI.addFavorite([recipe.id]);
+          addFavoriteRecipeId(recipe.id); // 세션 스토리지에 추가
+          toast.info('즐겨찾기에 성공적으로 추가되었습니다.');
+        } else {
+          // 회원 > 즐겨찾기 삭제 요청
+          await favoriteAPI.removeFavorite(recipe.id);
+          removeFavoriteRecipeId(recipe.id); // 세션 스토리지에서 제거
+          toast.info('즐겨찾기에서 성공적으로 제거되었습니다.');
+        }
+      } else {
+        if (favoriteToUpdate) {
+          addFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에 추가
+          toast.info('즐겨찾기에 추가되었습니다.');
+        } else {
+          removeFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에서 제거
+          toast.info('즐겨찾기에서 제거되었습니다.');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        '즐겨찾기 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      );
+    }
+  };
+
   // 더보기 전달값 적용
   useEffect(() => {
     if (more) {
@@ -111,29 +141,20 @@ const RecipePage = () => {
       </FilterListContainer>
 
       {/* 레시피 목록  Container */}
-      <ListRowContainer>
-        {recipeList.map((recipe) => (
-          <List key={recipe.id}>
-            <Link to={`/recipeDetail/${recipe.id}`}>
-              <RecipeImageBox>
-                <RecipeImage
-                  alt={recipe.title}
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
-                />
-              </RecipeImageBox>
-            </Link>
-            <TitleText>{recipe.title}</TitleText>
-            <PriceText>
-              {formatPrice(recipe.price / recipe.servings)}원 (1인분)
-            </PriceText>
-            <StarText>
-              <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
-            </StarText>
-          </List>
-        ))}
+      <CardListContainer layoutType="recipe">
+        {recipeList.map((recipe, index) => {
+          return (
+            <RecipeCard
+              key={recipe.id}
+              recipe={{ ...recipe }}
+              onToggleFavorite={handleToggleFavorite}
+              layoutType="recipe"
+            />
+          );
+        })}
         {/* 데이터가 더 있으면 추가 로드 */}
         {hasMore && <p ref={ref}></p>}
-      </ListRowContainer>
+      </CardListContainer>
     </Layout>
   );
 };

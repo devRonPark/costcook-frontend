@@ -25,8 +25,8 @@ import {
   TitleText,
   PriceText,
   StarText,
-  ListRowContainer,
 } from '../components/display/RecipeListStyle';
+import CardListContainer from '../components/CardListContainer';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -218,7 +218,7 @@ const HomePage = () => {
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <ListRowContainer>
+          <CardListContainer layoutType="home">
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
                 <Link to={`/recipeDetail/${recipe.id}`}>
@@ -241,7 +241,7 @@ const HomePage = () => {
                 </StarText>
               </List>
             ))}
-          </ListRowContainer>
+          </CardListContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 

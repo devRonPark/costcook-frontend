@@ -4,9 +4,10 @@ import styled from 'styled-components';
 import { forwardRef, useState } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { StarRating } from '../StarRating';
 
 const RecipeCard = forwardRef(
-  ({ recipe, onToggleFavorite, showFavoriteIcon = true }, ref) => {
+  ({ recipe, onToggleFavorite, showFavoriteIcon = true, layoutType }, ref) => {
     const navigate = useNavigate();
     const [favorite, setFavorite] = useState(recipe.favorite);
 
@@ -20,6 +21,7 @@ const RecipeCard = forwardRef(
       <CardContainer
         onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
         ref={ref}
+        layoutType={layoutType}
       >
         {showFavoriteIcon && (
           <FavoriteButton onClick={handleFavoriteClick}>
@@ -44,7 +46,7 @@ const RecipeCard = forwardRef(
             {formatNumberWithCommas(recipe.price)}원 (1인분)
           </PriceText>
           <StarText>
-            {renderStars(recipe.avgRatings)} {recipe.avgRatings}
+            <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
           </StarText>
         </TextContainer>
       </CardContainer>
@@ -57,16 +59,53 @@ export default RecipeCard;
 const CardContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
   align-items: center;
-  column-gap: 10px;
-  margin: 5px;
+  gap: 10px;
+  width: calc(100% - 10px);
+  min-width: 200px; // 카드의 최소 너비 설정 (가로로 두 개가 들어갈 수 있는 최소 크기)
   padding: 10px;
-  width: 100%;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // 그림자 효과 변경
-  cursor: pointer;
+  border-radius: 10px; // 카드 모서리 둥글게
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // 그림자 효과
+  cursor: pointer; // 포인터 커서
   position: relative;
+
+  /* 500px 이하에서 두 개씩 배치될 때 크기 조절 */
+  ${({ layoutType }) =>
+    layoutType === 'recipe' &&
+    `
+      @media (max-width: 500px) {
+        min-width: 200px;
+        flex-direction: row;
+        width: calc(100% - 10px); // 전체 너비에서 10px을 제외한 나머지 너비를 사용
+      }
+
+      @media (min-width: 501px) {
+        width: calc(50% - 5px);
+        flex-direction: column;
+      }
+    `}
+
+  /* 메인 페이지에서 한 줄에 세 개 배치 */
+  ${({ layoutType }) =>
+    layoutType === 'main' &&
+    `
+      width: calc(33.33% - 10px);
+    `}
+
+  ${({ layoutType }) =>
+    layoutType === 'search' &&
+    `
+      @media (max-width: 500px) {
+        flex-direction: column;
+      }
+    `}
+  ${({ layoutType }) =>
+    layoutType === 'favorite' &&
+    `
+      @media (max-width: 440px) {
+        flex-direction: column;
+      }
+    `}
 `;
 
 const FavoriteButton = styled.div`
@@ -102,8 +141,13 @@ const TextContainer = styled.div`
   justify-content: center;
   align-items: flex-start;
   margin-left: 10px;
-  width: calc(100% - 190px); // 이미지 크기를 제외한 너비 설정
   height: 100%;
+  flex: 1;
+
+  @media (min-width: 500px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;
 
 // 레시피 이름
