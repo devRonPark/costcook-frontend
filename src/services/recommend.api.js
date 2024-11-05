@@ -13,6 +13,15 @@ export const recommendAPI = {
       `/users/me/recommended-recipes?year=${year}&weekNumber=${weekNumber}`
     ),
 
+  deleteRecommendedRecipes: (year, weekNumber) => {
+    return apiClient.delete(`/recommendations/selected-recipes`, {
+      data: {
+        year: year,
+        weekNumber: weekNumber,
+      },
+    });
+  },
+
   getUsedRecipe: (recipe) => {
     apiClient.get(
       `/users/me/used-recipes?year=${year}&weekNumber=${weekNumber}`

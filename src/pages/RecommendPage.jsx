@@ -34,15 +34,20 @@ const RecommendPage = () => {
   }, [year, week]); // year와 week가 변경될 때마다 호출
 
   // 선택된 레시피 가격의 합을 계산하여 남은 예산을 업데이트하는 함수
-  const updateRemainingBudget = (newSelectedRecipes) => {
-    const totalSelectedCost = newSelectedRecipes.reduce(
-      (sum, recipe) => sum + recipe.price, // 레시피의 가격 속성을 이용해 합계 계산
+  const updateRemainingBudget = () => {
+    const totalSelectedCost = selectedRecipes.reduce(
+      (sum, recipe) => sum + recipe.price / recipe.servings,
       0
     );
     setRemainingBudget(budget - totalSelectedCost);
   };
 
+  useEffect(() => {
+    updateRemainingBudget(); // selectedRecipes가 변경될 때마다 남은 예산 업데이트
+  }, [selectedRecipes]);
+
   const handleSelectRecipe = (recipe) => {
+    console.log(recipe);
     setSelectedRecipes((prevSelected) => {
       // 이미 선택된 레시피가 있으면 제거, 없으면 추가
       const isSelected = prevSelected.some((item) => item.id === recipe.id);
@@ -64,20 +69,29 @@ const RecommendPage = () => {
 
   // 선택한 레시피를 DB에 저장하는 함수
   const handleCompleteSelection = async () => {
-    const recommendedRecipes = selectedRecipes.map((recipe) => ({
-      year,
-      weekNumber: week,
-      recipeId: recipe.id,
-      is_used: false,
-      userId: userId,
-    }));
+    const recommendedRecipes = selectedRecipes.map((recipe) => {
+      console.log(recipe.title, '의 상태 : ', recipe.used);
+      return {
+        year,
+        weekNumber: week,
+        recipeId: recipe.id,
+        used: recipe.used,
+        userId: userId,
+      };
+    });
 
-    console.log(recommendedRecipes);
     try {
+      // 예산 초기화
+      setRemainingBudget(budget);
+      // 기존 레시피 삭제
+      await recommendAPI.deleteRecommendedRecipes(year, week);
+
+      console.log(recommendedRecipes);
       const response = await recommendAPI.saveRecommendedRecipes(
         recommendedRecipes
       );
-      console.log('API Response:', response);
+      console.log(response);
+
       if (response.status === 201) {
         alert('레시피가 성공적으로 추천 목록에 추가되었습니다.');
         navigate('/Home');
@@ -141,7 +155,7 @@ const RecommendPage = () => {
       </RecommendContainer>
       <ShowBasicContainer>
         <ShowContainer>
-          남은 금액 : {remainingBudget.toLocaleString()}원
+          남은 금액 : {Math.round(remainingBudget).toLocaleString()}원
         </ShowContainer>
         <ShowContainer>
           <button onClick={handleCompleteSelection}>선택 완료</button>

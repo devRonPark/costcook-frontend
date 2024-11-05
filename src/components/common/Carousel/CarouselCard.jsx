@@ -14,9 +14,10 @@ const CarouselCard = ({
   remainingBudget,
 }) => {
   const [isClicked, setIsClicked] = useState(false);
+
   useEffect(() => {
-    setIsClicked(selectedRecipes?.includes(data));
-  }, [selectedRecipes]);
+    setIsClicked(selectedRecipes.some((recipe) => recipe.id === data.id));
+  }, [selectedRecipes, data.id]);
 
   // // 카드 클릭 시 상태 변경 함수
   const handleCardClick = () => {

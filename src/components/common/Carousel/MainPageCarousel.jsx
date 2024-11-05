@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css/pagination';
-import styled from 'styled-components';
-import { StarRating } from '../../../StarRating';
-import { formatPrice } from '../../../../utils/formatData';
-import './carousel.css';
 import CheckIcon from '@mui/icons-material/Check';
-import { recommendAPI } from '../../../../services/recommend.api';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { recommendAPI } from '../../../services/recommend.api';
+import { formatPrice } from '../../../utils/formatData';
+import { StarRating } from '../../StarRating';
 
+// 메인 캐러셀 (블러 X)
 const Carousel = ({ recipes, year, week }) => {
   const [updatedRecipes, setUpdatedRecipes] = useState(recipes);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -44,7 +44,7 @@ const Carousel = ({ recipes, year, week }) => {
 
   return (
     <Swiper
-      loop
+      loop={recipes.length > 3}
       slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
       centeredSlides={true}
       spaceBetween={0}

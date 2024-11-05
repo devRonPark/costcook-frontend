@@ -21,14 +21,14 @@ import {
   RightText,
   RecipeImage,
   RecipeImageBox,
-  TextBox,
+  RowTextContainer,
   TitleText,
   PriceText,
   StarText,
   ListRowContainer,
 } from '../components/display/RecipeListStyle';
 import { recommendAPI } from '../services/recommend.api';
-import Carousel from '../components/common/Carousel/Main/Carousel';
+import Carousel from '../components/common/Carousel/MainPageCarousel';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -51,18 +51,17 @@ const HomePage = () => {
   const [size, setSize] = useState(3); // 3개만 보여주기
   const [recipes, setRecipes] = useState([]);
   const [totalPricePerServing, setTotalPricePerServing] = useState(0); // 총 합계를 저장할 상태 변수
-
   const navigate = useNavigate();
+  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
+  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
+  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const [autoIncrementing, setAutoIncrementing] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
   const handleBudgetChange = (event, newValue) => {
     setBudget(newValue);
   };
-
-  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
-  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
-
-  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
 
   // 예산 가져오기
   const fetchWeeklyBudget = async () => {
@@ -80,9 +79,7 @@ const HomePage = () => {
 
   //
 
-  const [autoIncrementing, setAutoIncrementing] = useState(false);
-  const [timeoutId, setTimeoutId] = useState(null);
-
+  // 예산 랜덤 설정
   const startAutoIncrement = () => {
     setAutoIncrementing(true);
 
@@ -135,7 +132,6 @@ const HomePage = () => {
   const getRecommendedRecipes = async () => {
     try {
       const response = await recommendAPI.getRecommendedRecipes(year, week);
-      console.log(response.data.recipes);
       setRecipes(response.data.recipes);
 
       const totalPrice = response.data.recipes.reduce((sum, recipe) => {
@@ -220,7 +216,7 @@ const HomePage = () => {
               예산 : {budget.toLocaleString()}원
             </MoneyButton>
           ) : (
-            <div>
+            <RowTextContainer>
               <h4>
                 이번주 설정 예산 :{' '}
                 {Math.floor(totalPricePerServing).toLocaleString()} /{' '}
@@ -234,7 +230,7 @@ const HomePage = () => {
               >
                 다시 추천받기
               </Button>
-            </div>
+            </RowTextContainer>
           )}
         </MoneyContainerWrapper>
       </SettingContainer>
