@@ -66,6 +66,26 @@ const authReducer = (state, action) => {
         },
         isAuthenticated: true,
       };
+    case 'GET_MY_INFO':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...action.payload,
+          preferredIngredients:
+            action.payload.preferredIngredients?.length > 0
+              ? action.payload.preferredIngredients
+              : [],
+          dislikedIngredients:
+            action.payload.dislikedIngredients?.length > 0
+              ? action.payload.dislikedIngredients
+              : [],
+          nickname: action.payload.nickname ?? '',
+          profileFile: action.payload.profileFile ?? null,
+          profileUrl: action.payload.profileUrl ?? defaultImagePath,
+        },
+        isAuthenticated: true,
+      };
     case 'UPDATE_MY_INFO':
       const { field, value } = action.payload; // field와 value 추출
 
