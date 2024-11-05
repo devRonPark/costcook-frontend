@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onBackClick, onSubmit }) => (
+const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubmit }) => (
   <HeaderContainer>
-    <IconWrapper onClick={onBackClick}>
-      <ArrowBackIconStyled />
+    <IconWrapper onClick={onMenuClick}>
+      <MenuIconStyled />
     </IconWrapper>
     <Title>{title}</Title>
     <RightWrapper>
@@ -49,7 +49,7 @@ const IconWrapper = styled.div`
   }
 `;
 
-const ArrowBackIconStyled = styled(ArrowBackIcon)`
+const MenuIconStyled = styled(MenuIcon)`
   width: 24px;
   height: 24px;
 `;

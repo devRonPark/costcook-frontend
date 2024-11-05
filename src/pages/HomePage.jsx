@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { Button, Modal, Slider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -8,7 +7,6 @@ import AuthApi from '../services/auth.api';
 import { useAuth } from '../context/Auth/AuthContext';
 import { recipeAPI } from '../services/recipe.api';
 import { StarRating } from '../components/StarRating';
-
 import { formatPrice } from '../utils/formatData';
 import {
   SettingContainer,
@@ -143,7 +141,6 @@ const HomePage = () => {
         return;
       }
       setRecipeList(res.data.recipes);
-      console.log('홈페이지 인기레시피 : ', res.data.recipes);
     } catch (error) {
       console.error('페이지를 찾을 수 없습니다.', error);
     }
@@ -159,7 +156,7 @@ const HomePage = () => {
       setSize(9);
       const res = await recipeAPI.getMoreRecipeList(9);
       navigate('/recipe', {
-        state: { recipeData: res.data.recipes, fromMore: true },
+        state: { more: 'viewCountDesc' },
       });
     } catch (error) {
       console.error('더보기 API 호출 중 오류 발생:', error);
@@ -228,7 +225,7 @@ const HomePage = () => {
                   <RecipeImageBox>
                     <RecipeImage
                       alt={recipe.title}
-                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                      src={`${import.meta.env.VITE_SERVER}${
                         recipe.thumbnailUrl
                       }`}
                     />
