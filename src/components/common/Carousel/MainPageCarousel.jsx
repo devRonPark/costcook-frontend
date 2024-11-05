@@ -7,11 +7,12 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { recommendAPI } from '../../../services/recommend.api';
 import { formatPrice } from '../../../utils/formatData';
 import { StarRating } from '../../StarRating';
+import { useAuth } from '../../../context/Auth/AuthContext';
 
 // 메인 캐러셀 (블러 X)
 const Carousel = ({ recipes, year, week }) => {
+  const { state } = useAuth();
   const [updatedRecipes, setUpdatedRecipes] = useState(recipes);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const handleModifyUseRecipe = async (recipe) => {
     const recipeUsageRequest = {
@@ -21,14 +22,42 @@ const Carousel = ({ recipes, year, week }) => {
     };
 
     try {
-      const response = await recommendAPI.modifyUseRecipe(recipeUsageRequest);
+      if (!state?.isAuthenticated) {
+        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
 
-      setUpdatedRecipes((prevRecipes) =>
-        prevRecipes.map((r) =>
-          r.id === recipe.id ? { ...r, used: !r.used } : r
-        )
-      );
-      console.log('레시피 사용 상태 변경 성공:', response.data);
+          // 해당 year와 week의 레시피를 찾기
+          const recipeToUpdate = parsedData.recipes.find(
+            (r) => r.id === recipe.id
+          );
+          if (recipeToUpdate) {
+            // 사용 상태를 반대로 변경
+            recipeToUpdate.used = recipeToUpdate.used === 1 ? 0 : 1;
+
+            // 변경된 레시피를 다시 세션 스토리지에 저장
+            sessionStorage.setItem(
+              'RecommendRecipeList',
+              JSON.stringify(parsedData)
+            );
+
+            setUpdatedRecipes((prevRecipes) =>
+              prevRecipes.map((r) =>
+                r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
+              )
+            );
+          }
+        }
+      } else {
+        const response = await recommendAPI.modifyUseRecipe(recipeUsageRequest);
+
+        setUpdatedRecipes((prevRecipes) =>
+          prevRecipes.map((r) =>
+            r.id === recipe.id ? { ...r, used: !r.used } : r
+          )
+        );
+        console.log('레시피 사용 상태 변경 성공:', response.data);
+      }
     } catch (error) {
       console.error('레시피 사용 상태 변경 실패:', error);
     }
@@ -49,17 +78,15 @@ const Carousel = ({ recipes, year, week }) => {
       centeredSlides={true}
       spaceBetween={0}
       navigation={false}
-      pagination={recipes.length > 1 ? { clickable: true } : false}
+      pagination={recipes.length > 1 ? { clickable: false } : false}
       modules={[Navigation, Pagination]}
-      style={{ paddingBottom: '30px' }}
+      style={{ paddingBottom: '30px', marginLeft: '-30px' }}
     >
       {sortedRecipes.map((recipe, index) => (
         <SwiperSlide key={recipe.id} style={{ width: '210px' }}>
           {({ isActive }) => (
             <List
-              onClick={
-                isActive ? () => handleModifyUseRecipe(recipe) : undefined
-              }
+              onClick={isActive ? () => handleModifyUseRecipe(recipe) : false}
             >
               <RecipeImageBox>
                 <RecipeImage
