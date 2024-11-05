@@ -33,17 +33,14 @@ import {
 } from '../styles/RecipeDetail';
 import ShareModal from '../components/modal/ShareModal';
 import RecipeInstructions from '../components/RecipeInstructions';
+import ReviewEditModal from '../components/ReviewEditModal';
+import { Star, StarOutline } from '@mui/icons-material';
+import LoginModal from '../components/common/LoginModal';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
   const { state } = useAuth();
-  console.log('유저정보: ', state.user?.id);
-  const [myReview, setMyReview] = useState(null); // 내가 작성한 리뷰
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
-
-  // 공유하기 모달창 열기 및 닫기 함수
-  const handleShareModalOpen = () => setIsShareModalOpen(true);
-  const handleShareModalClose = () => setIsShareModalOpen(false);
 
   const navigate = useNavigate();
   // 레시피 & 재료
@@ -51,11 +48,18 @@ const RecipeDetail = () => {
   const [recipe, setRecipe] = useState({}); // 전체 레시피 정보
   const [ingredientData, setIngredientData] = useState([]); // 재료 정보
 
-  // 리뷰 목록
+  // 리뷰 관련 state
+  const [isReviewEditMode, setIsReviewEditMode] = useState(false);
   const [reviewList, setReviewList] = useState([]); // 전체 리뷰 목록
+  const [reviewState, setReviewState] = useState({ score: 0, comment: '' }); // 모달 내 변경되는 상태
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [page, setPage] = useState(1); // 리뷰 페이지
   const [hasMore, setHasMore] = useState(true); // 추가 리뷰가 있는지 확인
   const { ref, inView } = useInView(); // 스크롤 감지용 useRef
+  const reviewRef = useRef(null); // 리뷰 컨테이너의 ref 생성
+
+  // 로그인 유도 창 관련 state
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 활성 탭 상태 관리(처음부터 열려있음)
   const [activeTabs, setActiveTabs] = useState([
@@ -65,15 +69,18 @@ const RecipeDetail = () => {
     'review',
   ]); // 초기값은 전부다 열려있는 상태
 
+  // 공유하기 모달창 열기 및 닫기 함수
+  const handleShareModalOpen = () => setIsShareModalOpen(true);
+  const handleShareModalClose = () => setIsShareModalOpen(false);
+
   // 클릭 시 리뷰 목록으로 이동
   const scrollToReview = () => {
     if (!activeTabs.includes('review')) {
       setActiveTabs((prev) => [...prev, 'review']);
     }
-    reviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
-  const reviewRef = useRef(null); // 리뷰 컨테이너의 ref 생성
+    reviewRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // 탭 클릭 핸들러
   const handleTabClick = (tab) => {
@@ -81,6 +88,21 @@ const RecipeDetail = () => {
       prev.includes(tab) ? prev.filter((t) => t !== tab) : [...prev, tab]
     ); // 탭을 토글
   };
+
+  useEffect(() => {
+    // 로그인 후 대기 중인 리뷰 정보 확인
+    const pendingReview = JSON.parse(sessionStorage.getItem('pendingReview'));
+
+    if (pendingReview && pendingReview.isReviewing) {
+      // 세션 스토리지에서 대기 중인 리뷰 정보를 제거
+      sessionStorage.removeItem('pendingReview');
+
+      // 리뷰 작성 위치로 스크롤
+      scrollToReview();
+      // 리뷰 모달 열기
+      setIsReviewModalOpen(true);
+    }
+  }, [navigate, activeTabs]);
 
   // 레시피 상세 정보 가져오기
   const getRecipeById = async () => {
@@ -111,7 +133,46 @@ const RecipeDetail = () => {
     getRecipeById();
   }, []);
 
+  // 로그인 모달창 관련 메소드
+  const handleLoginModalOpen = () => setIsLoginModalOpen(true);
+  const handleLoginModalClose = () => setIsLoginModalOpen(false);
+  const handleLoginConfirm = () => {
+    // 로그인 전 리뷰 작성 중이었다는 걸 기억.
+    sessionStorage.setItem(
+      'pendingReview',
+      JSON.stringify({ isReviewing: true, recipeId })
+    );
+    navigate('/login');
+  };
+
   // 리뷰 관련 메소드
+  // 리뷰 작성 모달 내 인풋 변경 시
+  const resetReview = () => setReviewState({ score: 0, comment: '' });
+  const handleReviewModalOpen = () => setIsReviewModalOpen(true);
+  const handleReviewModalClose = () => {
+    setIsReviewModalOpen(false);
+    resetReview();
+  };
+  const handleReviewChange = (field, value) => {
+    setReviewState((prevState) => ({ ...prevState, [field]: value }));
+  };
+  // 별점 클릭 > 로그인 여부에 따라 동작이 달라짐.
+  // 비로그인 상태 > 로그인 모달창 띄워서 로그인 유도.
+  // 로그인 상태 > 리뷰 작성창 띄워서 리뷰 작성 유도.
+  const handleStarClick = (index) => {
+    const newScore = reviewState.score === index + 1 ? 0 : index + 1;
+
+    if (!state.isAuthenticated) {
+      // 로그인 모달 띄우기
+      handleLoginModalOpen();
+    } else {
+      handleReviewModalOpen();
+      handleReviewChange('score', newScore);
+    }
+  };
+  const handleReviewSubmit = async () => {
+    alert('리뷰 등록');
+  };
   // 이 레시피에 내가 작성한 리뷰 가져오기
 
   // DB의 리뷰 데이터 가져오기
@@ -141,7 +202,6 @@ const RecipeDetail = () => {
 
   // 페이지 변경 시 마다 추가 리뷰 로드
   useEffect(() => {
-    console.log('리뷰페이지 : ', page);
     fetchReviews();
   }, [page]);
 
@@ -159,7 +219,7 @@ const RecipeDetail = () => {
           width={'100%'}
           borderRadius={'0%'}
           altText={recipe.title}
-          src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+          src={`${import.meta.env.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
         ></ImageDisplay>
       </ReceiptImage>
 
@@ -264,11 +324,35 @@ const RecipeDetail = () => {
         {activeTabs.includes('recipeEvaluation') && (
           // 레시피 평가 컴포넌트 가져오기
           <TabContent>
-            {/* <RecipeEvaluation
-              // setRecipeList={setRecipeList} // 리뷰 목록 상태 제어 함수
-              recipeId={recipeId} // 레시피ID
-              isLoggedIn={state.isAuthenticated}
-            /> */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '10px',
+                width: '300px',
+              }}
+            >
+              {Array(5)
+                .fill()
+                .map((_, index) => {
+                  const isFilled = index < reviewState.score;
+                  return (
+                    <span
+                      key={index}
+                      onClick={() => handleStarClick(index)}
+                      style={{ cursor: 'pointer', marginRight: '2px' }}
+                    >
+                      {isFilled ? (
+                        <Star style={{ color: 'gold', fontSize: '24px' }} />
+                      ) : (
+                        <StarOutline
+                          style={{ color: 'gold', fontSize: '24px' }}
+                        />
+                      )}
+                    </span>
+                  );
+                })}
+            </div>
             <p>레시피를 평가해주세요.</p>
           </TabContent>
         )}
@@ -315,6 +399,23 @@ const RecipeDetail = () => {
           isOpen={isShareModalOpen}
           onClose={handleShareModalClose}
           shareUrl={window.location.href}
+        />
+      )}
+      {isReviewModalOpen && (
+        <ReviewEditModal
+          review={reviewState}
+          isOpen={isReviewModalOpen}
+          onChange={handleReviewChange}
+          onClose={handleReviewModalClose}
+          onSubmit={handleReviewSubmit}
+          isEditMode={isReviewEditMode}
+        />
+      )}
+      {isLoginModalOpen && (
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={handleLoginModalClose}
+          onConfirm={handleLoginConfirm}
         />
       )}
     </Layout>

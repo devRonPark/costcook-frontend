@@ -119,7 +119,7 @@ const OAuthVerification = () => {
           provider: res.data.provider.toLowerCase(),
         });
 
-        toast.info('로그인 중입니다...'); // 로그인 중 메시지
+        toast.info('로그인 성공');
 
         // 로그인 성공하면 전역 상태에 로그인된 사용자 정보를 저장
         dispatch({
@@ -129,8 +129,19 @@ const OAuthVerification = () => {
 
         // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
         if (loginRes.data.userProfileUpdated) {
-          // 홈 화면 이동
-          navigate('/home');
+          // 로그인 성공 시 세션 스토리지에서 정보를 확인
+          const pendingReview = JSON.parse(
+            sessionStorage.getItem('pendingReview')
+          );
+
+          // 대기 중인 리뷰 정보가 있는 경우
+          if (pendingReview && pendingReview.isReviewing) {
+            const recipeId = pendingReview.recipeId;
+            navigate(`/recipeDetail/${recipeId}`);
+          } else {
+            // 홈 화면 이동
+            navigate('/home');
+          }
         } else {
           // 프로필 업데이트 페이지로 이동
           navigate('/profile/update');
