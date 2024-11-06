@@ -44,7 +44,6 @@ const getCurrentYearAndWeek = (date) => {
 const HomePage = () => {
   const [status, setStatus] = useState(1); // 기본값을 1로 설정 (첫 번째 추천)
   const { state } = useAuth();
-  console.log(state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(10000); // 기본값 설정
   const [userId, setUserId] = useState(
@@ -74,7 +73,7 @@ const HomePage = () => {
         const storedBudget = sessionStorage.getItem('budget');
         if (storedBudget) {
           const parsedBudget = JSON.parse(storedBudget);
-          setBudget(parsedBudget.budget.amount); // amount 필드를 사용하여 예산 설정
+          setBudget(parsedBudget.amount); // amount 필드를 사용하여 예산 설정
         } else {
           setBudget(10000); // 기본값 설정
         }
@@ -86,7 +85,6 @@ const HomePage = () => {
         const response = await budgetAPI.getWeeklyBudget(year, week);
         if (response.data.message === '기본값 설정') {
           setIsDefaultBudget(true);
-          console.log(response.data);
         }
         setBudget(response.data.budget || 10000);
       }
@@ -94,34 +92,6 @@ const HomePage = () => {
       console.error('예산을 가져오는 중 오류 발생:', error);
     }
   };
-  // // 예산 랜덤 설정
-  // const startAutoIncrement = () => {
-  //   setAutoIncrementing(true);
-
-  //   const incrementBudget = () => {
-  //     setBudget((prevBudget) => {
-  //       if (prevBudget < 100000) {
-  //         return prevBudget + 1000;
-  //       } else {
-  //         return 10000; // 예산이 100,000 이상이 되면 10,000으로 설정
-  //       }
-  //     });
-
-  //     // 0.01초(10ms)에서 0.1초(100ms) 사이의 랜덤 지연 시간 설정
-  //     const randomDelay = Math.random(); // 10ms에서 100ms 사이
-  //     const id = setTimeout(incrementBudget, randomDelay); // timeout ID 저장
-  //     setTimeoutId(id); // 상태에 저장
-  //   };
-
-  //   incrementBudget(); // 최초 호출
-  // };
-
-  // const stopAutoIncrement = () => {
-  //   clearTimeout(timeoutId); // 이전 timeout 취소
-  //   setAutoIncrementing(false);
-  //   setWeeklyBudget(); // 주간 예산 설정 함수 호출
-  // };
-
   // 사용자 정보 가져오기
   const fetchUserInfo = async () => {
     try {
@@ -151,7 +121,7 @@ const HomePage = () => {
     try {
       // 비회원 인 경우
       if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        const storedData = sessionStorage.getItem('RecommendedRecipeList');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
@@ -173,7 +143,7 @@ const HomePage = () => {
         return sum + recipe.price / recipe.servings;
       }, 0);
 
-      // setTotalPricePerServing(totalPrice);
+      setTotalPricePerServing(totalPrice);
     } catch (error) {
       console.error('추천 레시피를 불러오는 중 오류 발생:', error);
     }
@@ -192,13 +162,12 @@ const HomePage = () => {
       // 비회원 인 경우
       if (!state?.isAuthenticated) {
         const budgetData = {
-          budget: {
-            year: year,
-            weekNumber: week,
-            amount: budget,
-          },
+          year: year,
+          weekNumber: week,
+          amount: budget,
         };
         sessionStorage.setItem('budget', JSON.stringify(budgetData));
+        closeModal();
         return;
       }
 
@@ -314,9 +283,7 @@ const HomePage = () => {
                   </RecipeImageBox>
                 </Link>
                 <TitleText>{recipe.title}</TitleText>
-                <PriceText>
-                  {formatPrice(recipe.price / recipe.servings)}원 (1인분)
-                </PriceText>
+                <PriceText>{formatPrice(recipe.price)}원 (1인분)</PriceText>
                 <StarText>
                   <StarRating ratings={recipe.avgRatings} /> (
                   {recipe.avgRatings})

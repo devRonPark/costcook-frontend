@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // useMemo를 사용하여 value를 메모이제이션
-  const value = () => ({ state, dispatch });
+  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
