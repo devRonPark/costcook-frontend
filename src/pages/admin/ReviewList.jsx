@@ -135,6 +135,14 @@ const AdminReviewList = () => {
     setInputCategory(e.target.value); // 선택된 카테고리 업데이트
   };
 
+  // 리뷰 상태 업데이트를 위한 콜백 함수
+  const updateReviewStatus = (reviewId, newStatus) => {
+    setReviews(prevReviews => prevReviews.map(review => {
+      if (review.id === reviewId) return {...review, status: newStatus}  
+      return review
+    }));
+  };
+
   // 로딩 상태일 때의 화면
   if (loading) {
     return (
@@ -228,7 +236,9 @@ const AdminReviewList = () => {
       {selectedReview && (
         <ReviewDetailModal
           review={selectedReview}
+          setReviews={setReviews}
           onClose={handleCloseModal}
+          onStatusChange={updateReviewStatus}
         />
       )}
     </AdminLayout>
