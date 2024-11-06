@@ -32,6 +32,7 @@ import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
+import AdminLogin from './pages/admin/AdminLogin';
 import AdminIngredientList from './pages/admin/AdminIngredientList';
 import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
@@ -165,6 +166,7 @@ function App() {
 
           {/* 관리자만 접근 가능 */}
           <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin/ingredient-form"
             element={<AdminIngredientForm />}
