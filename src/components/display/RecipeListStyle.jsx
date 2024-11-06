@@ -15,6 +15,18 @@ export const FilterListContainer = styled.div`
   justify-content: flex-end;
 `;
 
+// 레시피 목록 영역
+export const ListRowContainer = styled(StyledScrollbar)`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-height: 80vh;
+  overflow-y: auto;
+`;
+
 // 레시피 하나 영역
 export const List = styled.div`
   display: flex;
@@ -151,7 +163,6 @@ export const ListContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   overflow: hidden;
 `;
 

@@ -25,8 +25,8 @@ import {
   TitleText,
   PriceText,
   StarText,
+  ListRowContainer,
 } from '../components/display/RecipeListStyle';
-import CardListContainer from '../components/CardListContainer';
 import { recommendAPI } from '../services/recommend.api';
 import Carousel from '../components/common/Carousel/MainPageCarousel';
 
@@ -44,6 +44,7 @@ const getCurrentYearAndWeek = (date) => {
 const HomePage = () => {
   const [status, setStatus] = useState(1); // 기본값을 1로 설정 (첫 번째 추천)
   const { state } = useAuth();
+  console.log(state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(10000); // 기본값 설정
   const [userId, setUserId] = useState(
@@ -102,6 +103,38 @@ const HomePage = () => {
       console.error('사용자 정보를 가져오는 중 오류 발생:', error);
     }
   };
+
+  //
+
+  // 예산 랜덤 설정
+  const startAutoIncrement = () => {
+    setAutoIncrementing(true);
+
+    const incrementBudget = () => {
+      setBudget((prevBudget) => {
+        if (prevBudget < 100000) {
+          return prevBudget + 1000;
+        } else {
+          return 10000; // 예산이 100,000 이상이 되면 10,000으로 설정
+        }
+      });
+
+      // 0.01초(10ms)에서 0.1초(100ms) 사이의 랜덤 지연 시간 설정
+      const randomDelay = Math.random(); // 10ms에서 100ms 사이
+      const id = setTimeout(incrementBudget, randomDelay); // timeout ID 저장
+      setTimeoutId(id); // 상태에 저장
+    };
+
+    incrementBudget(); // 최초 호출
+  };
+
+  const stopAutoIncrement = () => {
+    clearTimeout(timeoutId); // 이전 timeout 취소
+    setAutoIncrementing(false);
+    setWeeklyBudget(); // 주간 예산 설정 함수 호출
+  };
+
+  //
 
   useEffect(() => {
     setYear(year);
@@ -211,8 +244,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(size);
+  }, [size]);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
@@ -270,7 +303,7 @@ const HomePage = () => {
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <CardListContainer layoutType="home">
+          <ListRowContainer>
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
                 <Link to={`/recipeDetail/${recipe.id}`}>
@@ -291,7 +324,7 @@ const HomePage = () => {
                 </StarText>
               </List>
             ))}
-          </CardListContainer>
+          </ListRowContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 
@@ -308,6 +341,12 @@ const HomePage = () => {
             valueLabelDisplay="auto"
           />
           <p>선택된 예산: {budget.toLocaleString()}원</p>
+          <Button
+            onMouseDown={startAutoIncrement}
+            onMouseUp={stopAutoIncrement}
+          >
+            꾹 누르기
+          </Button>
           <Button onClick={() => setWeeklyBudget()}>확인</Button>
         </ModalContainer>
       </Modal>
