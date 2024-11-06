@@ -62,7 +62,9 @@ const ProfileUpdate = () => {
     }
   };
 
+  // 저장 버튼 클릭 핸들러
   const handleOpen = () => {
+    // 선호 재료, 비선호 재료, 프로필 이미지 첨부, 닉네임 중복여부 확인이 안되어 있으면 저장버튼 비활성화 처리
     setModalOpen(true);
   };
 

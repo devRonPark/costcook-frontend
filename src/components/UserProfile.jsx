@@ -90,7 +90,14 @@ const UserProfile = ({
           : '이미 사용 중인 닉네임입니다.'}
       </div>
       <ButtonContainer>
-        <RoundedButton text="저장" onClick={onClick} />
+        <RoundedButton
+          text="저장"
+          onClick={onClick}
+          width="80%"
+          backgroundColor="#2196f3"
+          hoverBackgroundColor="none"
+          isDisabled={!nicknameAvailable}
+        />
       </ButtonContainer>
     </UserProfileContainer>
   );
