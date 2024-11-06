@@ -7,14 +7,23 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { StarRating } from '../StarRating';
 
 const RecipeCard = forwardRef(
-  ({ recipe, onToggleFavorite, showFavoriteIcon = true, layoutType }, ref) => {
+  (
+    {
+      recipe,
+      onToggleFavorite,
+      isAuthenticated,
+      showFavoriteIcon = true,
+      layoutType,
+    },
+    ref
+  ) => {
     const navigate = useNavigate();
     const [favorite, setFavorite] = useState(recipe.favorite);
 
     const handleFavoriteClick = (e) => {
       e.stopPropagation(); // 카드 클릭과 즐겨찾기 클릭이 동시에 실행되지 않도록 막기
       setFavorite(!favorite);
-      onToggleFavorite(recipe, !favorite);
+      onToggleFavorite(recipe, !favorite, isAuthenticated);
     };
 
     return (

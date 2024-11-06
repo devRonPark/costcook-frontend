@@ -34,6 +34,7 @@ import { toast } from 'react-toastify';
 import UserApi from '../services/user.api';
 import RecipeReviewCard from '../components/RecipeReviewCard';
 import useRecipeData from '../hooks/useRecipeInfo';
+import { handleToggleFavorite } from '../utils/favoriteHandler';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
@@ -41,6 +42,8 @@ const RecipeDetail = () => {
   const { recipeId } = useParams();
   // 레시피 & 재료
   const { recipe, ingredientData, isRecipeLoaded } = useRecipeData(recipeId);
+  // favorite 상태값에 따라 헤더의 Favorite Icon 이 변경됨.
+  const [favorite, setFavorite] = useState(false);
   const [myReview, setMyReview] = useState(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
 
@@ -74,6 +77,12 @@ const RecipeDetail = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (recipe) {
+      setFavorite(recipe.favorite);
+    }
+  }, [recipe]);
 
   // 로그인한 경우에만 이 레시피에 대해 내가 작성한 리뷰 조회
   useEffect(() => {
@@ -314,6 +323,15 @@ const RecipeDetail = () => {
       pageName={recipe.title}
       isRecipeDetailPage
       onShareClick={handleShareModalOpen}
+      favorite={favorite}
+      onToggleFavorite={() => {
+        handleToggleFavorite(
+          { id: recipe.recipeId },
+          !favorite,
+          state.isAuthenticated
+        );
+        setFavorite(!favorite);
+      }}
     >
       <RecipeImage>
         <ImageDisplay
@@ -435,7 +453,7 @@ const RecipeDetail = () => {
         )}
 
         <TabList onClick={() => handleTabClick('review')}>
-          레시피 리뷰{' '}
+          레시피 리뷰 ({recipe.reviewCount})
           {activeTabs.includes('review') ? (
             <KeyboardArrowUpIcon />
           ) : (

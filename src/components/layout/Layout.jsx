@@ -38,11 +38,14 @@ const Layout = ({
   isRecipeListPage = false,
   isRecipeDetailPage = false,
   isFavoritePage = false,
+  favorite = false,
+  onToggleFavorite = () => {},
 }) => {
   const { state } = useAuth();
   return (
     <Container>
       <Header
+        state={state}
         isBackBtnExist={isBackBtnExist}
         isSearchBtnExist={isSearchBtnExist}
         pageName={pageName}
@@ -54,6 +57,8 @@ const Layout = ({
         isRecipeListPage={isRecipeListPage}
         isRecipeDetailPage={isRecipeDetailPage}
         isFavoritePage={isFavoritePage}
+        favorite={favorite}
+        onToggleFavorite={onToggleFavorite}
       />
       <Content>
         <Main>{children}</Main>
