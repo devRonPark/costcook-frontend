@@ -94,33 +94,6 @@ const HomePage = () => {
       console.error('예산을 가져오는 중 오류 발생:', error);
     }
   };
-  // // 예산 랜덤 설정
-  // const startAutoIncrement = () => {
-  //   setAutoIncrementing(true);
-
-  //   const incrementBudget = () => {
-  //     setBudget((prevBudget) => {
-  //       if (prevBudget < 100000) {
-  //         return prevBudget + 1000;
-  //       } else {
-  //         return 10000; // 예산이 100,000 이상이 되면 10,000으로 설정
-  //       }
-  //     });
-
-  //     // 0.01초(10ms)에서 0.1초(100ms) 사이의 랜덤 지연 시간 설정
-  //     const randomDelay = Math.random(); // 10ms에서 100ms 사이
-  //     const id = setTimeout(incrementBudget, randomDelay); // timeout ID 저장
-  //     setTimeoutId(id); // 상태에 저장
-  //   };
-
-  //   incrementBudget(); // 최초 호출
-  // };
-
-  // const stopAutoIncrement = () => {
-  //   clearTimeout(timeoutId); // 이전 timeout 취소
-  //   setAutoIncrementing(false);
-  //   setWeeklyBudget(); // 주간 예산 설정 함수 호출
-  // };
 
   // 사용자 정보 가져오기
   const fetchUserInfo = async () => {
@@ -206,23 +179,6 @@ const HomePage = () => {
       }, 0);
 
       // setTotalPricePerServing(totalPrice);
-    } catch (error) {
-      console.error('추천 레시피를 불러오는 중 오류 발생:', error);
-    }
-  };
-
-  // 추천 받은 레시피 가져오기
-
-  const getRecommendedRecipes = async () => {
-    try {
-      const response = await recommendAPI.getRecommendedRecipes(year, week);
-      setRecipes(response.data.recipes);
-
-      const totalPrice = response.data.recipes.reduce((sum, recipe) => {
-        return sum + recipe.price / recipe.servings;
-      }, 0);
-
-      setTotalPricePerServing(totalPrice);
     } catch (error) {
       console.error('추천 레시피를 불러오는 중 오류 발생:', error);
     }
