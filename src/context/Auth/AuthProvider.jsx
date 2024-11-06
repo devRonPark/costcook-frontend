@@ -164,16 +164,12 @@ export const AuthProvider = ({ children }) => {
   // useEffect를 사용하여 새로 고침 시 사용자 정보를 확인하고 상태 업데이트
   useEffect(() => {
     const checkUserAuthentication = () => {
-      const accessToken = cookies.accessToken; // 쿠키에서 access_token 가져오기
+      const accessToken = cookies.accessToken; // 쿠키에서 accessToken 가져오기
       if (accessToken) {
         try {
           const decodedToken = jwtDecode(accessToken);
           const isExpired = decodedToken.exp * 1000 < Date.now(); // 만료 확인
-
-          if (isExpired) {
-            removeCookie('accessToken'); // 만료된 경우 쿠키 삭제
-            dispatch({ type: 'LOGOUT' }); // 만료된 경우 로그아웃
-          } else {
+          if (!isExpired) {
             dispatch({
               type: 'SET_MY_INFO',
               payload: decodedToken, // JWT에서 사용자 정보 추출
