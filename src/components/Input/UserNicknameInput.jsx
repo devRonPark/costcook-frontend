@@ -36,7 +36,7 @@ const NicknameInput = styled.input`
   }
 `;
 
-const ResetButton = styled.button`
+const RenewButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
@@ -92,13 +92,13 @@ const UserNicknameInput = ({
   handleDuplicateCheck,
   placeholder = '닉네임을 입력하세요',
   isChecked,
-  resetNickname,
+  renewNickname,
   nicknameAvailable,
 }) => {
   const inputRef = useRef();
 
-  const handleReset = () => {
-    resetNickname();
+  const handleRenew = () => {
+    renewNickname();
     inputRef.current.focus();
   };
 
@@ -114,9 +114,9 @@ const UserNicknameInput = ({
           ref={inputRef}
           nicknameAvailable={nicknameAvailable}
         />
-        <ResetButton onClick={handleReset}>
+        <RenewButton onClick={handleRenew}>
           <RestartAltIcon />
-        </ResetButton>
+        </RenewButton>
       </NicknameInputWrapper>
 
       <DuplicateCheckButton

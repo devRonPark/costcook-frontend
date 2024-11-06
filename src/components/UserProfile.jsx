@@ -5,6 +5,7 @@ import ProfileImageUploader from './ProfileImageUploader';
 import ButtonContainer from './common/Button/ButtonContainer';
 import apiClient from '../services/api';
 import { useEffect, useState } from 'react';
+import { generateRandomNickname } from '../utils/nicknameGenerator';
 
 const UserProfileContainer = styled.div`
   display: flex;
@@ -53,8 +54,8 @@ const UserProfile = ({
     }
   };
 
-  const resetNickname = () => {
-    handleChange('nickname', '');
+  const renewNickname = () => {
+    handleChange('nickname', generateRandomNickname());
     setNicknameAvailable(null);
     setIsChecked(false); // 중복 확인 취소
   };
@@ -73,7 +74,7 @@ const UserProfile = ({
         handleDuplicateCheck={handleDuplicateCheck}
         isChecked={isChecked}
         nicknameAvailable={nicknameAvailable}
-        resetNickname={resetNickname}
+        renewNickname={renewNickname}
         placeholder="새로운 닉네임"
       />
       <div
