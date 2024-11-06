@@ -24,34 +24,28 @@ import {
   TabListContainer,
   TabList,
   TabContent,
-  ReviewContainer,
-  ReviewTextContainer,
-  ReviewImage,
-  TitleText,
-  ContentText,
-  StarText,
 } from '../styles/RecipeDetail';
 import ShareModal from '../components/modal/ShareModal';
 import RecipeInstructions from '../components/RecipeInstructions';
 import ReviewEditModal from '../components/ReviewEditModal';
-import { Star, StarOutline } from '@mui/icons-material';
 import LoginModal from '../components/common/LoginModal';
 import ReviewApi from '../services/review.api';
 import { toast } from 'react-toastify';
 import UserApi from '../services/user.api';
 import RecipeReviewCard from '../components/RecipeReviewCard';
+import useRecipeData from '../hooks/useRecipeInfo';
 
 const RecipeDetail = () => {
   // 접속중 유저 정보
   const { state } = useAuth();
+  const { recipeId } = useParams();
+  // 레시피 & 재료
+  const { recipe, ingredientData, isRecipeLoaded } = useRecipeData(recipeId);
+  const [myReview, setMyReview] = useState(null);
   const [isMyReviewExist, setIsMyReviewExist] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
 
   const navigate = useNavigate();
-  // 레시피 & 재료
-  const { recipeId } = useParams();
-  const [recipe, setRecipe] = useState({}); // 전체 레시피 정보
-  const [ingredientData, setIngredientData] = useState([]); // 재료 정보
 
   // 리뷰 관련 state
   const [isReviewEditMode, setIsReviewEditMode] = useState(false);
@@ -62,10 +56,8 @@ const RecipeDetail = () => {
   const [hasMore, setHasMore] = useState(true); // 추가 리뷰가 있는지 확인
   const { ref, inView } = useInView(); // 스크롤 감지용 useRef
   const reviewRef = useRef(null); // 리뷰 컨테이너의 ref 생성
-
   // 로그인 유도 창 관련 state
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
   // 활성 탭 상태 관리(처음부터 열려있음)
   const [activeTabs, setActiveTabs] = useState([
     'ingredients',
@@ -74,8 +66,57 @@ const RecipeDetail = () => {
     'review',
   ]); // 초기값은 전부다 열려있는 상태
 
-  // 레시피 로드 상태
-  const [isRecipeLoaded, setIsRecipeLoaded] = useState(false);
+  // 서버로부터 받아온 레시피 정보 중 재료 정보 가공
+  const formatIngredientData = (ingredients) => {
+    return ingredients.map((item) => ({
+      name: item.ingredientName,
+      quantity: item.quantity,
+      unit: item.unitName,
+      price: Math.round(item.price * item.quantity), // 정수값만 출력
+      categoryId: item.category.id,
+      categoryName: item.category.name,
+    }));
+  };
+
+  // getRecipeById 함수에서 formatIngredientData를 호출
+  const getRecipeById = async () => {
+    try {
+      const res = await recipeAPI.getRecipeById(recipeId);
+      // 레시피 데이터
+      setRecipe(res.data);
+
+      // 재료 데이터 포맷팅
+      const formattedIngredients = formatIngredientData(res.data.ingredients);
+      setIngredientData(formattedIngredients);
+      console.log('포맷된 재료 정보: ', formattedIngredients);
+
+      setIsRecipeLoaded(true); // 레시피가 로드되었음을 설정
+    } catch (error) {
+      console.log('레시피를 불러올 수 없음', error);
+    }
+  };
+
+  const fetchMyReview = async () => {
+    try {
+      const res = await UserApi.getMyReviewWithRecipeId(recipeId);
+      setMyReview(res.data);
+      setIsMyReviewExist(!!res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 가져온 정보 보여주기
+  useEffect(() => {
+    if (recipeId) {
+      console.log('몇 번 호출???');
+      getRecipeById();
+
+      if (state.isAuthenticated && state.user != null) {
+        fetchMyReview();
+      }
+    }
+  }, [recipeId, state]);
 
   // 공유하기 모달창 열기 및 닫기 함수
   const handleShareModalOpen = () => setIsShareModalOpen(true);
@@ -110,36 +151,6 @@ const RecipeDetail = () => {
       setIsReviewModalOpen(true);
     }
   }, [isRecipeLoaded, navigate, activeTabs]);
-
-  // 레시피 상세 정보 가져오기
-  const getRecipeById = async () => {
-    try {
-      const res = await recipeAPI.getRecipeById(recipeId);
-      // 레시피 데이터
-      setRecipe(res.data);
-      console.log('레시피 정보: ', res.data);
-      console.log('레시피ID: ', res.data.recipeId);
-
-      // 재료 데이터
-      const ingredients = res.data.ingredients.map((item) => ({
-        name: item.ingredientName,
-        quantity: item.quantity,
-        unit: item.unitName,
-        price: Math.round(item.price * item.quantity), // 정수값만 출력
-        categoryId: item.category.id,
-        categoryName: item.category.name,
-      }));
-      setIngredientData(ingredients);
-      console.log('재료 정보 : ', ingredients);
-      setIsRecipeLoaded(true); // 레시피가 로드되었음을 설정
-    } catch (error) {
-      console.log('레시피를 불러올 수 없음', error);
-    }
-  };
-  // 가져온 정보 보여주기
-  useEffect(() => {
-    getRecipeById();
-  }, [recipeId]);
 
   // 로그인 모달창 관련 메소드
   const handleLoginModalOpen = () => setIsLoginModalOpen(true);
@@ -192,7 +203,6 @@ const RecipeDetail = () => {
         recipeId: parseInt(recipeId),
         ...reviewState,
       };
-      console.log(form);
       const res = await ReviewApi.createReview(form);
       if (res.status === 201) {
         console.log(res.data);
@@ -235,21 +245,6 @@ const RecipeDetail = () => {
       console.error('리뷰 불러오기 오류', error);
     }
   };
-
-  useEffect(() => {
-    const fetchMyReview = async () => {
-      try {
-        const res = await UserApi.getMyReviewWithRecipeId(recipeId);
-        console.log(res.data);
-        setIsMyReviewExist(!!res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (state.isAuthenticated && state.user != null) {
-      fetchMyReview();
-    }
-  }, [recipeId, state]);
 
   // 스크롤 시 페이지 증가
   useEffect(() => {
@@ -401,7 +396,11 @@ const RecipeDetail = () => {
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
             {reviewList.map((review) => (
-              <RecipeReviewCard key={review.id} review={review} />
+              <RecipeReviewCard
+                key={review.id}
+                review={review}
+                loginUserId={state?.user?.id !== null ? state?.user?.id : -1}
+              />
             ))}
             {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
             {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
