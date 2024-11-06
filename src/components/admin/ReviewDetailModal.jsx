@@ -22,6 +22,47 @@ const ReviewDetailModal = ({ review, onClose }) => {
     return format(new Date(dateString), 'yyyy년 MM월 dd일 HH:mm:ss');
   };
 
+  const handleReviewBlock = () => {
+    console.log('차단 상태 변경 요청');
+    // 여기에 서버와 통신하는 코드나 상태 변경 로직을 추가하면 됩니다.
+  };
+
+  const isUpdated = review.createdAt !== review.updatedAt;
+
+  let dateSection;
+
+  if (!isUpdated && !review.deletedAt) {
+    // 수정되지 않고 삭제되지 않은 경우에 Row 형식으로 작성일만 간단히 표시한다.
+    dateSection = (
+      <Row>
+        <Label>작성일</Label>
+        <Value>{formatDate(review.createdAt)}</Value>
+      </Row>
+    );
+  } else {
+    // 수정되었거나 삭제된 경우에 DateContainer 형식으로 여러 날짜를 표시한다.
+    dateSection = (
+      <DateContainer>
+        <DateItem style={{ marginTop: '16px' }}>
+          <DateLabel>작성일</DateLabel>
+          <DateValue>{formatDate(review.createdAt)}</DateValue>
+        </DateItem>
+        {isUpdated && (
+          <DateItem>
+            <DateLabel>수정일</DateLabel>
+            <DateValue>{formatDate(review.updatedAt)}</DateValue>
+          </DateItem>
+        )}
+        {review.deletedAt && (
+          <DateItem>
+            <DateLabel>삭제일</DateLabel>
+            <DateValue>{formatDate(review.deletedAt)}</DateValue>
+          </DateItem>
+        )}
+      </DateContainer>
+    );
+  }
+
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
@@ -46,22 +87,14 @@ const ReviewDetailModal = ({ review, onClose }) => {
           <Value>{review.comment}</Value>
         </Row>
         <Divider />
-        <DatesContainer>
-          <DateItem style={{ marginTop: '16px' }}>
-            <DateLabel>작성일</DateLabel>
-            <DateValue>{formatDate(review.createdAt)}</DateValue>
-          </DateItem>
-          <DateItem>
-            <DateLabel>수정일</DateLabel>
-            <DateValue>{formatDate(review.updatedAt)}</DateValue>
-          </DateItem>
-          {review.deletedAt && (
-            <DateItem>
-              <DateLabel>삭제일</DateLabel>
-              <DateValue>{formatDate(review.deletedAt)}</DateValue>
-            </DateItem>
-          )}
-        </DatesContainer>
+        {/* 날짜 관련 섹션 렌더링 */}
+        {dateSection}
+        <Divider />
+        <ModalFooter>
+          <BlockButton status={review.status} onClick={handleReviewBlock}>
+            {review.status ? '차단 해제' : '차단하기'}
+          </BlockButton>
+        </ModalFooter>
       </ModalContent>
     </ModalOverlay>
   );
@@ -133,11 +166,11 @@ const Divider = styled.div`
   margin: 8px 0;
 `;
 
-const DatesContainer = styled.div`
+const DateContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 8px;
+  margin: 8px 0 24px;
 `;
 
 const DateItem = styled.div`
@@ -155,4 +188,25 @@ const DateLabel = styled.div`
 const DateValue = styled.div`
   font-size: 0.9rem;
   color: #333;
+`;
+
+const ModalFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+`;
+
+const BlockButton = styled.button`
+  background-color: ${(props) => (props.status ? '#4CAF50' : '#FF4444')};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${(props) => (props.status ? '#388E3C' : '#D32F2F')};
+  }
 `;
