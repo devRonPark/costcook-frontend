@@ -10,6 +10,8 @@ import LoadingComponent from '../components/common/LoadingComponent';
 import {
   clearFavoriteRecipeIds,
   getFavoriteRecipeIds,
+  getRecommendedRecipes,
+  getWeeklyBudget,
 } from '../utils/sessionStorageUtil';
 
 const OAuthVerification = () => {
@@ -72,13 +74,41 @@ const OAuthVerification = () => {
           // sessionStorage에서 favoriteRecipeIds 값을 가져옵니다.
           const favoriteRecipeIds = getFavoriteRecipeIds();
 
+          // sessionStorage에서 budget 값을 가져옵니다.
+          const budget = getWeeklyBudget();
+
+          // sessionStorage에서 recommendedRecipes 값을 가져옵니다.
+          // { year, weekNumber, recipes: [{id}, ...]}
+          const recommendedRecipes = getRecommendedRecipes();
+          // recommendedRecipes가 null이 아닌 경우에만 추천 레시피 목록을 추가
+          const recommendedRecipePayload = recommendedRecipes
+            ? recommendedRecipes.recipes.map((r) => ({
+                year: recommendedRecipes.year,
+                weekNumber: recommendedRecipes.weekNumber,
+                recipeId: r.id,
+                isUsed: r.isUsed,
+              }))
+            : [];
+
           // 로그인 요청을 위한 사용자 정보 설정
           const loginData = {
             ...state.user.data,
             provider: state.user.data.provider.toLowerCase(),
-            // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가합니다.
+            // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가.
             ...(favoriteRecipeIds && favoriteRecipeIds.length > 0
               ? { favoriteRecipeIds }
+              : {}),
+            // budget 이 존재하고, null 이 아닌 경우에만 loginData 에 추가.
+            ...(budget != null
+              ? {
+                  year: budget.year,
+                  weekNumber: budget.weekNumber,
+                  weeklyBudget: budget.amount,
+                }
+              : {}),
+            // recommendedRecipePayload가 비어있지 않으면 loginData에 추가.
+            ...(recommendedRecipePayload.length > 0
+              ? { recommendedRecipes: recommendedRecipePayload }
               : {}),
           };
 
@@ -130,6 +160,20 @@ const OAuthVerification = () => {
       if (res.data.ableToLogin) {
         // sessionStorage에서 favoriteRecipeIds 값을 가져옵니다.
         const favoriteRecipeIds = getFavoriteRecipeIds();
+        // sessionStorage에서 budget 값을 가져옵니다.
+        const budget = getWeeklyBudget();
+        // sessionStorage에서 recommendedRecipes 값을 가져옵니다.
+        // { year, weekNumber, recipes: [{id}, ...]}
+        const recommendedRecipes = getRecommendedRecipes();
+        // recommendedRecipes가 null이 아닌 경우에만 추천 레시피 목록을 추가
+        const recommendedRecipePayload = recommendedRecipes
+          ? recommendedRecipes.recipes.map((r) => ({
+              year: recommendedRecipes.year,
+              weekNumber: recommendedRecipes.weekNumber,
+              recipeId: r.id,
+              isUsed: r.isUsed,
+            }))
+          : [];
 
         const loginRes = await AuthApi.signUpOrLogin({
           ...res.data,
@@ -137,6 +181,18 @@ const OAuthVerification = () => {
           // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가합니다.
           ...(favoriteRecipeIds && favoriteRecipeIds.length > 0
             ? { favoriteRecipeIds }
+            : {}),
+          // budget 이 존재하고, null 이 아닌 경우에만 loginData 에 추가.
+          ...(budget != null
+            ? {
+                year: budget.year,
+                weekNumber: budget.weekNumber,
+                weeklyBudget: budget.amount,
+              }
+            : {}),
+          // recommendedRecipePayload가 비어있지 않으면 loginData에 추가.
+          ...(recommendedRecipePayload.length > 0
+            ? { recommendedRecipes: recommendedRecipePayload }
             : {}),
         });
 

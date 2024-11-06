@@ -155,7 +155,7 @@ const HomePage = () => {
     try {
       // 비회원 인 경우
       if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendedRecipeList');
+        const storedData = sessionStorage.getItem('recommendedRecipeList');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
@@ -200,6 +200,7 @@ const HomePage = () => {
           weekNumber: week,
           amount: budget,
         };
+        console.log(budgetData);
         sessionStorage.setItem('budget', JSON.stringify(budgetData));
         closeModal();
         return;
