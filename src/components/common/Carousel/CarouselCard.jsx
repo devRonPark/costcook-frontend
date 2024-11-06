@@ -16,7 +16,7 @@ const CarouselCard = ({
   const [isClicked, setIsClicked] = useState(false);
 
   const isUsed = selectedRecipes.some(
-    (recipe) => recipe.id === data.id && recipe.used === 1
+    (recipe) => recipe.id === data.id && recipe.used == 1
   );
 
   useEffect(() => {
@@ -25,15 +25,22 @@ const CarouselCard = ({
 
   // // 카드 클릭 시 상태 변경 함수
   const handleCardClick = () => {
-    console.log(remainingBudget);
-    if (remainingBudget >= data.price) {
+    // 이미 선택된 레시피를 취소하는 경우
+    if (isClicked) {
+      // 선택 취소 시 예산 초과 체크는 필요 없음
+      onSelect(data);
+      return;
+    }
+
+    // 예산이 충분한 경우에만 선택하도록 처리
+    if (remainingBudget >= data.price / data.servings) {
       if (isActive) onSelect(data);
-    } else if (isUsed) {
-      toast.error(`이미 사용한 레시피입니다.`);
+    } else if (!isUsed) {
+      // 예산 초과 시, 사용되지 않은 레시피에 대해서만 처리
+      toast.error(`예산을 초과했습니다.`);
     } else {
-      if (isActive) {
-        toast.error(`예산을 초과했습니다.`);
-      }
+      // 이미 사용된 레시피는 취소 불가
+      toast.error(`이미 사용한 레시피입니다.`);
     }
   };
 
@@ -67,7 +74,7 @@ const CarouselCard = ({
 
       <CarouselData
         name={data.title}
-        price={data.price}
+        price={data.price / data.servings}
         likes={data.favoriteCount}
         score={data.avgRatings}
       />

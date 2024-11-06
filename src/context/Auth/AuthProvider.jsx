@@ -189,7 +189,7 @@ export const AuthProvider = ({ children }) => {
   }, [cookies, removeCookie]); // cookies와 removeCookie 의존성 추가
 
   // useMemo를 사용하여 value를 메모이제이션
-  const value = () => ({ state, dispatch });
+  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

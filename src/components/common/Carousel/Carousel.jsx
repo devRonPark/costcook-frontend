@@ -22,6 +22,7 @@ const Carousel = ({ budget, selectedRecipes, onSelect, remainingBudget }) => {
           maxBudget
         );
         setRecipes(response.data.recipes);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching recipes by budget:', error);
       }
