@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import StepIndicator from '../components/display/StepIndicator';
@@ -11,6 +11,7 @@ import AuthApi from '../services/auth.api';
 import { useNavigate } from 'react-router-dom';
 import { defaultImagePath, ingredients } from '../utils/constant';
 import { useAuth } from '../context/Auth/AuthContext';
+import { generateRandomNickname } from '../utils/nicknameGenerator';
 
 const ButtonContainer = styled.div`
   margin-top: 60px;
@@ -28,6 +29,23 @@ const ProfileUpdate = () => {
   const [personalInfoAgreement, setPersonalInfoAgreement] = useState(false); // 개인정보 수집 및 이용 동의 여부
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const hasUserChanged = useRef(false);
+
+  // 닉네임 상태 관리
+  useEffect(() => {
+    if (user && !user?.nickname && !hasUserChanged.current) {
+      console.log('랜덤 닉네임 생성');
+      dispatch({
+        type: 'UPDATE_MY_INFO',
+        payload: { field: 'nickname', value: generateRandomNickname() },
+      });
+    }
+
+    // user 값이 변경되면 hasUserChanged 값을 true로 설정
+    if (user && !hasUserChanged.current) {
+      hasUserChanged.current = true;
+    }
+  }, [user, dispatch]); // user가 변경될 때마다 확인
 
   const handleChange = (field, value) =>
     dispatch({ type: 'UPDATE_MY_INFO', payload: { field, value } });
@@ -131,9 +149,12 @@ const ProfileUpdate = () => {
     return (
       <>
         <UserProfile
-          nickname={user?.nickname ?? ''}
+          nickname={user?.nickname}
           handleChange={handleChange}
-          profileUrl={user?.profileUrl ?? ''}
+          profileUrl={
+            user?.profileUrl ??
+            `${import.meta.env.VITE_PUBLIC_URL}/default_user_profile.png`
+          }
           handleFileChange={handleFileChange}
           onClick={handleOpen}
         />
