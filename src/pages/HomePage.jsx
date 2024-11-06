@@ -25,8 +25,8 @@ import {
   TitleText,
   PriceText,
   StarText,
+  ListRowContainer,
 } from '../components/display/RecipeListStyle';
-import CardListContainer from '../components/CardListContainer';
 import { recommendAPI } from '../services/recommend.api';
 import Carousel from '../components/common/Carousel/MainPageCarousel';
 
@@ -44,6 +44,7 @@ const getCurrentYearAndWeek = (date) => {
 const HomePage = () => {
   const [status, setStatus] = useState(1); // 기본값을 1로 설정 (첫 번째 추천)
   const { state } = useAuth();
+  console.log(state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budget, setBudget] = useState(10000); // 기본값 설정
   const [userId, setUserId] = useState(
@@ -93,6 +94,33 @@ const HomePage = () => {
       console.error('예산을 가져오는 중 오류 발생:', error);
     }
   };
+  // // 예산 랜덤 설정
+  // const startAutoIncrement = () => {
+  //   setAutoIncrementing(true);
+
+  //   const incrementBudget = () => {
+  //     setBudget((prevBudget) => {
+  //       if (prevBudget < 100000) {
+  //         return prevBudget + 1000;
+  //       } else {
+  //         return 10000; // 예산이 100,000 이상이 되면 10,000으로 설정
+  //       }
+  //     });
+
+  //     // 0.01초(10ms)에서 0.1초(100ms) 사이의 랜덤 지연 시간 설정
+  //     const randomDelay = Math.random(); // 10ms에서 100ms 사이
+  //     const id = setTimeout(incrementBudget, randomDelay); // timeout ID 저장
+  //     setTimeoutId(id); // 상태에 저장
+  //   };
+
+  //   incrementBudget(); // 최초 호출
+  // };
+
+  // const stopAutoIncrement = () => {
+  //   clearTimeout(timeoutId); // 이전 timeout 취소
+  //   setAutoIncrementing(false);
+  //   setWeeklyBudget(); // 주간 예산 설정 함수 호출
+  // };
 
   // 사용자 정보 가져오기
   const fetchUserInfo = async () => {
@@ -140,19 +168,48 @@ const HomePage = () => {
     setYear(year);
     setWeek(week);
 
-    // 사용자 정보 가져오기
-    const fetchUserInfo = async () => {
-      try {
-        const response = await AuthApi.getMyInfo();
-        setUserId(response.data.id); // 사용자 ID 설정
-      } catch (error) {
-        console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-      }
-    };
-    fetchUserInfo();
+    // 회원 인 경우
+    if (state?.isAuthenticated) {
+      fetchUserInfo();
+    }
+
     fetchWeeklyBudget();
     getRecommendedRecipes();
-  }, []);
+  }, [state]);
+
+  // 추천 받은 레시피 가져오기
+
+  const getRecommendedRecipes = async () => {
+    try {
+      // 비회원 인 경우
+      if (!state?.isAuthenticated) {
+        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+
+          // year와 week 값이 일치하는지 확인
+          if (parsedData.year === year && parsedData.week === week) {
+            setRecipes(parsedData.recipes);
+          }
+        }
+        return;
+      }
+
+      // 회원 인 경우
+      else {
+      }
+      const response = await recommendAPI.getRecommendedRecipes(year, week);
+      setRecipes(response.data.recipes);
+
+      const totalPrice = response.data.recipes.reduce((sum, recipe) => {
+        return sum + recipe.price / recipe.servings;
+      }, 0);
+
+      // setTotalPricePerServing(totalPrice);
+    } catch (error) {
+      console.error('추천 레시피를 불러오는 중 오류 발생:', error);
+    }
+  };
 
   // 추천 받은 레시피 가져오기
 
@@ -233,8 +290,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(size);
+  }, [size]);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
@@ -262,7 +319,7 @@ const HomePage = () => {
             <RowTextContainer>
               <h4>
                 이번주 설정 예산 :{' '}
-                {Math.floor(totalPricePerServing).toLocaleString()} /{' '}
+                {/* {Math.floor(totalPricePerServing).toLocaleString()} /{' '} */}
                 {budget.toLocaleString()}원
               </h4>
               <Button
@@ -280,13 +337,7 @@ const HomePage = () => {
       <RecommendContainer>
         <ListContainer>
           {recipes.length === 0 ? (
-            <Button
-              onClick={() => {
-                checkIsDefaultBudget();
-              }}
-            >
-              추천받기
-            </Button>
+            <Button onClick={checkIsDefaultBudget}>추천받기</Button>
           ) : (
             <Carousel recipes={recipes} year={year} week={week} />
           )}
@@ -298,7 +349,7 @@ const HomePage = () => {
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <CardListContainer layoutType="home">
+          <ListRowContainer>
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
                 <Link to={`/recipeDetail/${recipe.id}`}>
@@ -321,7 +372,7 @@ const HomePage = () => {
                 </StarText>
               </List>
             ))}
-          </CardListContainer>
+          </ListRowContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 
