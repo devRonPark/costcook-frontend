@@ -46,7 +46,10 @@ const Footer = ({ state }) => {
           <Text>전체레시피</Text>
         </IconWrapper>
         <IconWrapper
-          isActive={location.pathname === '/budget'}
+          isActive={
+            location.pathname === '/budget' ||
+            location.pathname.startsWith('/weeklyDetail')
+          }
           onClick={() => handleNavigate('/budget')}
         >
           <CalculateIconStyled />
