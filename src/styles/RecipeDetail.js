@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export const ReceiptImage = styled.div`
+export const RecipeImage = styled.div`
   height: 300px;
   width: 100%;
   display: flex;
@@ -85,7 +85,6 @@ export const TabList = styled.div`
 
 export const TabContent = styled.div`
   width: 100%;
-  min-height: 150px;
   margin: 10px 0px;
   display: flex;
   align-items: center;
@@ -126,44 +125,4 @@ export const ContentText = styled.p`
 
 export const StarText = styled.p`
   font-size: 13px;
-`;
-
-export const HowToCooking = styled.div`
-  list-style: none;
-
-  li {
-    display: flex;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    justify-content: space-between;
-  }
-
-  .step_list_num {
-    flex: 0 0 10%;
-    font-weight: bold;
-  }
-
-  .step_list_txt_cont {
-    line-height: 1.5;
-    font-family: 'STUNNING-Bd';
-    flex: 0 0 60%;
-    font-size: 14px;
-  }
-
-  .step_list_txt_pic {
-    margin-left: auto;
-    flex: 0 0 30%;
-    display: flex;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 5px;
-  }
 `;

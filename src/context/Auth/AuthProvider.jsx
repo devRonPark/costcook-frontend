@@ -1,7 +1,8 @@
-import { useReducer, useMemo, useEffect } from 'react';
+import { useReducer, useMemo, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
-import AuthApi from '../../services/auth.api';
 import { defaultImagePath } from '../../utils/constant';
+import { jwtDecode } from 'jwt-decode';
+import { useCookies } from 'react-cookie';
 
 // 초기 상태
 const initialState = {
@@ -44,6 +45,28 @@ const authReducer = (state, action) => {
         },
       };
     case 'SET_MY_INFO':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          id: action.payload.id,
+          email: action.payload.sub,
+          role: action.payload.role,
+          preferredIngredients:
+            action.payload.preferredIngredients?.length > 0
+              ? action.payload.preferredIngredients
+              : [],
+          dislikedIngredients:
+            action.payload.dislikedIngredients?.length > 0
+              ? action.payload.dislikedIngredients
+              : [],
+          nickname: action.payload.nickname ?? '',
+          profileFile: action.payload.profileFile ?? null,
+          profileUrl: action.payload.profileUrl ?? defaultImagePath,
+        },
+        isAuthenticated: true,
+      };
+    case 'GET_MY_INFO':
       return {
         ...state,
         user: {
@@ -136,30 +159,34 @@ const authReducer = (state, action) => {
 // Provider 생성
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const [cookies, , removeCookie] = useCookies(['accessToken']); // 쿠키 가져오기 및 삭제 함수 추가
 
   // useEffect를 사용하여 새로 고침 시 사용자 정보를 확인하고 상태 업데이트
   useEffect(() => {
-    const checkUserAuthentication = async () => {
-      try {
-        const res = await AuthApi.getMyInfo(); // 인증 상태를 확인하는 API 호출
-        console.log(res.data);
-        if (res.status === 200) {
-          dispatch({
-            type: 'SET_MY_INFO',
-            payload: res.data, // 서버에서 받은 사용자 정보
-          });
-        } else {
-          dispatch({
-            type: 'LOGOUT',
-          });
+    const checkUserAuthentication = () => {
+      const accessToken = cookies.accessToken; // 쿠키에서 accessToken 가져오기
+      if (accessToken) {
+        try {
+          const decodedToken = jwtDecode(accessToken);
+          const isExpired = decodedToken.exp * 1000 < Date.now(); // 만료 확인
+          if (!isExpired) {
+            dispatch({
+              type: 'SET_MY_INFO',
+              payload: decodedToken, // JWT에서 사용자 정보 추출
+            });
+          }
+        } catch (error) {
+          console.error('JWT 파싱 오류:', error);
+          removeCookie('accessToken'); // JWT 파싱 오류 시 쿠키 삭제
+          dispatch({ type: 'LOGOUT' }); // JWT 파싱 오류 시 로그아웃
         }
-      } catch (error) {
-        console.error('사용자 로그인 여부 체크 실패:', error);
+      } else {
+        dispatch({ type: 'LOGOUT' }); // 토큰이 없으면 로그아웃
       }
     };
 
     checkUserAuthentication();
-  }, []);
+  }, [cookies, removeCookie]); // cookies와 removeCookie 의존성 추가
 
   // useMemo를 사용하여 value를 메모이제이션
   const value = () => ({ state, dispatch });
