@@ -25,8 +25,8 @@ import {
   TitleText,
   PriceText,
   StarText,
-  ListRowContainer,
 } from '../components/display/RecipeListStyle';
+import CardListContainer from '../components/CardListContainer';
 import { recommendAPI } from '../services/recommend.api';
 import Carousel from '../components/common/Carousel/MainPageCarousel';
 
@@ -92,6 +92,7 @@ const HomePage = () => {
       console.error('예산을 가져오는 중 오류 발생:', error);
     }
   };
+
   // 사용자 정보 가져오기
   const fetchUserInfo = async () => {
     try {
@@ -210,8 +211,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData(size);
-  }, [size]);
+    fetchData();
+  }, []);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
@@ -269,7 +270,7 @@ const HomePage = () => {
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <ListRowContainer>
+          <CardListContainer layoutType="home">
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
                 <Link to={`/recipeDetail/${recipe.id}`}>
@@ -290,7 +291,7 @@ const HomePage = () => {
                 </StarText>
               </List>
             ))}
-          </ListRowContainer>
+          </CardListContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 
