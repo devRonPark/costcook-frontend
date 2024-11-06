@@ -142,6 +142,7 @@ export const AuthProvider = ({ children }) => {
     const checkUserAuthentication = async () => {
       try {
         const res = await AuthApi.getMyInfo(); // 인증 상태를 확인하는 API 호출
+        console.log(res.data);
         if (res.status === 200) {
           dispatch({
             type: 'SET_MY_INFO',
@@ -161,7 +162,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // useMemo를 사용하여 value를 메모이제이션
-  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+  const value = () => ({ state, dispatch });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

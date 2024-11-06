@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FaStar } from 'react-icons/fa';
+import { format } from 'date-fns';
 
 const ReviewDetailModal = ({ review, onClose }) => {
   if (!review) return null;
@@ -17,23 +18,27 @@ const ReviewDetailModal = ({ review, onClose }) => {
     ));
   };
 
+  const formatDate = (dateString) => {
+    return format(new Date(dateString), 'yyyy년 MM월 dd일 HH:mm:ss');
+  };
+
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>×</CloseButton>
         <Row>
           <Label>레시피</Label>
-          <Value>{review.recipeName}</Value>
+          <Value>{review.recipe.title}</Value>
         </Row>
         <Divider />
         <Row>
           <Label>작성자</Label>
-          <Value>{review.author}</Value>
+          <Value>{review.user.nickname}</Value>
         </Row>
         <Divider />
         <Row>
           <Label>평점</Label>
-          <Value>{renderStars(review.rating)}</Value>
+          <Value>{renderStars(review.score)}</Value>
         </Row>
         <Divider />
         <Row>
@@ -42,18 +47,18 @@ const ReviewDetailModal = ({ review, onClose }) => {
         </Row>
         <Divider />
         <DatesContainer>
-          <DateItem style={{ marginTop: '16px' }}> {/* 작성일에 margin-top을 추가 */}
+          <DateItem style={{ marginTop: '16px' }}>
             <DateLabel>작성일</DateLabel>
-            <DateValue>{review.createdAt}</DateValue>
+            <DateValue>{formatDate(review.createdAt)}</DateValue>
           </DateItem>
           <DateItem>
             <DateLabel>수정일</DateLabel>
-            <DateValue>{review.updatedAt}</DateValue>
+            <DateValue>{formatDate(review.updatedAt)}</DateValue>
           </DateItem>
           {review.deletedAt && (
             <DateItem>
               <DateLabel>삭제일</DateLabel>
-              <DateValue>{review.deletedAt}</DateValue>
+              <DateValue>{formatDate(review.deletedAt)}</DateValue>
             </DateItem>
           )}
         </DatesContainer>
