@@ -14,15 +14,22 @@ const CarouselCard = ({
   remainingBudget,
 }) => {
   const [isClicked, setIsClicked] = useState(false);
+
+  const isUsed = selectedRecipes.some(
+    (recipe) => recipe.id === data.id && recipe.used === 1
+  );
+
   useEffect(() => {
-    setIsClicked(selectedRecipes?.includes(data));
-  }, [selectedRecipes]);
+    setIsClicked(selectedRecipes.some((recipe) => recipe.id === data.id));
+  }, [selectedRecipes, data.id]);
 
   // // 카드 클릭 시 상태 변경 함수
   const handleCardClick = () => {
     console.log(remainingBudget);
     if (remainingBudget >= data.price) {
       if (isActive) onSelect(data);
+    } else if (isUsed) {
+      toast.error(`이미 사용한 레시피입니다.`);
     } else {
       if (isActive) {
         toast.error(`예산을 초과했습니다.`);
@@ -38,7 +45,14 @@ const CarouselCard = ({
   };
 
   return (
-    <CardContainer scale={getScale()} onClick={() => handleCardClick()}>
+    <CardContainer
+      scale={getScale()}
+      onClick={isActive && !isUsed ? handleCardClick : undefined} // used가 1인 경우 클릭 이벤트 무시
+      style={{
+        backgroundColor: isUsed ? 'rgba(255, 0, 0, 0.3)' : 'white', // 사용된 레시피 배경색
+        cursor: isActive && isUsed ? 'not-allowed' : 'pointer', // 사용된 레시피는 클릭할 수 없도록 커서 설정
+      }}
+    >
       <Image
         src={`http://localhost:8080${data.thumbnailUrl}`}
         alt={data.title}

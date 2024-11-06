@@ -1,14 +1,11 @@
 .swiper-slide {
-  filter: blur(10px);
   z-index: 1;
 }
 .swiper-slide-prev,
 .swiper-slide-next {
-  filter: blur(3px);
   z-index: 50;
 }
 .swiper-slide-active {
-  filter: blur(0px);
   z-index: 100;
 }
 
@@ -18,4 +15,15 @@
 
 .swiper-button-prev {
   margin-left: 150px;
+}
+
+.swiper-slide.blurEffect {
+  filter: blur(2px);
+}
+.swiper-slide-prev.blurEffect,
+.swiper-slide-next.blurEffect {
+  filter: blur(1px);
+}
+.swiper-slide-active.blurEffect {
+  filter: blur(0px);
 }
