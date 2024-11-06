@@ -9,12 +9,13 @@ import {
   getCurrentYearAndWeek,
   getWeekAndFirstSundayDate,
 } from '../utils/dateUtil';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
+  const navigate = useNavigate();
   const { state } = useAuth();
   const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
   const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
@@ -145,11 +146,13 @@ const WeeklyDetail = () => {
             <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
             <br />
             <br />
-            <LinkButton to="/home">
-              <p style={{ margin: '5px' }}>
-                아직 요리한 레시피가 없네요! 요리하러 갈까요?
-              </p>
-            </LinkButton>
+            <LinkButtonWrapper>
+              <LinkButton onClick={() => navigate('/home')}>
+                <p style={{ margin: '5px' }}>
+                  아직 요리한 레시피가 없네요! 요리하러 갈까요?
+                </p>
+              </LinkButton>
+            </LinkButtonWrapper>
           </>
         )}
       </RecipeListBox>
@@ -183,24 +186,36 @@ const ArrowButton = styled.div`
 const RecipeListBox = styled.div`
   width: 95%;
   margin-bottom: 10px;
-  text-align: right;
+  text-align: left;
 `;
 const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
-  text-align: center;
   margin-bottom: 10px;
 `;
 
-const LinkButton = styled(Link)`
+const LinkButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
+const LinkButton = styled.button`
+  width: 100%;
   height: 30px;
   display: block;
   background-color: #e0e0e0;
   text-align: center;
+  border: 0px solid white;
   border-radius: 10px;
   font-size: 20px;
   padding: 3px;
   font-family: 'GangwonEduPowerExtraBoldA';
   color: orange;
   overflow: hidden;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ffd700; // hover 시 진한 노란색
+    color: white;
+  }
 `;

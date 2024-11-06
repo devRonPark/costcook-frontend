@@ -9,12 +9,15 @@ const ProgressBar = ({ useAmount, budgetAmount }) => {
   useEffect(() => {
     const newProgress = (useAmount / budgetAmount) * 100;
     setProgress(newProgress);
+    console.log('진행도 : ', progress);
+    console.log('new진행도 : ', newProgress);
+    console.log('사용금액 : ', useAmount);
   }, [useAmount, budgetAmount]);
 
   return (
     <ProgressContainer>
       <ProgressBarContainer>
-        {isNaN(progress) ? (
+        {useAmount === 0 ? (
           <LinkButton to="/home">
             <p style={{ margin: '8px' }}>
               아직 사용한 예산이 없네요! 요리하러 갈까요?
@@ -30,14 +33,8 @@ const ProgressBar = ({ useAmount, budgetAmount }) => {
         )}
       </ProgressBarContainer>
       <ProgressBarTextBox>
-        {isNaN(progress) ? (
-          <></>
-        ) : (
-          <>
-            <ProgressBarText>0</ProgressBarText>
-            <ProgressBarText>{formatPrice(budgetAmount)}</ProgressBarText>
-          </>
-        )}
+        <ProgressBarText>0</ProgressBarText>
+        <ProgressBarText>{formatPrice(budgetAmount)}</ProgressBarText>
       </ProgressBarTextBox>
     </ProgressContainer>
   );

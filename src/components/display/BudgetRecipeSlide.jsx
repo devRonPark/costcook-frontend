@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { StarRating } from '../StarRating';
 import { formatPrice } from '../../utils/formatData';
@@ -9,24 +9,24 @@ import { Navigation, Pagination } from 'swiper/modules';
 import { PriceText, StarText, TitleText } from './RecipeListStyle';
 
 export const BudgetRecipeSlide = ({ recipes }) => {
+  const navigate = useNavigate();
   // 랜덤 출력 (데이터에 0 ~ 1 랜덤 부여 후 0.5와 비교)
   const shuffledRecipes = [...recipes].sort(() => 0.5 - Math.random());
 
   return (
     <Swiper
       loop={recipes.length > 1}
-      // slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
-      slidesPerView={3}
+      slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
       centeredSlides={true}
       spaceBetween={-40}
       navigation={false}
-      pagination={recipes.length > 1 ? { clickable: true } : false}
+      pagination={recipes.length > 1 ? { clickable: false } : false}
       modules={[Navigation, Pagination]}
-      style={{ paddingBottom: '30px' }}
+      style={{ paddingBottom: '30px', marginLeft: '-30px' }}
     >
       {shuffledRecipes.map((recipe) => (
-        <SwiperSlide key={recipe.id} style={{ margin: '-1px' }}>
-          <Link to={`/recipeDetail/${recipe.id}`}>
+        <SwiperSlideContainer key={recipe.id} style={{ margin: '-1px' }}>
+          <RecipeLink onClick={() => navigate(`/recipeDetail/${recipe.id}`)}>
             <List>
               <RecipeImageBox>
                 <RecipeImage
@@ -45,27 +45,38 @@ export const BudgetRecipeSlide = ({ recipes }) => {
                 </StarText>
               </TextBox>
             </List>
-          </Link>
-        </SwiperSlide>
+          </RecipeLink>
+        </SwiperSlideContainer>
       ))}
     </Swiper>
   );
 };
+
+const SwiperSlideContainer = styled(SwiperSlide)`
+  text-align: center;
+  border-radius: 10px;
+  overflow: hidden;
+`;
+
+const RecipeLink = styled.button`
+  border: 0px solid white;
+  border-radius: 10px;
+`;
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  height: 220px;
+  height: 200px;
   width: 200px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 `;
 
 const RecipeImageBox = styled.div`
-  height: 100%;
   width: 100%;
+  height: 70%;
   display: flex;
   align-items: center;
   justify-content: center;
