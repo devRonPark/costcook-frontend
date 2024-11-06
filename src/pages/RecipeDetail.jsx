@@ -42,7 +42,6 @@ const RecipeDetail = () => {
   // 레시피 & 재료
   const { recipe, ingredientData, isRecipeLoaded } = useRecipeData(recipeId);
   const [myReview, setMyReview] = useState(null);
-  const [isMyReviewExist, setIsMyReviewExist] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false); // 공유하기 모달 창 상태 제어
 
   const navigate = useNavigate();
@@ -154,7 +153,7 @@ const RecipeDetail = () => {
       // 로그인 모달 띄우기
       handleLoginModalOpen();
     } else {
-      if (isMyReviewExist) {
+      if (!!myReview) {
         toast.info('이 레시피에 대한 리뷰는 이미 작성하셨습니다.');
         return;
       }
@@ -163,6 +162,7 @@ const RecipeDetail = () => {
     }
   };
 
+  // 리뷰 등록 요청
   const createReview = async () => {
     try {
       const form = {
@@ -172,6 +172,10 @@ const RecipeDetail = () => {
       const res = await ReviewApi.createReview(form);
       if (res.status === 201) {
         toast.success('리뷰가 성공적으로 등록되었습니다!'); // 성공 메시지
+        handleReviewModalClose();
+        resetReview();
+        setMyReview(res.data);
+        setReviewList((prev) => [res.data, ...prev]);
       }
     } catch (error) {
       console.error(error);
@@ -347,7 +351,7 @@ const RecipeDetail = () => {
         {activeTabs.includes('recipeEvaluation') && (
           <TabContent>
             <RecipeEvaluation
-              isMyReviewExist={isMyReviewExist}
+              isMyReviewExist={!!myReview}
               reviewState={reviewState}
               handleStarClick={handleStarClick}
             />
