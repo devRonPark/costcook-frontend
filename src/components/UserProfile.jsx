@@ -23,19 +23,31 @@ const UserProfile = ({
 }) => {
   const [nicknameAvailable, setNicknameAvailable] = useState(null);
   const [isChecked, setIsChecked] = useState(false); // 중복 확인 상태
+  const [nicknameError, setNicknameError] = useState(null); // 닉네임 오류 상태
 
-  // 닉네임 값이 변경될 때 중복 확인 해제
+  // 닉네임 값이 변경될 때 중복 확인 해제 및 유효성 체크
   useEffect(() => {
     setIsChecked(false);
     setNicknameAvailable(null);
+    setNicknameError(null);
+
+    // 닉네임 유효성 검사
+    const isValidNickname = /^[a-zA-Z0-9가-힣_]+$/.test(nickname);
+
+    if (!isValidNickname && nickname.length > 0) {
+      setNicknameError(
+        '닉네임은 알파벳, 숫자, 한글, 밑줄(_)만 사용할 수 있습니다.'
+      );
+    } else {
+      setNicknameError(null); // 유효한 닉네임이면 오류 없음
+    }
   }, [nickname]);
 
   const handleDuplicateCheck = async () => {
-    if (!nickname) {
-      console.error('닉네임이 입력되지 않았습니다.');
+    if (!nickname || nicknameError) {
+      console.error('닉네임이 입력되지 않았거나 유효하지 않습니다.');
       return;
     }
-    console.log(nickname);
 
     try {
       const response = await apiClient.get(
@@ -58,6 +70,7 @@ const UserProfile = ({
     handleChange('nickname', generateRandomNickname());
     setNicknameAvailable(null);
     setIsChecked(false); // 중복 확인 취소
+    setNicknameError(null); // 유효성 오류도 초기화
   };
 
   return (
@@ -65,8 +78,7 @@ const UserProfile = ({
       <ProfileImageUploader
         imageUrl={profileUrl}
         onImageChange={handleFileChange}
-      />{' '}
-      {/* 프로필 이미지 수정 컴포넌트 포함 */}
+      />
       <UserNicknameInput
         name="nickname"
         value={nickname}
@@ -76,7 +88,13 @@ const UserProfile = ({
         nicknameAvailable={nicknameAvailable}
         renewNickname={renewNickname}
         placeholder="새로운 닉네임"
+        borderColor={nicknameError ? 'red' : undefined} // 오류 시 빨간색 보더
       />
+      {nicknameError && (
+        <div style={{ color: 'red', width: '80%', margin: '0 auto' }}>
+          {nicknameError}
+        </div>
+      )}
       <div
         style={{
           color: nicknameAvailable === false ? 'red' : 'green',
@@ -97,7 +115,7 @@ const UserProfile = ({
           width="80%"
           backgroundColor="#2196f3"
           hoverBackgroundColor="none"
-          isDisabled={!nicknameAvailable}
+          isDisabled={!nicknameAvailable || nicknameError} // 오류가 있으면 저장 불가능
         />
       </ButtonContainer>
     </UserProfileContainer>
