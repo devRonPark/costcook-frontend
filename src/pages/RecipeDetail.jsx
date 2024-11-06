@@ -75,7 +75,7 @@ const RecipeDetail = () => {
     }
   };
 
-  // 가져온 정보 보여주기
+  // 로그인한 경우에만 이 레시피에 대해 내가 작성한 리뷰 조회
   useEffect(() => {
     if (recipeId && state.isAuthenticated && state.user != null) {
       fetchMyReview();
@@ -225,14 +225,51 @@ const RecipeDetail = () => {
     }
   };
   // 리뷰 등록, 수정에서 범용적으로 사용됨.
-  const handleReviewSubmit = () => {
+  const handleReviewSubmit = async () => {
     // 리뷰 등록
     if (!isReviewEditMode) {
       createReview();
       resetReview();
     } else {
       // 리뷰 수정
-      console.log(reviewState);
+      const reviewToUpdate = {
+        id: myReview.id,
+        ...reviewState,
+      };
+
+      try {
+        const res = await ReviewApi.updateReview(reviewToUpdate);
+        console.log(res.data);
+        if (res.status === 200) {
+          const updatedReviews = reviewList.map((review) =>
+            review.id === myReview.id
+              ? { ...myReview, ...reviewState } // 수정된 상태로 업데이트
+              : review
+          );
+          setMyReview(res.data);
+          setReviewList(updatedReviews); // 상태 업데이트
+          handleReviewModalClose();
+          toast.success('리뷰가 성공적으로 업데이트되었습니다!'); // 성공 메시지
+        }
+      } catch (error) {
+        // 에러 발생 시 적절한 메시지 설정
+        const errorMessage =
+          error.response && error.response.data && error.response.data.message
+            ? error.response.data.message // 서버에서 반환된 메시지 사용
+            : '리뷰 업데이트에 실패했습니다. 서버 오류가 발생했습니다. 다시 시도해 주세요.'; // 기본 메시지
+
+        toast.error(errorMessage); // 에러 메시지 표시
+
+        // 재시도 버튼 (optional)
+        const retry = window.confirm(
+          '리뷰 업데이트에 실패했습니다. 다시 시도하시겠습니까?'
+        );
+
+        // 사용자가 재시도를 원할 경우 함수 재호출
+        if (retry) {
+          handleReviewSubmit(); // 재시도
+        }
+      }
     }
   };
   // 이 레시피에 내가 작성한 리뷰 가져오기
@@ -241,7 +278,6 @@ const RecipeDetail = () => {
   const fetchReviews = async (newPage = 1) => {
     setReviewLoading(true); // 로딩 시작
     try {
-      console.log(`레시피 리뷰 목록 조회 API 호출 (요청 페이지: ${newPage})`);
       const res = await recipeAPI.getRecipeReviews(recipeId, newPage);
       if (res.status === 200) {
         const { reviews, totalPages } = res.data;

@@ -77,7 +77,6 @@ const MyReviewPage = () => {
       id: selectedReview.id,
       ...reviewState,
     };
-    console.log(reviewToUpdate);
 
     try {
       const res = await ReviewApi.updateReview(reviewToUpdate);
