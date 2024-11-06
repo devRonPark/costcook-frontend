@@ -10,6 +10,7 @@ const RoundedButton = ({
   isDisabled = false,
   style = {}, // style props 추가
 }) => {
+  console.log(isDisabled);
   return (
     <RoundedButtonContainer
       onClick={isDisabled ? null : onClick}

@@ -74,7 +74,7 @@ const HomePage = () => {
         const storedBudget = sessionStorage.getItem('budget');
         if (storedBudget) {
           const parsedBudget = JSON.parse(storedBudget);
-          setBudget(parsedBudget.budget.amount); // amount 필드를 사용하여 예산 설정
+          setBudget(parsedBudget.amount); // amount 필드를 사용하여 예산 설정
         } else {
           setBudget(10000); // 기본값 설정
         }
@@ -86,7 +86,6 @@ const HomePage = () => {
         const response = await budgetAPI.getWeeklyBudget(year, week);
         if (response.data.message === '기본값 설정') {
           setIsDefaultBudget(true);
-          console.log(response.data);
         }
         setBudget(response.data.budget || 10000);
       }
@@ -156,7 +155,7 @@ const HomePage = () => {
     try {
       // 비회원 인 경우
       if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        const storedData = sessionStorage.getItem('recommendedRecipeList');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
@@ -178,7 +177,7 @@ const HomePage = () => {
         return sum + recipe.price / recipe.servings;
       }, 0);
 
-      // setTotalPricePerServing(totalPrice);
+      setTotalPricePerServing(totalPrice);
     } catch (error) {
       console.error('추천 레시피를 불러오는 중 오류 발생:', error);
     }
@@ -197,13 +196,13 @@ const HomePage = () => {
       // 비회원 인 경우
       if (!state?.isAuthenticated) {
         const budgetData = {
-          budget: {
-            year: year,
-            weekNumber: week,
-            amount: budget,
-          },
+          year: year,
+          weekNumber: week,
+          amount: budget,
         };
+        console.log(budgetData);
         sessionStorage.setItem('budget', JSON.stringify(budgetData));
+        closeModal();
         return;
       }
 
@@ -310,16 +309,14 @@ const HomePage = () => {
                   <RecipeImageBox>
                     <RecipeImage
                       alt={recipe.title}
-                      src={`${import.meta.env.VITE_SERVER}${
+                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
                         recipe.thumbnailUrl
                       }`}
                     />
                   </RecipeImageBox>
                 </Link>
                 <TitleText>{recipe.title}</TitleText>
-                <PriceText>
-                  {formatPrice(recipe.price / recipe.servings)}원 (1인분)
-                </PriceText>
+                <PriceText>{formatPrice(recipe.price)}원 (1인분)</PriceText>
                 <StarText>
                   <StarRating ratings={recipe.avgRatings} /> (
                   {recipe.avgRatings})
