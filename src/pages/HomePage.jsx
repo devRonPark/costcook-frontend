@@ -21,12 +21,14 @@ import {
   RightText,
   RecipeImage,
   RecipeImageBox,
-  TextBox,
+  RowTextContainer,
   TitleText,
   PriceText,
   StarText,
-  ListRowContainer,
 } from '../components/display/RecipeListStyle';
+import CardListContainer from '../components/CardListContainer';
+import { recommendAPI } from '../services/recommend.api';
+import Carousel from '../components/common/Carousel/MainPageCarousel';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -40,36 +42,65 @@ const getCurrentYearAndWeek = (date) => {
 };
 
 const HomePage = () => {
+  const [status, setStatus] = useState(1); // 기본값을 1로 설정 (첫 번째 추천)
   const { state } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [budget, setBudget] = useState(0); // 기본값 설정
-  const [userId, setUserId] = useState(null); // 사용자 ID 상태 추가
+  const [budget, setBudget] = useState(10000); // 기본값 설정
+  const [userId, setUserId] = useState(
+    state?.isAuthenticated ? state.user.id : null
+  ); // 사용자 ID 상태 추가
   const [recipeList, setRecipeList] = useState([]); // DB 레시피 불러오기
   const [size, setSize] = useState(3); // 3개만 보여주기
-
+  const [recipes, setRecipes] = useState([]);
+  const [totalPricePerServing, setTotalPricePerServing] = useState(0); // 총 합계를 저장할 상태 변수
   const navigate = useNavigate();
+  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
+  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
+  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const [autoIncrementing, setAutoIncrementing] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
   const handleBudgetChange = (event, newValue) => {
     setBudget(newValue);
   };
 
-  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
-  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
-
-  const [isDefaultBudget, setIsDefaultBudget] = useState(false);
-
   // 예산 가져오기
   const fetchWeeklyBudget = async () => {
     try {
-      const response = await budgetAPI.getWeeklyBudget(year, week);
-      if (response.data.message === '기본값 설정') {
-        setIsDefaultBudget(true);
-        console.log(response.data);
+      // 비회원
+      if (!state?.isAuthenticated) {
+        const storedBudget = sessionStorage.getItem('budget');
+        if (storedBudget) {
+          const parsedBudget = JSON.parse(storedBudget);
+          setBudget(parsedBudget.budget.amount); // amount 필드를 사용하여 예산 설정
+        } else {
+          setBudget(10000); // 기본값 설정
+        }
+        return;
       }
-      setBudget(response.data.budget);
+
+      // 회원
+      else {
+        const response = await budgetAPI.getWeeklyBudget(year, week);
+        if (response.data.message === '기본값 설정') {
+          setIsDefaultBudget(true);
+          console.log(response.data);
+        }
+        setBudget(response.data.budget || 10000);
+      }
     } catch (error) {
       console.error('예산을 가져오는 중 오류 발생:', error);
+    }
+  };
+
+  // 사용자 정보 가져오기
+  const fetchUserInfo = async () => {
+    try {
+      const response = await AuthApi.getMyInfo();
+      setUserId(response.data.id); // 사용자 ID 설정
+    } catch (error) {
+      console.error('사용자 정보를 가져오는 중 오류 발생:', error);
     }
   };
 
@@ -77,29 +108,48 @@ const HomePage = () => {
     setYear(year);
     setWeek(week);
 
-    // 사용자 정보 가져오기
-    const fetchUserInfo = async () => {
-      try {
-        const response = await AuthApi.getMyInfo();
-        setUserId(response.data.id); // 사용자 ID 설정
-        console.log(response.data.id);
-      } catch (error) {
-        console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-      }
-    };
-    fetchUserInfo();
-    fetchWeeklyBudget();
+    // 회원 인 경우
+    if (state?.isAuthenticated) {
+      fetchUserInfo();
+    }
 
-    // if (state.isAuthenticated) {
-    //   // 회원
-    //   fetchWeeklyBudget();
-    // } else {
-    //   // 비회원
-    //   if (sessionStorage.getItem("budget"))
-    //   setBudget(sessionStorage.getItem("budget"));
-    //   setIsDefaultBudget(true);
-    // }
-  }, []);
+    fetchWeeklyBudget();
+    getRecommendedRecipes();
+  }, [state]);
+
+  // 추천 받은 레시피 가져오기
+
+  const getRecommendedRecipes = async () => {
+    try {
+      // 비회원 인 경우
+      if (!state?.isAuthenticated) {
+        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+
+          // year와 week 값이 일치하는지 확인
+          if (parsedData.year === year && parsedData.week === week) {
+            setRecipes(parsedData.recipes);
+          }
+        }
+        return;
+      }
+
+      // 회원 인 경우
+      else {
+      }
+      const response = await recommendAPI.getRecommendedRecipes(year, week);
+      setRecipes(response.data.recipes);
+
+      const totalPrice = response.data.recipes.reduce((sum, recipe) => {
+        return sum + recipe.price / recipe.servings;
+      }, 0);
+
+      // setTotalPricePerServing(totalPrice);
+    } catch (error) {
+      console.error('추천 레시피를 불러오는 중 오류 발생:', error);
+    }
+  };
 
   // DB에 사용자가 설정한 예산 등록
   const setWeeklyBudget = async () => {
@@ -111,11 +161,27 @@ const HomePage = () => {
     };
 
     try {
-      if (isDefaultBudget) {
-        const res = await budgetAPI.createWeeklyBudget(budgetRequest); // 생성 API 호출
-        if (res.status === 201) setIsDefaultBudget(false);
-      } else {
-        const res = await budgetAPI.modifyWeeklyBudget(budgetRequest); // 수정 API 호출
+      // 비회원 인 경우
+      if (!state?.isAuthenticated) {
+        const budgetData = {
+          budget: {
+            year: year,
+            weekNumber: week,
+            amount: budget,
+          },
+        };
+        sessionStorage.setItem('budget', JSON.stringify(budgetData));
+        return;
+      }
+
+      // 회원 인 경우
+      else {
+        if (isDefaultBudget) {
+          const res = await budgetAPI.createWeeklyBudget(budgetRequest); // 생성 API 호출
+          if (res.status === 201) setIsDefaultBudget(false);
+        } else {
+          const res = await budgetAPI.modifyWeeklyBudget(budgetRequest); // 수정 API 호출
+        }
       }
     } catch (error) {
       console.error(error);
@@ -147,8 +213,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData(size);
-  }, [size]);
+    fetchData();
+  }, []);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
@@ -166,50 +232,38 @@ const HomePage = () => {
   return (
     <Layout isSearchBtnExist pageName="Cost Cook">
       <SettingContainer>
-        <h3>추천 설정</h3>
+        <h2>추천 설정</h2>
         <MoneyContainerWrapper>
-          <MoneyButton onClick={openModal}>
-            예산 : {budget.toLocaleString()}원
-          </MoneyButton>
+          {recipes.length === 0 ? (
+            <MoneyButton onClick={openModal}>
+              예산 : {budget.toLocaleString()}원
+            </MoneyButton>
+          ) : (
+            <RowTextContainer>
+              <h4>
+                이번주 설정 예산 :{' '}
+                {/* {Math.floor(totalPricePerServing).toLocaleString()} /{' '} */}
+                {budget.toLocaleString()}원
+              </h4>
+              <Button
+                onClick={() => {
+                  setStatus(2);
+                  checkIsDefaultBudget();
+                }}
+              >
+                다시 추천받기
+              </Button>
+            </RowTextContainer>
+          )}
         </MoneyContainerWrapper>
       </SettingContainer>
       <RecommendContainer>
         <ListContainer>
-          <List>
-            {/* 로직 구현 시 실제 이미지 넣기 */}
-            {/* 로직 구현 시 실제 데이터 넣기 */}
-            <RecipeImageBox>
-              <Button
-                onClick={() => {
-                  checkIsDefaultBudget();
-                }}
-              >
-                추천받기
-              </Button>
-            </RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-
-          <List>
-            <RecipeImageBox>이미지</RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
-          <List>
-            <RecipeImageBox>이미지</RecipeImageBox>
-            <TextBox>
-              <TitleText>김치볶음밥</TitleText>
-              <PriceText>4300원</PriceText>
-              <StarText>★★★★☆ 4.0</StarText>
-            </TextBox>
-          </List>
+          {recipes.length === 0 ? (
+            <Button onClick={checkIsDefaultBudget}>추천받기</Button>
+          ) : (
+            <Carousel recipes={recipes} year={year} week={week} />
+          )}
         </ListContainer>
       </RecommendContainer>
       <UpcommingReceiptContainer>
@@ -218,7 +272,7 @@ const HomePage = () => {
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
         <ListContainer>
-          <ListRowContainer>
+          <CardListContainer layoutType="home">
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
                 <Link to={`/recipeDetail/${recipe.id}`}>
@@ -241,7 +295,7 @@ const HomePage = () => {
                 </StarText>
               </List>
             ))}
-          </ListRowContainer>
+          </CardListContainer>
         </ListContainer>
       </UpcommingReceiptContainer>
 
