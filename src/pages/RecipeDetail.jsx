@@ -202,6 +202,7 @@ const RecipeDetail = () => {
         setReviewList((prevReviews) =>
           prevReviews.filter((r) => r.id !== review.id)
         );
+        setMyReview(null);
         toast.info('리뷰가 성공적으로 삭제되었습니다!'); // 사용자에게 성공 메시지 표시
       }
     } catch (err) {
@@ -272,7 +273,6 @@ const RecipeDetail = () => {
       }
     }
   };
-  // 이 레시피에 내가 작성한 리뷰 가져오기
 
   // DB의 리뷰 데이터 가져오기
   const fetchReviews = async (newPage = 1) => {
