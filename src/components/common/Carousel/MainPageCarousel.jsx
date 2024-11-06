@@ -32,7 +32,7 @@ const Carousel = ({ recipes, year, week }) => {
 
     try {
       if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        const storedData = sessionStorage.getItem('recommendedRecipeList');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
@@ -46,7 +46,7 @@ const Carousel = ({ recipes, year, week }) => {
 
             // 변경된 레시피를 다시 세션 스토리지에 저장
             sessionStorage.setItem(
-              'RecommendRecipeList',
+              'recommendedRecipeList',
               JSON.stringify(parsedData)
             );
 
