@@ -6,6 +6,7 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ReviewDetailModal from '../../components/admin/ReviewDetailModal';
 import apiClient from '../../services/api';
+import AdminSearchForm from '../../components/admin/AdminSearchForm';
 
 const AdminReviewList = () => {
   // State 설정
@@ -166,26 +167,14 @@ const AdminReviewList = () => {
     return (
       <AdminLayout title="리뷰">
         <NoReviewsWrapper>현재 조회 가능한 리뷰가 없습니다.</NoReviewsWrapper>
-        {/* 검색 폼을 유지하여 검색을 다시 시도할 수 있도록 함 */}
-        <SearchForm onSubmit={handleSearchSubmit}>
-          {/* 카테고리 드롭다운 컴포넌트 */}
-          <CategorySelect value={inputCategory} onChange={handleCategoryChange}>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </CategorySelect>
-  
-          {/* 검색창 컴포넌트 */}
-          <SearchInput
-            type="text"
-            value={inputKeyword}
-            onChange={handleKeywordChange}
-            placeholder="검색어를 입력하세요..."
-          />
-          <SearchButton type="submit">검색</SearchButton>
-        </SearchForm>
+        <AdminSearchForm
+          inputCategory={inputCategory}
+          handleCategoryChange={handleCategoryChange}
+          categories={categories}
+          inputKeyword={inputKeyword}
+          handleKeywordChange={handleKeywordChange}
+          handleSearchSubmit={handleSearchSubmit}
+        />
       </AdminLayout>
     );
   }
@@ -241,25 +230,14 @@ const AdminReviewList = () => {
           showLastButton
         />
       </PaginationWrapper>
-      <SearchForm onSubmit={handleSearchSubmit}>
-        {/* 카테고리 드롭다운 컴포넌트 */}
-        <CategorySelect value={inputCategory} onChange={handleCategoryChange}>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </CategorySelect>
-
-        {/* 검색창 컴포넌트 */}
-        <SearchInput
-          type="text"
-          value={inputKeyword}
-          onChange={handleKeywordChange}
-          placeholder="검색어를 입력하세요..."
-        />
-        <SearchButton type="submit">검색</SearchButton>
-      </SearchForm>
+      <AdminSearchForm
+        inputCategory={inputCategory}
+        handleCategoryChange={handleCategoryChange}
+        categories={categories}
+        inputKeyword={inputKeyword}
+        handleKeywordChange={handleKeywordChange}
+        handleSearchSubmit={handleSearchSubmit}
+      />
 
       {/* 리뷰 모달 컴포넌트 */}
       {selectedReview && (
@@ -334,50 +312,6 @@ const PaginationWrapper = styled.div`
   margin-top: 20px;
   display: flex;
   justify-content: center;
-`;
-
-const SearchForm = styled.form`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 30px;
-`;
-
-const CategorySelect = styled.select`
-  padding: 10px 7px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-right: 10px;
-  width: 80px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23555"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
-  background-color: white;
-  background-size: 20px;
-`;
-
-const SearchInput = styled.input`
-  width: 260px; 
-  padding: 12px; 
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-right: 10px;
-`;
-
-const SearchButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
 `;
 
 const Wrapper = styled.div`
