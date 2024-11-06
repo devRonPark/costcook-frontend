@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { StarRating } from '../StarRating';
@@ -9,7 +8,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { PriceText, StarText, TitleText } from './RecipeListStyle';
 
-export const RecipeSlide = ({ recipes }) => {
+export const BudgetRecipeSlide = ({ recipes }) => {
   // 랜덤 출력 (데이터에 0 ~ 1 랜덤 부여 후 0.5와 비교)
   const shuffledRecipes = [...recipes].sort(() => 0.5 - Math.random());
 
@@ -19,14 +18,14 @@ export const RecipeSlide = ({ recipes }) => {
       // slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
       slidesPerView={3}
       centeredSlides={true}
-      spaceBetween={10}
+      spaceBetween={-40}
       navigation={false}
       pagination={recipes.length > 1 ? { clickable: true } : false}
       modules={[Navigation, Pagination]}
       style={{ paddingBottom: '30px' }}
     >
       {shuffledRecipes.map((recipe) => (
-        <SwiperSlide key={recipe.id}>
+        <SwiperSlide key={recipe.id} style={{ margin: '-1px' }}>
           <Link to={`/recipeDetail/${recipe.id}`}>
             <List>
               <RecipeImageBox>

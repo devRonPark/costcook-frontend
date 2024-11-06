@@ -10,15 +10,12 @@ import {
   getWeekAndFirstSundayDate,
 } from '../utils/dateUtil';
 import { Link, useNavigate } from 'react-router-dom';
-import { RecipeSlide } from '../components/display/RecipeSlide';
+import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
-import { Button } from '@mui/material';
 
 // 날짜 계산 (헤더에 날짜 표시)
-
 const WeeklyDetail = () => {
   const { state } = useAuth();
-  const navigate = useNavigate();
   const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
   const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
   const [currentMonth, setCurrentMonth] = useState('');
@@ -27,7 +24,6 @@ const WeeklyDetail = () => {
   const [firstSundayDateString, setFirstSundayDateString] = useState('');
   const [usedRecipes, setUsedRecipes] = useState([]); // 사용 레시피
   const [recommendedRecipes, setRecommendedRecipes] = useState([]); // 추천받은 레시피
-  console.log('유저 정보: ', state?.user);
 
   // 추천받은 레시피 정보 가져오기(is_used 무관)
   const getRecommendedRecipes = async () => {
@@ -38,9 +34,8 @@ const WeeklyDetail = () => {
       );
       const recommendedRecipes = recommendedRes.data.recipes || [];
       setRecommendedRecipes(recommendedRecipes);
-      console.log('추천받은 레시피 정보 : ', recommendedRecipes);
     } catch (error) {
-      console.log('데이터 출력 중 오류 발생', error);
+      console.log('비 로그인 상태');
     }
   };
 
@@ -50,17 +45,12 @@ const WeeklyDetail = () => {
       const usedRes = await budgetAPI.getUsedWeeklyBudget(year, week);
       const usedRecipes = usedRes.data.recipes || [];
       setUsedRecipes(usedRecipes);
-      console.log('사용 레시피 정보: ', usedRecipes);
     } catch (error) {
-      console.error('데이터 출력 중 오류 발생', error);
+      console.log('데이터를 불러올 수 없음');
     }
   };
 
   useEffect(() => {
-    console.log('월', currentMonth);
-    console.log('주차', weekNumber);
-    console.log('연', year);
-    console.log('주차', week);
     getUsedRecipes();
     getRecommendedRecipes();
   }, [year, week]);
@@ -96,8 +86,6 @@ const WeeklyDetail = () => {
     setCurrentDate(newDate);
     setYear(newYear);
     setWeek(newWeek);
-    console.log('newYear:', newYear);
-    console.log('newWeek:', newWeek);
   };
 
   // 주차 변경 버튼 클릭 핸들러
@@ -132,15 +120,12 @@ const WeeklyDetail = () => {
           <>
             <RecipeListText>추천받은 레시피</RecipeListText>
             <div style={{ width: '100%' }}>
-              <RecipeSlide recipes={recommendedRecipes} />
+              <BudgetRecipeSlide recipes={recommendedRecipes} />
             </div>
           </>
         ) : (
           <>
             <RecipeListText>추천받은 레시피가 없습니다.</RecipeListText>
-            <ButtonBox>
-              <GoHomeButton>추천받으러 가기</GoHomeButton>
-            </ButtonBox>
           </>
         )}
       </RecipeListBox>
@@ -152,15 +137,19 @@ const WeeklyDetail = () => {
           <>
             <RecipeListText>요리한 레시피</RecipeListText>
             <div style={{ width: '100%' }}>
-              <RecipeSlide recipes={usedRecipes} />
+              <BudgetRecipeSlide recipes={usedRecipes} />
             </div>
           </>
         ) : (
           <>
             <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
-            <ButtonBox>
-              <GoHomeButton>요리하러 가기</GoHomeButton>
-            </ButtonBox>
+            <br />
+            <br />
+            <LinkButton to="/home">
+              <p style={{ margin: '5px' }}>
+                아직 요리한 레시피가 없네요! 요리하러 갈까요?
+              </p>
+            </LinkButton>
           </>
         )}
       </RecipeListBox>
@@ -199,18 +188,19 @@ const RecipeListBox = styled.div`
 const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
-  text-align: right;
+  text-align: center;
   margin-bottom: 10px;
 `;
 
-const ButtonBox = styled.div`
-  margin-top: 10px;
+const LinkButton = styled(Link)`
+  height: 30px;
+  display: block;
+  background-color: #e0e0e0;
   text-align: center;
-`;
-
-const GoHomeButton = styled(Link)`
-  color: black;
-  border: none;
   border-radius: 10px;
-  background-color: blue;
+  font-size: 20px;
+  padding: 3px;
+  font-family: 'GangwonEduPowerExtraBoldA';
+  color: orange;
+  overflow: hidden;
 `;

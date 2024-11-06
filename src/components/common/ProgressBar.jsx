@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { formatPrice } from '../../utils/formatData';
+import { Link } from 'react-router-dom';
 
 const ProgressBar = ({ useAmount, budgetAmount }) => {
   const [progress, setProgress] = useState(0);
@@ -13,12 +14,30 @@ const ProgressBar = ({ useAmount, budgetAmount }) => {
   return (
     <ProgressContainer>
       <ProgressBarContainer>
-        <ProgressBarFill style={{ width: `${progress}%` }} />
-        <ProgressPercentageText>{progress.toFixed(2)}%</ProgressPercentageText>
+        {isNaN(progress) ? (
+          <LinkButton to="/home">
+            <p style={{ margin: '8px' }}>
+              아직 사용한 예산이 없네요! 요리하러 갈까요?
+            </p>
+          </LinkButton>
+        ) : (
+          <>
+            <ProgressBarFill style={{ width: `${progress}%` }} />
+            <ProgressPercentageText>
+              {progress.toFixed(2)}%
+            </ProgressPercentageText>
+          </>
+        )}
       </ProgressBarContainer>
       <ProgressBarTextBox>
-        <ProgressBarText>0</ProgressBarText>
-        <ProgressBarText>{formatPrice(budgetAmount)}</ProgressBarText>
+        {isNaN(progress) ? (
+          <></>
+        ) : (
+          <>
+            <ProgressBarText>0</ProgressBarText>
+            <ProgressBarText>{formatPrice(budgetAmount)}</ProgressBarText>
+          </>
+        )}
       </ProgressBarTextBox>
     </ProgressContainer>
   );
@@ -58,8 +77,9 @@ const ProgressBarTextBox = styled.div`
 `;
 
 const ProgressBarText = styled.div`
+  font-family: 'GangwonEdu_OTFBoldA';
   height: 10px;
-  font-size: 14px;
+  font-size: 16px;
 `;
 
 const ProgressPercentageText = styled.div`
@@ -70,4 +90,12 @@ const ProgressPercentageText = styled.div`
   font-weight: bold;
   top: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const LinkButton = styled(Link)`
+  text-align: center;
+  border-radius: 10px;
+  font-size: 20px;
+  color: orange;
+  font-family: 'GangwonEduPowerExtraBoldA';
 `;
