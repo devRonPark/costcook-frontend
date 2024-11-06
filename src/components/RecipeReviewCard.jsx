@@ -93,7 +93,6 @@ const RecipeReviewCard = forwardRef(
     };
 
     const handleEdit = () => {
-      console.log(`${review.id} 번 리뷰 수정할 꺼야!!!`);
       // 수정 화면으로 이동.
       onEdit(review); // 수정 핸들러
       setDropdownOpen(false); // 드롭다운 닫기

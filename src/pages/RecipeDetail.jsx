@@ -12,7 +12,7 @@ import ImageDisplay from '../components/display/ImageDisplay';
 import { useAuth } from '../context/Auth/AuthContext';
 // 스타일 불러오기
 import {
-  ReceiptImage,
+  RecipeImage,
   ScoreContainer,
   ScoreSubContainer,
   IngredientContainer,
@@ -70,7 +70,6 @@ const RecipeDetail = () => {
     try {
       const res = await UserApi.getMyReviewWithRecipeId(recipeId);
       setMyReview(res.data);
-      setIsMyReviewExist(!!res.data);
     } catch (error) {
       console.error(error);
     }
@@ -155,6 +154,7 @@ const RecipeDetail = () => {
     } else {
       if (!!myReview) {
         toast.info('이 레시피에 대한 리뷰는 이미 작성하셨습니다.');
+        handleReviewModalClose();
         return;
       }
       handleReviewModalOpen();
@@ -187,12 +187,52 @@ const RecipeDetail = () => {
       toast.error(errorMessage); // 에러 메시지 표시
     }
   };
+  // 리뷰 수정 버튼 클릭 시 모달 오픈 및 수정할 리뷰 선택
+  const handleReviewEditBtnClick = (review) => {
+    setReviewState({ score: review.score, comment: review.comment });
+    setIsReviewEditMode(true);
+    handleReviewModalOpen();
+  };
+  // 리뷰 삭제 확인 창에서 확인 클릭 시 리뷰 삭제 처리
+  const handleReviewDeleteClick = async (review) => {
+    try {
+      const res = await ReviewApi.deleteReview(review.id);
+      // 삭제 성공 시 리뷰 목록에서 해당 리뷰 제거
+      if (res.status === 204) {
+        setReviewList((prevReviews) =>
+          prevReviews.filter((r) => r.id !== review.id)
+        );
+        toast.info('리뷰가 성공적으로 삭제되었습니다!'); // 사용자에게 성공 메시지 표시
+      }
+    } catch (err) {
+      // 에러 발생 시 적절한 메시지 설정
+      const errorMessage =
+        err.response && err.response.data && err.response.data.message
+          ? err.response.data.message // 서버에서 반환된 메시지 사용
+          : '리뷰 삭제에 실패했습니다. 서버 오류가 발생했습니다. 다시 시도해 주세요.'; // 기본 메시지
+
+      toast.error(errorMessage); // 에러 메시지 표시
+
+      // 재시도 버튼 (optional)
+      const retry = window.confirm(
+        '리뷰 삭제에 실패했습니다. 다시 시도하시겠습니까?'
+      );
+
+      // 사용자가 재시도를 원할 경우 함수 재호출
+      if (retry) {
+        handleReviewDeleteClick(review); // 재시도
+      }
+    }
+  };
   // 리뷰 등록, 수정에서 범용적으로 사용됨.
   const handleReviewSubmit = () => {
     // 리뷰 등록
     if (!isReviewEditMode) {
       createReview();
       resetReview();
+    } else {
+      // 리뷰 수정
+      console.log(reviewState);
     }
   };
   // 이 레시피에 내가 작성한 리뷰 가져오기
@@ -239,7 +279,7 @@ const RecipeDetail = () => {
       isRecipeDetailPage
       onShareClick={handleShareModalOpen}
     >
-      <ReceiptImage>
+      <RecipeImage>
         <ImageDisplay
           objectFit={'cover'}
           height={'100%'}
@@ -248,7 +288,7 @@ const RecipeDetail = () => {
           altText={recipe.title}
           src={`${import.meta.env.VITE_BASE_SERVER_URL}${recipe.thumbnailUrl}`}
         ></ImageDisplay>
-      </ReceiptImage>
+      </RecipeImage>
 
       <ScoreContainer>
         <ScoreSubContainer text="center">
@@ -373,6 +413,8 @@ const RecipeDetail = () => {
               <RecipeReviewCard
                 key={review.id}
                 review={review}
+                onEdit={handleReviewEditBtnClick}
+                onDelete={handleReviewDeleteClick}
                 loginUserId={state?.user?.id !== null ? state?.user?.id : -1}
                 ref={
                   index === reviewList.length - 1 ? lastReviewElementRef : null

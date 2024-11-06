@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export const ReceiptImage = styled.div`
+export const RecipeImage = styled.div`
   height: 300px;
   width: 100%;
   display: flex;
