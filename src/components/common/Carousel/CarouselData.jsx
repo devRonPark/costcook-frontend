@@ -1,6 +1,7 @@
 // CarouselData.js
 import React from 'react';
 import styled from 'styled-components';
+import { formatPrice } from '../../../utils/formatData';
 
 const TextField = styled.div`
   h4 {
@@ -21,13 +22,13 @@ const CarouselData = ({ name, price, likes, score }) => {
     <TextField>
       <h4>{name}</h4>
       <div>
-        <p>{price}원</p>
+        <p>{formatPrice(price)}원</p>
       </div>
       <div style={{ display: 'flex' }}>
         <p style={{ color: 'red', margin: '-5px 5px' }}>♥</p>
-        <p style={{ margin: '-5px 0px' }}>{likes}K</p>
+        <p style={{ margin: '-5px 0px' }}>{formatPrice(likes)}K</p>
         <p style={{ color: '#FF9400', margin: '-5px 10px' }}>★</p>
-        <p style={{ margin: '-5px -10px' }}>{score}</p>
+        <p style={{ margin: '-5px -10px' }}>{formatPrice(score)}</p>
       </div>
     </TextField>
   );
