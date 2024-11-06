@@ -2,11 +2,16 @@ import styled from 'styled-components';
 import { formatCreationDate, renderStars } from '../utils/format';
 import { Box } from '@mui/material';
 import { Star } from '@mui/icons-material';
+import DropdownButton from './dropdown/DropdownButton';
+import DropdownMenu from './dropdown/DropdownMenu';
+import { forwardRef, useState } from 'react';
+import ConfirmationModal from './ConfirmationModal';
 
 // 카드 스타일링
 const CardContainer = styled(Box)`
   display: flex;
   flex-direction: column;
+  gap: 10px;
   padding: 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -64,40 +69,107 @@ const Comment = styled.p`
   color: #333; /* 코멘트 색상 */
 `;
 
-const RecipeReviewCard = ({ review }) => {
-  return (
-    <CardContainer>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <ProfileImage
-          src={`${import.meta.env.VITE_BASE_SERVER_URL}${
-            review.user.profileUrl
-          }`}
-          alt={`${review.user.nickname}'s profile`}
-        />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Nickname>{review.user.nickname}</Nickname>
-          <ReviewMetaContainer>
-            <RatingContainer>
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  style={{
-                    color: index < review.score ? 'gold' : 'lightgray',
-                    fontSize: '20px', // 아이콘 크기 조정
-                  }}
+// props 로 loginUserId 를 전달받아서, loginUserId 와 review.user.id 가 일치하면, 드롭다운 메뉴 영역이 화면에 보여진다.
+const RecipeReviewCard = forwardRef(
+  ({ review, onEdit, onDelete, loginUserId }, ref) => {
+    const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 메뉴 활성화 여부 제어
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const handleDeleteClick = () => {
+      setIsDeleteModalOpen(true); // 모달 오픈
+    };
+
+    const handleConfirmDelete = () => {
+      onDelete(review); // 삭제 처리
+      setIsDeleteModalOpen(false); // 모달 닫기
+    };
+
+    const handleCancelDelete = () => {
+      setIsDeleteModalOpen(false); // 모달 닫기
+    };
+
+    const handleDropdown = () => {
+      setDropdownOpen((prev) => !prev);
+    };
+
+    const handleEdit = () => {
+      console.log(`${review.id} 번 리뷰 수정할 꺼야!!!`);
+      // 수정 화면으로 이동.
+      onEdit(review); // 수정 핸들러
+      setDropdownOpen(false); // 드롭다운 닫기
+    };
+
+    const menuItems = [
+      {
+        text: '수정',
+        onClick: handleEdit,
+      },
+      {
+        text: '삭제',
+        onClick: handleDeleteClick,
+      },
+    ];
+    return (
+      <CardContainer ref={ref}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            position: 'relative',
+          }}
+        >
+          <ProfileImage
+            src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+              review.user.profileUrl
+            }`}
+            alt={`${review.user.nickname}'s profile`}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Nickname>{review.user.nickname}</Nickname>
+            <ReviewMetaContainer>
+              <RatingContainer>
+                {[...Array(5)].map((_, index) => (
+                  <Star
+                    key={index}
+                    style={{
+                      color: index < review.score ? 'gold' : 'lightgray',
+                      fontSize: '20px', // 아이콘 크기 조정
+                    }}
+                  />
+                ))}
+                <AverageRating>({review.score})</AverageRating>
+              </RatingContainer>
+              <UpdatedAt>{formatCreationDate(review.updatedAt)}</UpdatedAt>
+            </ReviewMetaContainer>
+          </div>
+          {/* 드롭다운 메뉴 영역 */}
+          {loginUserId === review.user.id && (
+            <div style={{ position: 'absolute', right: 0 }}>
+              <DropdownButton onClick={handleDropdown} />
+              {dropdownOpen && (
+                <DropdownMenu
+                  items={menuItems}
+                  isOpen={dropdownOpen}
+                  onClose={() => setDropdownOpen(false)}
                 />
-              ))}
-              <AverageRating>({review.score})</AverageRating>
-            </RatingContainer>
-            <UpdatedAt>{formatCreationDate(review.updatedAt)}</UpdatedAt>
-          </ReviewMetaContainer>
+              )}
+            </div>
+          )}
         </div>
-      </div>
-      <ContentContainer>
-        <Comment>{review.comment}</Comment>
-      </ContentContainer>
-    </CardContainer>
-  );
-};
+        <ContentContainer>
+          <Comment>{review.comment}</Comment>
+        </ContentContainer>
+
+        {/* 삭제 확인 모달 */}
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          message={`${review.recipe.title} 리뷰를 삭제하시겠습니까?`}
+        />
+      </CardContainer>
+    );
+  }
+);
 
 export default RecipeReviewCard;

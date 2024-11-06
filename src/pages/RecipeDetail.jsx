@@ -50,11 +50,12 @@ const RecipeDetail = () => {
   // 리뷰 관련 state
   const [isReviewEditMode, setIsReviewEditMode] = useState(false);
   const [reviewList, setReviewList] = useState([]); // 전체 리뷰 목록
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [page, setPage] = useState(1); // 리뷰 페이지
+  const [totalPages, setTotalPages] = useState(1);
   const [reviewState, setReviewState] = useState({ score: 0, comment: '' }); // 모달 내 변경되는 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [page, setPage] = useState(1); // 리뷰 페이지
-  const [hasMore, setHasMore] = useState(true); // 추가 리뷰가 있는지 확인
-  const { ref, inView } = useInView(); // 스크롤 감지용 useRef
+  const { ref: lastReviewElementRef, inView } = useInView(); // 스크롤 감지용 useRef
   const reviewRef = useRef(null); // 리뷰 컨테이너의 ref 생성
   // 로그인 유도 창 관련 state
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -65,36 +66,6 @@ const RecipeDetail = () => {
     'recipeEvaluation',
     'review',
   ]); // 초기값은 전부다 열려있는 상태
-
-  // 서버로부터 받아온 레시피 정보 중 재료 정보 가공
-  const formatIngredientData = (ingredients) => {
-    return ingredients.map((item) => ({
-      name: item.ingredientName,
-      quantity: item.quantity,
-      unit: item.unitName,
-      price: Math.round(item.price * item.quantity), // 정수값만 출력
-      categoryId: item.category.id,
-      categoryName: item.category.name,
-    }));
-  };
-
-  // getRecipeById 함수에서 formatIngredientData를 호출
-  const getRecipeById = async () => {
-    try {
-      const res = await recipeAPI.getRecipeById(recipeId);
-      // 레시피 데이터
-      setRecipe(res.data);
-
-      // 재료 데이터 포맷팅
-      const formattedIngredients = formatIngredientData(res.data.ingredients);
-      setIngredientData(formattedIngredients);
-      console.log('포맷된 재료 정보: ', formattedIngredients);
-
-      setIsRecipeLoaded(true); // 레시피가 로드되었음을 설정
-    } catch (error) {
-      console.log('레시피를 불러올 수 없음', error);
-    }
-  };
 
   const fetchMyReview = async () => {
     try {
@@ -108,13 +79,8 @@ const RecipeDetail = () => {
 
   // 가져온 정보 보여주기
   useEffect(() => {
-    if (recipeId) {
-      console.log('몇 번 호출???');
-      getRecipeById();
-
-      if (state.isAuthenticated && state.user != null) {
-        fetchMyReview();
-      }
+    if (recipeId && state.isAuthenticated && state.user != null) {
+      fetchMyReview();
     }
   }, [recipeId, state]);
 
@@ -205,7 +171,6 @@ const RecipeDetail = () => {
       };
       const res = await ReviewApi.createReview(form);
       if (res.status === 201) {
-        console.log(res.data);
         toast.success('리뷰가 성공적으로 등록되었습니다!'); // 성공 메시지
       }
     } catch (error) {
@@ -229,33 +194,38 @@ const RecipeDetail = () => {
   // 이 레시피에 내가 작성한 리뷰 가져오기
 
   // DB의 리뷰 데이터 가져오기
-  const fetchReviews = async () => {
+  const fetchReviews = async (newPage = 1) => {
+    setReviewLoading(true); // 로딩 시작
     try {
-      const res = await recipeAPI.getRecipeReviews(recipeId, page);
-      console.log('리뷰 데이터 : ', res.data.reviews);
-      if (res.data.reviews.length === 0) {
-        setHasMore(false);
-        return;
+      console.log(`레시피 리뷰 목록 조회 API 호출 (요청 페이지: ${newPage})`);
+      const res = await recipeAPI.getRecipeReviews(recipeId, newPage);
+      if (res.status === 200) {
+        const { reviews, totalPages } = res.data;
+        if (newPage === 1) {
+          setReviewList(reviews);
+        } else {
+          setReviewList((prev) => [...prev, ...reviews]);
+        }
+        setTotalPages(totalPages);
       }
-      // 기존 리뷰에 새 리뷰 추가
-      setReviewList((prevReviews) => [...prevReviews, ...res.data.reviews]);
-
-      console.log('전체 데이터 : ', res.data);
     } catch (error) {
-      console.error('리뷰 불러오기 오류', error);
+      console.error(error);
+      toast.error('리뷰를 가져오는 데 실패했습니다.');
+    } finally {
+      setReviewLoading(false);
     }
   };
 
   // 스크롤 시 페이지 증가
   useEffect(() => {
-    if (inView && hasMore) {
+    if (inView && !reviewLoading && page < totalPages) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [inView, hasMore]); // 스크롤 끝에 올 때마다 호출
+  }, [inView, reviewLoading, page, totalPages]); // 스크롤 끝에 올 때마다 호출
 
   // 페이지 변경 시 마다 추가 리뷰 로드
   useEffect(() => {
-    fetchReviews();
+    fetchReviews(page);
   }, [page]);
 
   return (
@@ -395,19 +365,21 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {reviewList.map((review) => (
+            {reviewList.map((review, index) => (
               <RecipeReviewCard
                 key={review.id}
                 review={review}
                 loginUserId={state?.user?.id !== null ? state?.user?.id : -1}
+                ref={
+                  index === reviewList.length - 1 ? lastReviewElementRef : null
+                }
               />
             ))}
-            {/* 마지막 리뷰 다음에 스크롤 감지용 빈 div */}
-            {/* {reviewList.length < reviewsData.length && <div ref={ref} style={{ height: '1px' }} />} */}
-            {hasMore && <p ref={ref}>.</p>}
           </TabContent>
         )}
       </TabListContainer>
+
+      {/* 공유 모달 */}
       {isShareModalOpen && (
         <ShareModal
           isOpen={isShareModalOpen}
@@ -415,6 +387,7 @@ const RecipeDetail = () => {
           shareUrl={window.location.href}
         />
       )}
+      {/* 리뷰 등록 및 수정 모달 */}
       {isReviewModalOpen && (
         <ReviewEditModal
           review={reviewState}
@@ -425,6 +398,7 @@ const RecipeDetail = () => {
           isEditMode={isReviewEditMode}
         />
       )}
+      {/* 로그인 유도 모달 */}
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
