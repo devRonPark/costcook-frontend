@@ -18,11 +18,11 @@
 }
 
 .swiper-slide.blurEffect {
-  filter: blur(10px);
+  filter: blur(2px);
 }
 .swiper-slide-prev.blurEffect,
 .swiper-slide-next.blurEffect {
-  filter: blur(3px);
+  filter: blur(1px);
 }
 .swiper-slide-active.blurEffect {
   filter: blur(0px);

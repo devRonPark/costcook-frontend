@@ -80,7 +80,6 @@ const Carousel = ({ recipes, year, week }) => {
       navigation={false}
       pagination={recipes.length > 1 ? { clickable: false } : false}
       modules={[Navigation, Pagination]}
-      style={{ paddingBottom: '30px', marginLeft: '-30px' }}
     >
       {sortedRecipes.map((recipe, index) => (
         <SwiperSlide key={recipe.id} style={{ width: '210px' }}>
