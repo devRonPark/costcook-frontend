@@ -33,3 +33,8 @@ export const removeFavoriteRecipeIds = (recipeIds) => {
 export const getFavoriteRecipeIds = () => {
   return JSON.parse(sessionStorage.getItem('favoriteRecipeIds')) || [];
 };
+
+// 즐겨찾기 비우기 함수
+export const clearFavoriteRecipeIds = () => {
+  return sessionStorage.removeItem('favoriteRecipeIds');
+};
