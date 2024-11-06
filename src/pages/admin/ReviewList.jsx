@@ -257,7 +257,7 @@ export default AdminReviewList;
 // 스타일 정의
 const TableWrapper = styled.div`
   overflow-x: auto;
-  margin-top: 80px;
+  margin-top: 100px;
 `;
 
 const Table = styled.table`

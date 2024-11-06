@@ -38,6 +38,7 @@ import AdminRecipeForm from './pages/admin/RecipeForm';
 import AdminRecipeList from './pages/admin/RecipeList';
 import AdminReviewList from './pages/admin/ReviewList';
 import MyReviewPage from './pages/MyReviewPage';
+import AdminLogin from './pages/admin/AdminLogin';
 
 function App() {
   const location = useLocation();
@@ -163,6 +164,7 @@ function App() {
 
           {/* 관리자만 접근 가능 */}
           <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin/ingredient-form"
             element={<AdminIngredientForm />}
