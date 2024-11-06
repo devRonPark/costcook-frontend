@@ -168,48 +168,19 @@ const HomePage = () => {
     setYear(year);
     setWeek(week);
 
-    // 회원 인 경우
-    if (state?.isAuthenticated) {
-      fetchUserInfo();
-    }
-
+    // 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await AuthApi.getMyInfo();
+        setUserId(response.data.id); // 사용자 ID 설정
+      } catch (error) {
+        console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+      }
+    };
+    fetchUserInfo();
     fetchWeeklyBudget();
     getRecommendedRecipes();
-  }, [state]);
-
-  // 추천 받은 레시피 가져오기
-
-  const getRecommendedRecipes = async () => {
-    try {
-      // 비회원 인 경우
-      if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendRecipeList');
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-
-          // year와 week 값이 일치하는지 확인
-          if (parsedData.year === year && parsedData.week === week) {
-            setRecipes(parsedData.recipes);
-          }
-        }
-        return;
-      }
-
-      // 회원 인 경우
-      else {
-      }
-      const response = await recommendAPI.getRecommendedRecipes(year, week);
-      setRecipes(response.data.recipes);
-
-      const totalPrice = response.data.recipes.reduce((sum, recipe) => {
-        return sum + recipe.price / recipe.servings;
-      }, 0);
-
-      // setTotalPricePerServing(totalPrice);
-    } catch (error) {
-      console.error('추천 레시피를 불러오는 중 오류 발생:', error);
-    }
-  };
+  }, []);
 
   // 추천 받은 레시피 가져오기
 
@@ -319,7 +290,7 @@ const HomePage = () => {
             <RowTextContainer>
               <h4>
                 이번주 설정 예산 :{' '}
-                {/* {Math.floor(totalPricePerServing).toLocaleString()} /{' '} */}
+                {Math.floor(totalPricePerServing).toLocaleString()} /{' '}
                 {budget.toLocaleString()}원
               </h4>
               <Button
@@ -337,7 +308,13 @@ const HomePage = () => {
       <RecommendContainer>
         <ListContainer>
           {recipes.length === 0 ? (
-            <Button onClick={checkIsDefaultBudget}>추천받기</Button>
+            <Button
+              onClick={() => {
+                checkIsDefaultBudget();
+              }}
+            >
+              추천받기
+            </Button>
           ) : (
             <Carousel recipes={recipes} year={year} week={week} />
           )}
