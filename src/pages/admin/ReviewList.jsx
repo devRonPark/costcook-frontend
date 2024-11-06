@@ -19,7 +19,7 @@ const AdminReviewList = () => {
   const [inputKeyword, setInputKeyword] = useState(''); // 폼에 입력된 검색 키워드 상태
   const [serverKeyword, setServerKeyword] = useState(''); // 서버에 적용된 검색 키워드 상태
   const [categories] = useState(['레시피', '작성자']); // 카테고리 목록 (고정값)
-  const [inputCategory, setInputCategory] = useState(''); // 폼에 선택된 카테고리
+  const [inputCategory, setInputCategory] = useState('레시피'); // 폼에 선택된 카테고리
   const [serverCategory, setServerCategory] = useState(''); // 서버에 적용된 카테고리
   const itemsPerPage = 5; // 페이지당 항목 수
 
@@ -157,6 +157,35 @@ const AdminReviewList = () => {
     return (
       <AdminLayout title="리뷰">
         <ErrorWrapper>{error}</ErrorWrapper>
+      </AdminLayout>
+    );
+  }
+
+  // 리뷰 목록이 비어있는 경우의 화면
+  if (reviews.length === 0) {
+    return (
+      <AdminLayout title="리뷰">
+        <NoReviewsWrapper>현재 조회 가능한 리뷰가 없습니다.</NoReviewsWrapper>
+        {/* 검색 폼을 유지하여 검색을 다시 시도할 수 있도록 함 */}
+        <SearchForm onSubmit={handleSearchSubmit}>
+          {/* 카테고리 드롭다운 컴포넌트 */}
+          <CategorySelect value={inputCategory} onChange={handleCategoryChange}>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </CategorySelect>
+  
+          {/* 검색창 컴포넌트 */}
+          <SearchInput
+            type="text"
+            value={inputKeyword}
+            onChange={handleKeywordChange}
+            placeholder="검색어를 입력하세요..."
+          />
+          <SearchButton type="submit">검색</SearchButton>
+        </SearchForm>
       </AdminLayout>
     );
   }
@@ -351,21 +380,24 @@ const SearchButton = styled.button`
   }
 `;
 
-const LoadingWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+  margin: 160px 0 80px;
   font-size: 1.2em;
-  margin-top: 80px;
+  color: ${(props) => props.color || "#333"};
 `;
 
-const ErrorWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  margin-top: 80px;
-  font-size: 1.2em;
-  color: red;
+const LoadingWrapper = styled(Wrapper)`
+  color: #333; // 기본 색상 (로딩 중일 때)
+`;
+
+const ErrorWrapper = styled(Wrapper)`
+  color: red; // 에러일 때의 색상
+`;
+
+const NoReviewsWrapper = styled(Wrapper)`
+  color: #888; // 리뷰가 없을 때의 색상
 `;
