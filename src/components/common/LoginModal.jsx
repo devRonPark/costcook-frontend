@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 
 const LoginModal = ({ isOpen, onClose, onConfirm }) => (
   <Dialog open={isOpen} onClose={onClose}>
-    <DialogTitle>로그인이 필요한 페이지입니다.</DialogTitle>
+    <DialogTitle>로그인이 필요합니다.</DialogTitle>
     <DialogContent>
       <DialogContentText>로그인하시겠습니까?</DialogContentText>
     </DialogContent>

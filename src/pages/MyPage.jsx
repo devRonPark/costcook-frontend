@@ -28,6 +28,25 @@ const MyPage = () => {
   const preferredIngredientsCopy = useRef(null);
   const dislikedIngredientsCopy = useRef(null);
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await AuthApi.getMyInfo(); // 인증 상태를 확인하는 API 호출
+        if (res.status === 200) {
+          console.log(res.data);
+          dispatch({
+            type: 'GET_MY_INFO',
+            payload: res.data, // 서버에서 받은 사용자 정보
+          });
+        }
+      } catch (error) {
+        console.error('내 정보 조회 실패:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const handleChange = (field, value) =>
     dispatch({ type: 'UPDATE_MY_INFO', payload: { field, value } });
 

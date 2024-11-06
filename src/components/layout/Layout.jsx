@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import Header from './Header/Header';
 import Main from './Main';
 import Footer from './Footer';
+import { useAuth } from '../../context/Auth/AuthContext';
 
 const Container = styled.div`
   display: flex;
@@ -37,26 +38,34 @@ const Layout = ({
   isRecipeListPage = false,
   isRecipeDetailPage = false,
   isFavoritePage = false,
-}) => (
-  <Container>
-    <Header
-      isBackBtnExist={isBackBtnExist}
-      isSearchBtnExist={isSearchBtnExist}
-      pageName={pageName}
-      onBackClick={onBackClick}
-      onFilterClick={onFilterClick}
-      onShareClick={onShareClick}
-      onLikeClick={onLikeClick}
-      onDeleteClick={onDeleteClick}
-      isRecipeListPage={isRecipeListPage}
-      isRecipeDetailPage={isRecipeDetailPage}
-      isFavoritePage={isFavoritePage}
-    />
-    <Content>
-      <Main>{children}</Main>
-    </Content>
-    <Footer />
-  </Container>
-);
+  favorite = false,
+  onToggleFavorite = () => {},
+}) => {
+  const { state } = useAuth();
+  return (
+    <Container>
+      <Header
+        state={state}
+        isBackBtnExist={isBackBtnExist}
+        isSearchBtnExist={isSearchBtnExist}
+        pageName={pageName}
+        onBackClick={onBackClick}
+        onFilterClick={onFilterClick}
+        onShareClick={onShareClick}
+        onLikeClick={onLikeClick}
+        onDeleteClick={onDeleteClick}
+        isRecipeListPage={isRecipeListPage}
+        isRecipeDetailPage={isRecipeDetailPage}
+        isFavoritePage={isFavoritePage}
+        favorite={favorite}
+        onToggleFavorite={onToggleFavorite}
+      />
+      <Content>
+        <Main>{children}</Main>
+      </Content>
+      <Footer state={state} />
+    </Container>
+  );
+};
 
 export default Layout;

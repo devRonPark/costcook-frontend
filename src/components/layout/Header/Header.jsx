@@ -6,21 +6,24 @@ import { Link } from 'react-router-dom'; // React Router의 Link 컴포넌트
 import BackButton from '../../common/Button/BackButton'; // 뒤로가기 버튼
 import FilterButton from '../../common/Button/FilterButton'; // 필터 버튼
 import ShareButton from '../../common/Button/ShareButton'; // 공유 버튼
-import LikeButton from '../../common/Button/LikeButton'; // 좋아요 버튼
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import DeleteButton from '../../common/Button/DeleteButton';
 
 const Header = ({
+  state,
   isSearchBtnExist,
   pageName, // 현재 페이지 이름
   isBackBtnExist, // 뒤로가기 버튼 존재 여부
   onBackClick, // 뒤로 가기 버튼 클릭 이벤트 핸들러
   onFilterClick, // 필터 버튼 클릭 이벤트 핸들러
   onShareClick, // 공유 버튼 클릭 이벤트 핸들러
-  onLikeClick, // 좋아요 버튼 클릭 이벤트 핸들러
   onDeleteClick, // 삭제 버튼 클릭 이벤트 핸들러
   isRecipeListPage, // 레시피 목록 페이지 여부
   isRecipeDetailPage, // 레시피 상세 페이지 여부
   isFavoritePage, // 저장한 레시피 페이지 여부
+  favorite, // 현재 즐겨찾기 상태
+  onToggleFavorite, // 즐겨찾기 상태 제어 함수
 }) => (
   <HeaderContainer>
     <IconWrapper>
@@ -44,7 +47,13 @@ const Header = ({
       {isRecipeDetailPage && ( // 레시피 상세 페이지일 때
         <>
           <ShareButton handleShareOpen={onShareClick} /> {/* 공유 버튼 */}
-          <LikeButton onClick={onLikeClick} /> {/* 좋아요 버튼 */}
+          <FavoriteButton onClick={onToggleFavorite}>
+            {favorite ? (
+              <FavoriteIcon style={{ color: 'red' }} />
+            ) : (
+              <FavoriteBorderIcon style={{ color: 'black' }} />
+            )}
+          </FavoriteButton>
         </>
       )}
       {isSearchBtnExist && (
@@ -100,4 +109,15 @@ const PageName = styled.h1`
   text-align: center; /* 가운데 정렬 */
   font-size: 1.5rem; /* 제목 크기 조정 */
   color: #333; /* 제목 색상 */
+`;
+
+const FavoriteButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 1;
 `;
