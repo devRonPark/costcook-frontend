@@ -2,25 +2,31 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { formatPrice } from '../../utils/formatData';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const ProgressBar = ({ useAmount, budgetAmount }) => {
+const ProgressBar = ({ useAmount, budgetAmount, isCurrentWeek }) => {
   const [progress, setProgress] = useState(0);
 
+  // 사용 예산에 따른 진행 상황 업데이트
   useEffect(() => {
     const newProgress = (useAmount / budgetAmount) * 100;
     setProgress(newProgress);
-    console.log('진행도 : ', progress);
-    console.log('new진행도 : ', newProgress);
-    console.log('사용금액 : ', useAmount);
   }, [useAmount, budgetAmount]);
+
+  // 예산 미사용시, 홈으로 보내는 버튼 클릭 시 toast 출력
+  const handleLinkCilck = () => {
+    toast.info('추천받은 레시피를 선택하여\n 요리해보세요!', {
+      className: 'custom-toast',
+    });
+  };
 
   return (
     <ProgressContainer>
       <ProgressBarContainer>
-        {useAmount === 0 ? (
-          <LinkButton to="/home">
+        {isCurrentWeek && useAmount === 0 ? (
+          <LinkButton to="/home" onClick={handleLinkCilck}>
             <p style={{ margin: '8px' }}>
-              아직 사용한 예산이 없네요! 요리하러 갈까요?
+              아직 사용한 예산이 없네요! 요리하러 가볼까요?
             </p>
           </LinkButton>
         ) : (
