@@ -70,7 +70,7 @@ const CardContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  width: calc(100% - 10px);
+  width: calc(100vw - 10px);
   min-width: 200px; // 카드의 최소 너비 설정 (가로로 두 개가 들어갈 수 있는 최소 크기)
   padding: 10px;
   border-radius: 10px; // 카드 모서리 둥글게
@@ -85,7 +85,7 @@ const CardContainer = styled.div`
       @media (max-width: 500px) {
         min-width: 200px;
         flex-direction: row;
-        width: calc(100% - 10px); // 전체 너비에서 10px을 제외한 나머지 너비를 사용
+        width: calc(100vw - 10px);
       }
 
       @media (min-width: 501px) {

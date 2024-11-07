@@ -186,7 +186,7 @@ const FavoritePage = () => {
               margin="30px auto"
             />
             <NoFavoritesText>저장된 레시피가 없습니다.</NoFavoritesText>
-            <BrowseButton onClick={() => navigate('/recipe')}>
+            <BrowseButton onClick={() => navigate('/recipes')}>
               레시피 구경가기
             </BrowseButton>
           </NoFavoritesContainer>

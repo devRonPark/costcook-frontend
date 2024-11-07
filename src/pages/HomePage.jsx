@@ -219,7 +219,7 @@ const HomePage = () => {
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
     try {
-      navigate('/recipe', {
+      navigate('/recipes', {
         state: { more: 'viewCountDesc' },
       });
     } catch (error) {
