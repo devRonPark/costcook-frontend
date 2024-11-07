@@ -98,11 +98,7 @@ const AdminRecipeList = () => {
               recipeList.map((recipe) => (
                 <RecipeCard key={recipe.id}>
                   <Thumbnail
-                    src={
-                      recipe.thumbnailUrl
-                        ? BASE_SERVER_URL + recipe.thumbnailUrl
-                        : 'https://via.placeholder.com/50'
-                    }
+                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"}
                     alt="썸네일 이미지"
                   />
                   <RecipeInfo>
@@ -154,6 +150,10 @@ const AdminRecipeList = () => {
               onChange={handlePageChange}
               color="primary"
               shape="rounded"
+              siblingCount={2}
+              boundaryCount={0}
+              showFirstButton
+              showLastButton
             />
           </PaginationWrapper>
         </ContentContainer>
@@ -164,6 +164,7 @@ const AdminRecipeList = () => {
 
 export default AdminRecipeList;
 
+// 스타일 컴포넌트
 const RecipeListWrapper = styled.div`
   display: flex;
   flex-direction: column;
