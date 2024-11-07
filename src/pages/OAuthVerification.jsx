@@ -131,7 +131,7 @@ const OAuthVerification = () => {
               navigate('/home');
             } else {
               // 프로필 업데이트 페이지로 이동
-              navigate('/profile/update');
+              navigate('/profile-setup');
             }
           }
         } else {
@@ -217,14 +217,14 @@ const OAuthVerification = () => {
             // 대기 중인 리뷰 정보가 있는 경우
             if (pendingReview && pendingReview.isReviewing) {
               const recipeId = pendingReview.recipeId;
-              navigate(`/recipeDetail/${recipeId}`);
+              navigate(`/recipes/${recipeId}`);
             } else {
               // 홈 화면 이동
               navigate('/home');
             }
           } else {
             // 프로필 업데이트 페이지로 이동
-            navigate('/profile/update');
+            navigate('/profile-setup');
           }
         } else {
           // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
@@ -259,7 +259,7 @@ const OAuthVerification = () => {
 
   // 신규 회원가입한 회원이면,
   if (state.user && state.user.newUser && state.isAuthenticated) {
-    navigate('/profile/update');
+    navigate('/profile-setup');
     return;
   }
 

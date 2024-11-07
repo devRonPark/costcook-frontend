@@ -28,7 +28,7 @@ const RecipeCard = forwardRef(
 
     return (
       <CardContainer
-        onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
+        onClick={() => navigate(`/recipes/${recipe.id}`)}
         ref={ref}
         layoutType={layoutType}
       >

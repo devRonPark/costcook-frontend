@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   clearAllSearchKeywords,
   deleteSearchKeyword,
@@ -18,12 +18,7 @@ import RecentKeywords from '../components/RecentKeywords';
 import LoadingComponent from '../components/common/LoadingComponent';
 import { useInView } from 'react-intersection-observer'; // Intersection Observer 훅 추가
 import { useAuth } from '../context/Auth/AuthContext';
-import {
-  addFavoriteRecipeId,
-  getFavoriteRecipeIds,
-  removeFavoriteRecipeId,
-} from '../utils/sessionStorageUtil';
-import { favoriteAPI } from '../services/favorite.api';
+import { getFavoriteRecipeIds } from '../utils/sessionStorageUtil';
 
 const SearchPage = () => {
   const navigate = useNavigate();
@@ -64,7 +59,7 @@ const SearchPage = () => {
   const handleSearch = async (keyword, newPage = 1) => {
     // 검색어가 비어있지 않을 경우 검색
     if (keyword) {
-      navigate(`/search?keyword=${keyword}`);
+      navigate(`/recipes/search?keyword=${keyword}`);
       const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 제거
       setRecentKeywords(updatedKeywords);
 
@@ -233,7 +228,7 @@ const SearchPage = () => {
   };
 
   const handleBackBtnClick = () => {
-    navigate('/search');
+    navigate('/recipes/search');
     setSearchedRecipes(null);
     setKeyword(''); // 검색어 리셋
   };

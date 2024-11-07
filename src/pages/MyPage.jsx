@@ -334,7 +334,7 @@ const MyPage = () => {
         </ButtonContainer>
         <ButtonContainer>
           <ButtonSplitBox>
-            <Link to="../budget">
+            <Link to="/budget-history">
               <Button>예산 관리</Button>
             </Link>
           </ButtonSplitBox>

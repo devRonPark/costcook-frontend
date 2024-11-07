@@ -194,7 +194,7 @@ const HomePage = () => {
     if (isDefaultBudget) {
       openModal(); // 예산 설정 모달 열기
     } else {
-      navigate('/Recommend', { state: { budget, year, week, userId } });
+      navigate('/recipes/recommend', { state: { budget, year, week, userId } });
     }
   };
 
@@ -213,8 +213,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData(size);
-  }, [size]);
+    fetchData();
+  }, []);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
@@ -273,7 +273,7 @@ const HomePage = () => {
           <ListRowContainer>
             {recipeList.map((recipe) => (
               <List key={recipe.id}>
-                <Link to={`/recipeDetail/${recipe.id}`}>
+                <Link to={`/recipes/${recipe.id}`}>
                   <RecipeImageBox>
                     <RecipeImage
                       alt={recipe.title}

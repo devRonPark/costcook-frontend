@@ -97,7 +97,7 @@ const ProfileUpdate = () => {
         toast.info('회원 정보가 성공적으로 업데이트되었습니다!');
 
         // 회원가입 완료 페이지로 이동.
-        navigate('/signup/complete');
+        navigate('/profile-setup/complete');
       }
     } catch (error) {
       console.error('사용자 정보 업데이트 실패:', error);
