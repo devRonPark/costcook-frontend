@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import apiClient from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -65,21 +67,55 @@ const Button = styled.button`
 
 const AdminLogin = () => {
   const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/admin/");
+    } else {
+      setLoading(false); // 토큰이 없을 경우에만 로딩 완료
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 로직은 여기에 추가합니다
+  
+    try {
+      const response = await apiClient.post('/admin/login', {
+        username: form.username,
+        password: form.password,
+      });
+  
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem("token", token);
+        navigate("/admin/");
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
+    }
   };
+
+  if (loading) {
+    // 로딩 중이면 빈 화면을 표시하거나 로딩 스피너를 보여줍니다.
+    return null; // 로딩 중인 동안 로그인 페이지가 보이지 않음
+  }
 
   return (
     <Container>
       <FormWrapper>
         <Title>Admin Login</Title>
-        <form style={{marginTop:"32px"}} onSubmit={handleSubmit}>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form style={{ marginTop: "32px" }} onSubmit={handleSubmit}>
           <FormGroup>
             <Label htmlFor="username">Username</Label>
             <Input
@@ -106,7 +142,7 @@ const AdminLogin = () => {
             />
           </FormGroup>
 
-          <Button type="submit" style={{marginTop:"16px"}}>Login</Button>
+          <Button type="submit" style={{ marginTop: "16px" }}>Login</Button>
         </form>
       </FormWrapper>
     </Container>
