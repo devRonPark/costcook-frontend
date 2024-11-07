@@ -84,6 +84,8 @@ const WeeklyDetail = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + delta * 7); // 1주일 더하기 또는 빼기
     const { year: newYear, week: newWeek } = getCurrentYearAndWeek(newDate);
+    setUsedRecipes([]);
+    setRecommendedRecipes([]);
     setCurrentDate(newDate);
     setYear(newYear);
     setWeek(newWeek);
