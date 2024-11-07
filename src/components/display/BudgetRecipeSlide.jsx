@@ -1,11 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { StarRating } from '../StarRating';
-import { formatPrice } from '../../utils/formatData';
+// import 'swiper/css';
+// import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Navigation, Pagination } from 'swiper/modules';
+import { formatPrice } from '../../utils/formatData';
+import { StarRating } from '../StarRating';
 import { PriceText, StarText, TitleText } from './RecipeListStyle';
 
 export const BudgetRecipeSlide = ({ recipes }) => {
@@ -15,26 +15,29 @@ export const BudgetRecipeSlide = ({ recipes }) => {
 
   return (
     <Swiper
-      loop={recipes.length > 1}
+      loop={false}
       slidesPerView={recipes.length === 1 ? 1 : recipes.length === 2 ? 2 : 3}
       centeredSlides={true}
-      spaceBetween={-40}
-      navigation={false}
-      pagination={recipes.length > 1 ? { clickable: false } : false}
-      modules={[Navigation, Pagination]}
-      style={{ paddingBottom: '30px', marginLeft: '-30px' }}
+      centeredSlidesBounds={true}
+      spaceBetween={-50}
     >
       {shuffledRecipes.map((recipe) => (
-        <SwiperSlideContainer key={recipe.id} style={{ margin: '-1px' }}>
-          <RecipeLink onClick={() => navigate(`/recipes/${recipe.id}`)}>
-            <List>
-              <RecipeImageBox>
-                <RecipeImage
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
-                  alt={recipe.title}
-                />
-              </RecipeImageBox>
-              <TextBox>
+        <SwiperSlideContainer key={recipe.id}>
+          {({ isActive, isPrev, isNext }) => (
+            <CardContainer
+              recipesLength={recipes.length}
+              isActive={isActive}
+              isNext={isNext}
+              isPrev={isPrev}
+              onClick={() => navigate(`/recipes/${recipe.id}`)}
+            >
+              <RecipeImage
+                src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                  recipe.thumbnailUrl
+                }`}
+                alt={recipe.title}
+              />
+              <RecipeInfoContainer>
                 <TitleText>{recipe.title}</TitleText>
                 <PriceText>
                   {formatPrice(recipe.price / recipe.servings)}원 (1인분)
@@ -43,9 +46,9 @@ export const BudgetRecipeSlide = ({ recipes }) => {
                   <StarRating ratings={recipe.avgRatings} /> (
                   {recipe.avgRatings})
                 </StarText>
-              </TextBox>
-            </List>
-          </RecipeLink>
+              </RecipeInfoContainer>
+            </CardContainer>
+          )}
         </SwiperSlideContainer>
       ))}
     </Swiper>
@@ -53,44 +56,36 @@ export const BudgetRecipeSlide = ({ recipes }) => {
 };
 
 const SwiperSlideContainer = styled(SwiperSlide)`
-  text-align: center;
-  border-radius: 10px;
-  overflow: hidden;
-`;
-
-const RecipeLink = styled.button`
-  border: 0px solid white;
-  border-radius: 10px;
-`;
-
-const List = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: white;
-  height: 200px;
-  width: 200px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-`;
-
-const RecipeImageBox = styled.div`
-  width: 100%;
-  height: 70%;
-  display: flex;
-  align-items: center;
   justify-content: center;
+`;
+
+const RecipeInfoContainer = styled.div`
+  text-align: center;
   overflow: hidden;
+`;
+
+const CardContainer = styled.div`
+  width: 200px;
+  height: 220px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.4s ease-in-out;
+  transition: transform 0.3s ease;
+  /* recipes.length가 3 미만일 경우 transform을 안 하도록 */
+  transform: ${({ recipesLength, isActive, isPrev, isNext }) => {
+    if (recipesLength < 3) return 'scale(1.0)'; // 레시피가 3개 미만일 경우 transform 안 적용
+    if (isActive) return 'scale(1.0)';
+    if (isPrev || isNext) return 'scale(0.9)';
+    return 'scale(0.8)';
+  }};
 `;
 
 const RecipeImage = styled.img`
   width: 100%;
-  height: 102%;
+  height: 70%;
   object-fit: cover;
-  border-radius: 10px 10px 0px 0px;
-`;
-
-const TextBox = styled.div`
-  width: 100%;
-  text-align: center;
 `;

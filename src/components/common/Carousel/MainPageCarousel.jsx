@@ -117,7 +117,7 @@ const Carousel = ({ recipes, year, week }) => {
                 <List>
                   <RecipeImageBox>
                     <RecipeImage
-                      src={`${import.meta.env.VITE_SERVER}${
+                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
                         recipe.thumbnailUrl
                       }`}
                       alt={recipe.title}
@@ -161,7 +161,7 @@ const Carousel = ({ recipes, year, week }) => {
 
 export default Carousel;
 
-// 메인 페이지
+// 메인 페이지 캐러셀
 
 const FlipCard = styled.div`
   position: relative;

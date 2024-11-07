@@ -28,6 +28,7 @@ import ProfileUpdate from './pages/ProfileUpdate';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
+import AdminLogin from './pages/admin/AdminLogin';
 import AdminIngredientList from './pages/admin/AdminIngredientList';
 import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
@@ -219,6 +220,14 @@ function App() {
               <AdminRoute>
                 <AdminHome />
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/login"
+            element={
+              <PublicRoute>
+                <AdminLogin />
+              </PublicRoute>
             }
           />
           <Route
