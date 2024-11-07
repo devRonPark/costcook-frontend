@@ -200,7 +200,7 @@ const LinkButton = styled.button`
   padding: 10px;
   font-family: 'GangwonEduPowerExtraBoldA';
   overflow: hidden;
-  background-color: #ffd700;
+  background-color: #fef2b0;
   color: white;
 `;
 
