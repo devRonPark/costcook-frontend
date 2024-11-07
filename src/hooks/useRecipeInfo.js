@@ -20,7 +20,6 @@ const useRecipeData = (recipeId) => {
   const getRecipeById = async () => {
     try {
       const res = await recipeAPI.getRecipeById(recipeId);
-      console.log(res.data);
       setRecipe(res.data);
       const formattedIngredients = formatIngredientData(res.data.ingredients);
       setIngredientData(formattedIngredients);

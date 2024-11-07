@@ -85,7 +85,7 @@ const CardContainer = styled.div`
       @media (max-width: 500px) {
         min-width: 200px;
         flex-direction: row;
-        width: calc(100% - 10px); // 전체 너비에서 10px을 제외한 나머지 너비를 사용
+        width: calc(100vw - 10px);
       }
 
       @media (min-width: 501px) {
