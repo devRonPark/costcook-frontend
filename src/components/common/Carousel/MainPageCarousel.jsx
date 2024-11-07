@@ -107,7 +107,7 @@ const Carousel = ({ recipes, year, week }) => {
       pagination={recipes.length > 1 ? { clickable: false } : false}
       modules={[Navigation, Pagination]}
     >
-      {sortedRecipes.map((recipe, index) => (
+      {sortedRecipes.map((recipe) => (
         <SwiperSlide key={recipe.id} style={{ width: '200px' }}>
           {({ isActive }) => (
             <FlipCard isFlipped={flippedRecipe === recipe.id}>
@@ -122,7 +122,7 @@ const Carousel = ({ recipes, year, week }) => {
                       }`}
                       alt={recipe.title}
                     />
-                    {recipe.used && (
+                    {recipe.used == 1 && (
                       <Overlay>
                         <CheckIcon
                           style={{ fontSize: '8rem', color: 'white' }}
@@ -190,7 +190,7 @@ const BackCard = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f8f9fa;
+  background-color: #dcdcdc;
   border-radius: 10px;
 `;
 
@@ -276,7 +276,6 @@ const Overlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 5px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.5); // 투명도 조정
   z-index: 10; // 이미지 위에 표시
