@@ -213,8 +213,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchData(size);
-  }, [size]);
+    fetchData();
+  }, []);
 
   // 더보기 -> 레시피 목록 이동(조회수 높은순 정렬)
   const handleMoreClick = async () => {
