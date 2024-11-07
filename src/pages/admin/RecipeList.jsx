@@ -11,12 +11,11 @@ import apiClient from '../../services/api';
 const BASE_SERVER_URL = import.meta.env.VITE_BASE_SERVER_URL;
 
 const AdminRecipeList = () => {
- 
   const navigate = useNavigate();
 
   // API 호출을 위한 useEffect
   const [recipeList, setRecipeList] = useState([]);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -88,9 +87,9 @@ const AdminRecipeList = () => {
             {recipeList && recipeList.length > 0 ? (
               recipeList.map((recipe) => (
                 <RecipeCard key={recipe.id}>
-                  <Thumbnail 
-                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"} 
-                    alt="썸네일 이미지" 
+                  <Thumbnail
+                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"}
+                    alt="썸네일 이미지"
                   />
                   <RecipeInfo>
                     <RecipeName>{recipe.title}</RecipeName>
@@ -129,13 +128,17 @@ const AdminRecipeList = () => {
           </RecipeListWrapper>
 
           <PaginationWrapper>
-          <Pagination
-            count={totalPages} 
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            shape="rounded"
-          />
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+              siblingCount={2}
+              boundaryCount={0}
+              showFirstButton
+              showLastButton
+            />
           </PaginationWrapper>
         </ContentContainer>
       </ContentContainer>
@@ -145,6 +148,7 @@ const AdminRecipeList = () => {
 
 export default AdminRecipeList;
 
+// 스타일 컴포넌트
 const RecipeListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -227,5 +231,3 @@ const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
-
-

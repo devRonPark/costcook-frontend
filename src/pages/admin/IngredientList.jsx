@@ -9,7 +9,6 @@ import ContentContainer from '../../components/admin/ContentContainer';
 import apiClient from '../../services/api';
 
 const AdminIngredientList = () => {
-  
   const navigate = useNavigate();
 
   // [1] 상태 관리
@@ -29,15 +28,12 @@ const AdminIngredientList = () => {
 
   const deleteIngredient = async (ingredientId) => {
     try {
-      // 서버에 삭제 요청 보내기
       await apiClient.delete(`/admin/ingredients/${ingredientId}`);
-      await fetchIngredients(); // 재료 목록 갱신
+      await fetchIngredients();
 
-      // 현재 페이지의 재료 수 확인 후, 필요 시 페이지 이동
-      const newTotalItems = ingredientList.length - 1; // 삭제 후의 총 재료 개수
+      const newTotalItems = ingredientList.length - 1;
       const newTotalPages = Math.ceil(newTotalItems / itemsPerPage);
 
-      // 현재 페이지가 새로운 총 페이지 수보다 크다면, 이전 페이지로 이동
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       } else if (newTotalPages === 0) {
@@ -81,9 +77,9 @@ const AdminIngredientList = () => {
       rightLabel="추가"
       isRegisterEnabled={true}
       onSubmit={() => navigate('/admin/ingredient-form')}
-      onBack={() => navigate("/admin")}
+      onBack={() => navigate('/admin')}
     >
-      <ContentContainer>
+      <ContentContainer style={{ marginTop: '100px' }}>
         <IngredientListWrapper>
           {currentIngredients.length > 0 ? (
             currentIngredients.map((ingredient) => (
@@ -111,6 +107,7 @@ const AdminIngredientList = () => {
           )}
         </IngredientListWrapper>
 
+        {/* 페이지네이션 */}
         <PaginationWrapper>
           <Pagination
             count={Math.ceil(ingredientList.length / itemsPerPage)}
@@ -118,6 +115,10 @@ const AdminIngredientList = () => {
             onChange={handlePageChange}
             color="primary"
             shape="rounded"
+            siblingCount={2}  
+            boundaryCount={0}
+            showFirstButton 
+            showLastButton    
           />
         </PaginationWrapper>
       </ContentContainer>
@@ -132,7 +133,7 @@ const IngredientListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 60px;
+  margin-top: 30px;
 `;
 
 const IngredientCard = styled.div`
@@ -141,9 +142,9 @@ const IngredientCard = styled.div`
   align-items: center;
   justify-content: space-between;
   background-color: #f9f9f9;
-  border-bottom: 1px solid #ddd; 
-  border-radius: 0; 
-  margin: 0; 
+  border-bottom: 1px solid #ddd;
+  border-radius: 0;
+  margin: 0;
   padding: 8px;
   width: 100%;
   max-width: 600px;
@@ -162,7 +163,7 @@ const IngredientID = styled.span`
   padding-right: 8px;
   border-right: 1px solid #ddd;
   width: 50px;
-  text-align: right; 
+  text-align: right;
 `;
 
 const IngredientName = styled.h3`

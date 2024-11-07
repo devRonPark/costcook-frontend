@@ -34,7 +34,7 @@ const BoxContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   padding: 16px;
-  margin-top: 50px;
+  margin-top: 87px;
 `;
 
 const Box = styled.div`

@@ -97,7 +97,7 @@ const DrawerHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px 16px;
   background-color: #343a40;
   color: #ffffff;
   border-bottom: 1px solid #ddd;
