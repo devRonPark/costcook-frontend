@@ -7,6 +7,12 @@ import EmailVerification from '../components/EmailVerification';
 import VerificationCodeInput from '../components/VerificationCodeInput ';
 import Layout from '../components/layout/Layout';
 import LoadingComponent from '../components/common/LoadingComponent';
+import {
+  clearFavoriteRecipeIds,
+  getFavoriteRecipeIds,
+  getRecommendedRecipes,
+  getWeeklyBudget,
+} from '../utils/sessionStorageUtil';
 
 const OAuthVerification = () => {
   const { provider } = useParams();
@@ -65,30 +71,40 @@ const OAuthVerification = () => {
             '인증 코드가 확인되었습니다. 회원가입이 완료되었습니다.'
           );
 
+          // sessionStorage에서 favoriteRecipeIds 값을 가져옵니다.
+          const favoriteRecipeIds = getFavoriteRecipeIds();
+
           // 로그인 요청을 위한 사용자 정보 설정
           const loginData = {
             ...state.user.data,
             provider: state.user.data.provider.toLowerCase(),
+            // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가.
+            ...(favoriteRecipeIds && favoriteRecipeIds.length > 0
+              ? { favoriteRecipeIds }
+              : {}),
           };
 
           // 로그인 요청
           const loginRes = await AuthApi.signUpOrLogin(loginData);
 
-          // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
-          dispatch({
-            type: 'LOGIN',
-            payload: loginRes.data,
-          });
+          if (loginRes.status === 200) {
+            clearFavoriteRecipeIds();
+            // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
+            dispatch({
+              type: 'LOGIN',
+              payload: loginRes.data,
+            });
 
-          toast.info('로그인 중입니다...'); // 로그인 중 메시지
+            toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
-          // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
-          if (loginRes.data.userProfileUpdated) {
-            // 홈 화면 이동
-            navigate('/home');
-          } else {
-            // 프로필 업데이트 페이지로 이동
-            navigate('/profile/update');
+            // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
+            if (loginRes.data.userProfileUpdated) {
+              // 홈 화면 이동
+              navigate('/home');
+            } else {
+              // 프로필 업데이트 페이지로 이동
+              navigate('/profile-setup');
+            }
           }
         } else {
           // 인증 코드가 일치하지 않는 경우
@@ -114,51 +130,60 @@ const OAuthVerification = () => {
 
       // res.data.ableToLogin 이 true 이면, 이메일 인증 과정을 거치지 않고 자동 회원가입 처리 및 로그인 요청을 보낸다.
       if (res.data.ableToLogin) {
+        // sessionStorage에서 favoriteRecipeIds 값을 가져옵니다.
+        const favoriteRecipeIds = getFavoriteRecipeIds();
+
         const loginRes = await AuthApi.signUpOrLogin({
           ...res.data,
           provider: res.data.provider.toLowerCase(),
+          // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가합니다.
+          ...(favoriteRecipeIds && favoriteRecipeIds.length > 0
+            ? { favoriteRecipeIds }
+            : {}),
         });
 
-        toast.info('로그인 성공');
+        if (loginRes.status === 200) {
+          // 비회원 즐겨찾기 데이터 비우기
+          clearFavoriteRecipeIds();
+          toast.info('로그인 성공');
 
-        // 로그인 성공하면 전역 상태에 로그인된 사용자 정보를 저장
-        dispatch({
-          type: 'LOGIN',
-          payload: loginRes.data,
-        });
+          // 로그인 성공하면 전역 상태에 로그인된 사용자 정보를 저장
+          dispatch({
+            type: 'LOGIN',
+            payload: loginRes.data,
+          });
 
-        // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
-        if (loginRes.data.userProfileUpdated) {
-          // 로그인 성공 시 세션 스토리지에서 정보를 확인
-          const pendingReview = JSON.parse(
-            sessionStorage.getItem('pendingReview')
-          );
+          // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
+          if (loginRes.data.userProfileUpdated) {
+            // 로그인 성공 시 세션 스토리지에서 정보를 확인
+            const pendingReview = JSON.parse(
+              sessionStorage.getItem('pendingReview')
+            );
 
-          // 대기 중인 리뷰 정보가 있는 경우
-          if (pendingReview && pendingReview.isReviewing) {
-            const recipeId = pendingReview.recipeId;
-            navigate(`/recipeDetail/${recipeId}`);
+            // 대기 중인 리뷰 정보가 있는 경우
+            if (pendingReview && pendingReview.isReviewing) {
+              const recipeId = pendingReview.recipeId;
+              navigate(`/recipes/${recipeId}`);
+            } else {
+              // 홈 화면 이동
+              navigate('/home');
+            }
           } else {
-            // 홈 화면 이동
-            navigate('/home');
+            // 프로필 업데이트 페이지로 이동
+            navigate('/profile-setup');
           }
         } else {
-          // 프로필 업데이트 페이지로 이동
-          navigate('/profile/update');
-        }
-      } else {
-        // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
-        dispatch({
-          type: 'SET_AUTH_DATA',
-          payload: res, // 이메일 인증 절차를 위해 필요한 데이터 저장
-        });
+          // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
+          dispatch({
+            type: 'SET_AUTH_DATA',
+            payload: res, // 이메일 인증 절차를 위해 필요한 데이터 저장
+          });
 
-        setLoading(false);
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.error(error);
-      // TODO: 에러 발생 시 어느 페이지로 이동 시킬 지 결정 후 구현.
-      // 에러 상태 코드, 그에 대한 메세지는 일괄적으로 설정. 홈으로 가기 > 로그아웃 처리 및 홈 화면 이동
     }
   };
 
@@ -178,7 +203,7 @@ const OAuthVerification = () => {
 
   // 신규 회원가입한 회원이면,
   if (state.user && state.user.newUser && state.isAuthenticated) {
-    navigate('/profile/update');
+    navigate('/profile-setup');
     return;
   }
 

@@ -8,11 +8,20 @@ import { recommendAPI } from '../../../services/recommend.api';
 import { formatPrice } from '../../../utils/formatData';
 import { StarRating } from '../../StarRating';
 import { useAuth } from '../../../context/Auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // 메인 캐러셀 (블러 X)
 const Carousel = ({ recipes, year, week }) => {
   const { state } = useAuth();
+  const navigate = useNavigate();
   const [updatedRecipes, setUpdatedRecipes] = useState(recipes);
+  const [flippedRecipe, setFlippedRecipe] = useState(null); // 회전된 레시피 상태
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  // 레시피 상세보기 클릭 이벤트
+  const handleDetailClick = (recipe) => {
+    navigate(`/recipes/${recipe.id}`);
+  };
 
   const handleModifyUseRecipe = async (recipe) => {
     const recipeUsageRequest = {
@@ -23,7 +32,7 @@ const Carousel = ({ recipes, year, week }) => {
 
     try {
       if (!state?.isAuthenticated) {
-        const storedData = sessionStorage.getItem('RecommendRecipeList');
+        const storedData = sessionStorage.getItem('recommendedRecipeList');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
@@ -37,30 +46,46 @@ const Carousel = ({ recipes, year, week }) => {
 
             // 변경된 레시피를 다시 세션 스토리지에 저장
             sessionStorage.setItem(
-              'RecommendRecipeList',
+              'recommendedRecipeList',
               JSON.stringify(parsedData)
             );
 
-            setUpdatedRecipes((prevRecipes) =>
-              prevRecipes.map((r) =>
-                r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
-              )
-            );
+            setFlippedRecipe(null);
+            setTimeout(() => {
+              setUpdatedRecipes((prevRecipes) =>
+                prevRecipes.map((r) =>
+                  r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
+                )
+              );
+            }, 400); // 카드 회전 애니메이션 시간과 맞추기 위해 0.8초 지연
           }
         }
       } else {
         const response = await recommendAPI.modifyUseRecipe(recipeUsageRequest);
 
-        setUpdatedRecipes((prevRecipes) =>
-          prevRecipes.map((r) =>
-            r.id === recipe.id ? { ...r, used: !r.used } : r
-          )
-        );
+        setFlippedRecipe(null);
+        setTimeout(() => {
+          setUpdatedRecipes((prevRecipes) =>
+            prevRecipes.map((r) =>
+              r.id === recipe.id ? { ...r, used: !r.used } : r
+            )
+          );
+        }, 400);
         console.log('레시피 사용 상태 변경 성공:', response.data);
       }
     } catch (error) {
       console.error('레시피 사용 상태 변경 실패:', error);
     }
+  };
+
+  const handleCardClick = (recipe) => {
+    if (isFlipping) return;
+    setIsFlipping(true);
+    setFlippedRecipe(flippedRecipe === recipe.id ? null : recipe.id);
+
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 500); // 회전 애니메이션 시간과 동일
   };
 
   // 사용되지 않은 레시피와 사용된 레시피를 분리
@@ -78,37 +103,55 @@ const Carousel = ({ recipes, year, week }) => {
       centeredSlides={true}
       spaceBetween={0}
       navigation={false}
+      style={{ paddingBottom: '40px' }}
       pagination={recipes.length > 1 ? { clickable: false } : false}
       modules={[Navigation, Pagination]}
     >
       {sortedRecipes.map((recipe, index) => (
-        <SwiperSlide key={recipe.id} style={{ width: '210px' }}>
+        <SwiperSlide key={recipe.id} style={{ width: '200px' }}>
           {({ isActive }) => (
-            <List
-              onClick={isActive ? () => handleModifyUseRecipe(recipe) : false}
-            >
-              <RecipeImageBox>
-                <RecipeImage
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
-                  alt={recipe.title}
-                />
-                {recipe.used && (
-                  <Overlay>
-                    <CheckIcon style={{ fontSize: '8rem', color: 'white' }} />
-                  </Overlay>
-                )}
-              </RecipeImageBox>
-              <TextBox>
-                <TitleText>{recipe.title}</TitleText>
-                <PriceText>
-                  {formatPrice(recipe.price / recipe.servings)}원 (1인분)
-                </PriceText>
-                <StarText>
-                  <StarRating ratings={recipe.avgRatings} /> (
-                  {recipe.avgRatings})
-                </StarText>
-              </TextBox>
-            </List>
+            <FlipCard isFlipped={flippedRecipe === recipe.id}>
+              <FrontCard
+                onClick={isActive ? () => handleCardClick(recipe) : null}
+              >
+                <List>
+                  <RecipeImageBox>
+                    <RecipeImage
+                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                        recipe.thumbnailUrl
+                      }`}
+                      alt={recipe.title}
+                    />
+                    {recipe.used && (
+                      <Overlay>
+                        <CheckIcon
+                          style={{ fontSize: '8rem', color: 'white' }}
+                        />
+                      </Overlay>
+                    )}
+                  </RecipeImageBox>
+                  <TextBox>
+                    <TitleText>{recipe.title}</TitleText>
+                    <PriceText>
+                      {formatPrice(recipe.price / recipe.servings)}원 (1인분)
+                    </PriceText>
+                    <StarText>
+                      <StarRating ratings={recipe.avgRatings} /> (
+                      {recipe.avgRatings})
+                    </StarText>
+                  </TextBox>
+                </List>
+              </FrontCard>
+
+              <BackCard onClick={() => handleCardClick(recipe)}>
+                <OptionButton onClick={() => handleModifyUseRecipe(recipe)}>
+                  {recipe.used == 0 ? '먹었어요' : '안먹었어요'}
+                </OptionButton>
+                <OptionButton onClick={() => handleDetailClick(recipe)}>
+                  상세정보
+                </OptionButton>
+              </BackCard>
+            </FlipCard>
           )}
         </SwiperSlide>
       ))}
@@ -118,12 +161,60 @@ const Carousel = ({ recipes, year, week }) => {
 
 export default Carousel;
 
+// 메인 페이지 캐러셀
+
+const FlipCard = styled.div`
+  position: relative;
+  width: 200px;
+  height: 300px;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  transform: ${({ isFlipped }) =>
+    isFlipped ? 'rotateY(180deg)' : 'rotateY(0)'};
+`;
+
+const FrontCard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+`;
+
+const BackCard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+`;
+
+const OptionButton = styled.button`
+  width: 80%;
+  margin: 8px 0;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
 const List = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  margin: 5px;
   height: 300px; // 220px에서 줄임
   width: 200px;
   border-radius: 10px;
@@ -180,11 +271,12 @@ const StarText = styled.p`
 const Overlay = styled.div`
   position: absolute;
   top: 0;
-  width: 123%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 5px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.5); // 투명도 조정
   z-index: 10; // 이미지 위에 표시

@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   clearAllSearchKeywords,
   deleteSearchKeyword,
@@ -18,12 +18,8 @@ import RecentKeywords from '../components/RecentKeywords';
 import LoadingComponent from '../components/common/LoadingComponent';
 import { useInView } from 'react-intersection-observer'; // Intersection Observer 훅 추가
 import { useAuth } from '../context/Auth/AuthContext';
-import {
-  addFavoriteRecipeId,
-  getFavoriteRecipeIds,
-  removeFavoriteRecipeId,
-} from '../utils/sessionStorageUtil';
-import { favoriteAPI } from '../services/favorite.api';
+import { getFavoriteRecipeIds } from '../utils/sessionStorageUtil';
+import { handleToggleFavorite } from '../utils/favoriteHandler';
 
 const SearchPage = () => {
   const navigate = useNavigate();
@@ -64,7 +60,7 @@ const SearchPage = () => {
   const handleSearch = async (keyword, newPage = 1) => {
     // 검색어가 비어있지 않을 경우 검색
     if (keyword) {
-      navigate(`/search?keyword=${keyword}`);
+      navigate(`/recipes/search?keyword=${keyword}`);
       const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 제거
       setRecentKeywords(updatedKeywords);
 
@@ -233,13 +229,19 @@ const SearchPage = () => {
   };
 
   const handleBackBtnClick = () => {
-    navigate('/search');
+    navigate('/recipes/search');
     setSearchedRecipes(null);
     setKeyword(''); // 검색어 리셋
   };
 
   return (
-    <Layout isBackBtnExist onBackClick={handleBackBtnClick}>
+    <Layout
+      pageName={
+        searchParams.get('keyword') ? '레시피 검색 결과' : '레시피 검색'
+      }
+      isBackBtnExist
+      onBackClick={handleBackBtnClick}
+    >
       <SearchInputContainer>
         <SearchButtonWrap onClick={handleSearch}>
           <SearchButton
@@ -277,8 +279,8 @@ export default SearchPage;
 
 const SearchInputContainer = styled.div`
   width: 100%;
-  padding-bottom: 10px;
-  border-bottom: 2px solid orange; /* 주황색 테두리 */
+  padding-bottom: 5px;
+  border-bottom: 2px solid orange;
   position: relative;
   display: flex;
   align-items: center;
@@ -286,12 +288,12 @@ const SearchInputContainer = styled.div`
 
 const SearchInput = styled.input`
   flex: 1;
-  font-size: 18px;
-  padding: 10px 10px; /* 검색 버튼 공간을 감안해 왼쪽 패딩만 설정 */
+  font-size: 16px;
+  padding: 10px;
   border: none;
   outline: none;
-  border-radius: 5px; /* 모서리 둥글게 */
-  background-color: white; /* 배경색 흰색 */
+  border-radius: 5px;
+  background-color: white;
 
   @media (min-width: 600px) {
     font-size: 20px;

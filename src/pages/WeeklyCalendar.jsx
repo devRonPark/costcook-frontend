@@ -65,9 +65,13 @@ const WeeklyCalendar = ({ currentDate }) => {
 export default WeeklyCalendar;
 
 const StyledCalendar = styled(Calendar)`
+  border: 1.5px solid gray;
+  border-radius: 20px;
   width: 100%;
-  height: 320px;
+  height: 300px;
   .react-calendar__month-view__weekdays abbr {
+    font-size: 14px;
+    font-family: 'GmarketSansMedium';
     text-decoration: none;
     font-weight: 800;
   }
@@ -78,6 +82,7 @@ const StyledCalendar = styled(Calendar)`
 
   .react-calendar__navigation__label {
     font-size: 20px;
+    font-family: 'GumiRomanceTTF';
     flex-grow: 0 !important;
   }
 
@@ -91,6 +96,8 @@ const StyledCalendar = styled(Calendar)`
   }
 
   .react-calendar__tile {
+    font-size: 16px;
+    font-family: 'BMJUA';
     color: black !important;
   }
 

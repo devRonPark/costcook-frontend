@@ -7,7 +7,7 @@ const BudgetAmountSetting = ({ id, amount, title, recipeId }) => {
   return (
     <StyledBudgetNumber id={id}>
       {title && recipeId ? ( // 가장 저렴한or비싼 레시피 상세보기 링크
-        <StyledLink to={`/recipeDetail/${recipeId}`}>
+        <StyledLink to={`/recipes/${recipeId}`}>
           <Title>{title}</Title>
           <Amount>{formatPrice(amount)} 원</Amount>
         </StyledLink>

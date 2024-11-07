@@ -21,7 +21,7 @@ const RecommendPage = () => {
     const fetchRecommendedRecipes = async () => {
       try {
         if (!state?.isAuthenticated) {
-          const storedData = sessionStorage.getItem('RecommendRecipeList');
+          const storedData = sessionStorage.getItem('recommendedRecipeList');
           if (storedData) {
             const parsedData = JSON.parse(storedData);
 
@@ -46,8 +46,6 @@ const RecommendPage = () => {
     fetchRecommendedRecipes();
   }, [year, week]); // year와 week가 변경될 때마다 호출
 
-  const filteredRecipes = selectedRecipes.filter((recipe) => recipe.used !== 1);
-
   // 선택된 레시피 가격의 합을 계산하여 남은 예산을 업데이트하는 함수
   const updateRemainingBudget = () => {
     const totalSelectedCost = selectedRecipes.reduce(
@@ -63,11 +61,28 @@ const RecommendPage = () => {
 
   const handleSelectRecipe = (recipe) => {
     setSelectedRecipes((prevSelected) => {
-      // 이미 선택된 레시피가 있으면 제거, 없으면 추가
       const isSelected = prevSelected.some((item) => item.id === recipe.id);
+
+      if (!isSelected) {
+        // 새로 추가하는 경우 예산 초과 여부를 확인
+        const newTotalCost =
+          prevSelected.reduce(
+            (sum, item) => sum + item.price / item.servings,
+            0
+          ) +
+          recipe.price / recipe.servings;
+
+        if (newTotalCost > budget) {
+          alert('예산을 초과하여 선택할 수 없습니다.');
+          return prevSelected; // 예산을 초과할 경우 아무 것도 변경하지 않음
+        }
+      }
+
+      // 선택을 해제하거나 새로 추가할 경우
       const newSelectedRecipes = isSelected
-        ? prevSelected.filter((item) => item.id !== recipe.id) // 선택 해제 시
-        : [...prevSelected, recipe]; // 선택 추가 시
+        ? prevSelected.filter((item) => item.id !== recipe.id) // 선택 해제
+        : [...prevSelected, recipe]; // 새로 추가
+
       updateRemainingBudget(newSelectedRecipes); // 남은 예산 업데이트
       return newSelectedRecipes;
     });
@@ -94,7 +109,7 @@ const RecommendPage = () => {
         servings: recipe.servings,
         thumbnailUrl: recipe.thumbnailUrl,
         title: recipe.title,
-        used: recipe.used !== undefined ? recipe.used : 0,
+        used: recipe.used !== undefined ? recipe.used : false,
 
         // 회원 비회원 구분
         userId: state?.isAuthenticated ? userId : undefined,
@@ -108,7 +123,7 @@ const RecommendPage = () => {
       // 비회원
       if (!state?.isAuthenticated) {
         // 기존 레시피 삭제
-        sessionStorage.removeItem('RecommendRecipeList');
+        sessionStorage.removeItem('recommendRecipeList');
         // 추천 레시피 저장
         const isSaved = saveToSessionStorage(year, week, recommendedRecipes);
         if (isSaved) {
@@ -152,13 +167,13 @@ const RecommendPage = () => {
           servings: recipe.servings,
           thumbnailUrl: recipe.thumbnailUrl,
           title: recipe.title,
-          used: recipe.used !== undefined ? recipe.used : 0,
+          used: recipe.used !== undefined ? recipe.used : false,
         })),
       };
 
       // 세션 스토리지에 저장
       sessionStorage.setItem(
-        'RecommendRecipeList',
+        'recommendedRecipeList',
         JSON.stringify(dataToStore)
       );
 
@@ -180,17 +195,19 @@ const RecommendPage = () => {
               <SelectedList
                 key={recipe.id}
                 onClick={() =>
-                  recipe.used !== 1 ? handleRemoveSelectRecipe(recipe) : null
+                  recipe.used != 1 ? handleRemoveSelectRecipe(recipe) : null
                 }
                 style={{
-                  opacity: recipe.used === 1 ? 0.5 : 1,
+                  opacity: recipe.used == 1 ? 0.5 : 1,
                   backgroundColor:
-                    recipe.used === 1 ? 'rgba(255, 0, 0, 0.3)' : 'transparent', // 사용된 레시피는 배경색을 빨강으로
-                  cursor: recipe.used === 1 ? 'not-allowed' : 'pointer', // 사용된 레시피는 클릭할 수 없도록 커서 설정
+                    recipe.used == 1 ? 'rgba(255, 0, 0, 0.3)' : 'transparent', // 사용된 레시피는 배경색을 빨강으로
+                  cursor: recipe.used == 1 ? 'not-allowed' : 'pointer', // 사용된 레시피는 클릭할 수 없도록 커서 설정
                 }}
               >
                 <SelectedImage
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+                  src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                    recipe.thumbnailUrl
+                  }`}
                   alt={recipe.title}
                 />
 

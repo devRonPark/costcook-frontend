@@ -5,6 +5,7 @@ const StyledStepIndicator = styled.div`
   font-size: 16px;
   text-align: right;
   margin: 20px 0;
+  margin-right: 20px;
 `;
 
 const StepIndicator = ({ currentStep, totalSteps }) => {

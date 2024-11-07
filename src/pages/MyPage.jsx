@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { useAuth } from '../context/Auth/AuthContext';
@@ -303,7 +302,8 @@ const MyPage = () => {
           <Button
             name="preferred"
             onClick={(e) => toggleTasteManagement(e)}
-            style={{ width: '100%', color: COLORS.PREFERRED.COLOR }}
+            textColor={COLORS.PREFERRED.COLOR}
+            style={{ width: '100%' }}
           >
             선호 재료 관리
           </Button>
@@ -320,7 +320,8 @@ const MyPage = () => {
           <Button
             name="disliked"
             onClick={(e) => toggleTasteManagement(e)}
-            style={{ width: '100%', color: COLORS.DISLIKED.COLOR }}
+            textColor={COLORS.DISLIKED.COLOR}
+            style={{ width: '100%' }}
           >
             비선호 재료 관리
           </Button>
@@ -328,19 +329,21 @@ const MyPage = () => {
       </SettingContainer>
       <ButtonLayoutContainer>
         <ButtonContainer>
-          <Link to="../activities">
-            <Button>내 활동</Button>
-          </Link>
+          <p>내 활동</p>
         </ButtonContainer>
         <ButtonContainer>
           <ButtonSplitBox>
-            <Link to="../budget">
-              <Button>예산 관리</Button>
+            <Link to="/budget-history">
+              <Button bgColor="#4CAF50" textColor="#FFFFFF">
+                예산 관리
+              </Button>
             </Link>
           </ButtonSplitBox>
           <ButtonSplitBox>
             <Link to="/my/reviews">
-              <Button>내가 쓴 리뷰</Button>
+              <Button bgColor="#2196F3" textColor="#FFFFFF">
+                내가 쓴 리뷰
+              </Button>
             </Link>
           </ButtonSplitBox>
         </ButtonContainer>
@@ -354,13 +357,15 @@ export default MyPage;
 const DateContainer = styled.div`
   height: 300px;
   width: 100%;
-  border: 1px black solid;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   display: flex;
-  justify-content: space-around;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
 `;
 
 const ProfileContainer = styled.div`
@@ -370,7 +375,10 @@ const ProfileContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const ProfileNameContainer = styled.div`
@@ -378,9 +386,11 @@ const ProfileNameContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  padding-top: 10px;
 `;
 
 const DateButtonContainer = styled.div`
@@ -396,40 +406,38 @@ const DateButtonContainer = styled.div`
 const SettingContainer = styled.div`
   height: 100px;
   width: 100%;
-  border: 1px black solid;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  padding: 20px;
+  background-color: #fff;
   margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
+
 const SettingButtonContainer = styled.div`
-  height: 30px;
   width: 100%;
-  margin-top: 10px;
-  border: 1px black solid;
-  border-radius: 5px;
-  border-radius: 5px;
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 10px;
 `;
+
 const ButtonLayoutContainer = styled.div`
   width: 100%;
-  border: 1px black solid;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
 `;
 
 const ButtonContainer = styled.div`
-  height: 120px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -440,9 +448,20 @@ const ButtonContainer = styled.div`
 const ButtonSplitBox = styled.div`
   height: 120px;
   width: 50%;
-  border: 1px black solid;
   display: flex;
   justify-content: center;
-  flex-direction: row;
   align-items: center;
+  margin: 5px;
+`;
+
+const Button = styled.button`
+  background-color: ${({ bgColor }) => bgColor || '#fff'};
+  color: ${({ textColor }) => textColor || 'black'};
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
 `;

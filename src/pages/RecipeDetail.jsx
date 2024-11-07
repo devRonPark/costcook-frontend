@@ -463,18 +463,36 @@ const RecipeDetail = () => {
         {/* 리뷰 컨텐츠에 ref 연결  */}
         {activeTabs.includes('review') && (
           <TabContent ref={reviewRef}>
-            {reviewList.map((review, index) => (
+            {/* 사용자가 작성한 리뷰는 항상 맨 앞에 위치 */}
+            {myReview && (
               <RecipeReviewCard
-                key={review.id}
-                review={review}
+                key={myReview.id}
+                review={myReview}
                 onEdit={handleReviewEditBtnClick}
                 onDelete={handleReviewDeleteClick}
                 loginUserId={state?.user?.id !== null ? state?.user?.id : -1}
-                ref={
-                  index === reviewList.length - 1 ? lastReviewElementRef : null
-                }
               />
-            ))}
+            )}
+            {reviewList
+              .filter((review) => myReview?.id !== review.id)
+              .map((review, index) => {
+                return (
+                  <RecipeReviewCard
+                    key={review.id}
+                    review={review}
+                    onEdit={handleReviewEditBtnClick}
+                    onDelete={handleReviewDeleteClick}
+                    loginUserId={
+                      state?.user?.id !== null ? state?.user?.id : -1
+                    }
+                    ref={
+                      index === reviewList.length - 1
+                        ? lastReviewElementRef
+                        : null
+                    }
+                  />
+                );
+              })}
           </TabContent>
         )}
       </TabListContainer>
