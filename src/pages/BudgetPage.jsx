@@ -130,7 +130,7 @@ const BudgetPage = () => {
   const handleCalendarClick = () => {
     const confirmNavigation = window.confirm('주간 상세 페이지로 이동합니다.');
     if (confirmNavigation) {
-      navigate('/weeklyDetail');
+      navigate('/weekly-details');
     }
   };
 

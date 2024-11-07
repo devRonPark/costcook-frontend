@@ -16,7 +16,7 @@ const Footer = ({ state }) => {
 
   // 경로를 변경하는 핸들러 함수
   const handleNavigate = (path) => {
-    if (path === '/my' || path === '/budget') {
+    if (path === '/my' || path === '/budget-history') {
       if (!isAuthenticated) {
         setIsModalOpen(true); // 모달 열기
       } else {
@@ -39,18 +39,18 @@ const Footer = ({ state }) => {
     <>
       <FooterContainer>
         <IconWrapper
-          isActive={location.pathname === '/recipe'}
-          onClick={() => handleNavigate('/recipe')}
+          isActive={location.pathname === '/recipes'}
+          onClick={() => handleNavigate('/recipes')}
         >
           <MenuBookIconStyled />
           <Text>전체레시피</Text>
         </IconWrapper>
         <IconWrapper
           isActive={
-            location.pathname === '/budget' ||
-            location.pathname.startsWith('/weeklyDetail')
+            location.pathname === '/budget-history' ||
+            location.pathname.startsWith('/weekly-details')
           }
-          onClick={() => handleNavigate('/budget')}
+          onClick={() => handleNavigate('/budget-history')}
         >
           <CalculateIconStyled />
           <Text>예산관리</Text>
@@ -65,8 +65,8 @@ const Footer = ({ state }) => {
         </IconWrapper>
 
         <IconWrapper
-          isActive={location.pathname === '/favorite'}
-          onClick={() => handleNavigate('/favorite')}
+          isActive={location.pathname === '/recipes/favorites'}
+          onClick={() => handleNavigate('/recipes/favorites')}
         >
           <FavoriteIconStyled />
           <Text>즐겨찾기</Text>
