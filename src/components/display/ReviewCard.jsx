@@ -58,9 +58,7 @@ const ReviewCard = forwardRef(({ review, onEdit, onDelete }, ref) => {
       </ThumbnailImageBox>
       <ContentContainer>
         <Header>
-          <TitleText
-            onClick={() => navigate(`/recipeDetail/${review.recipe.id}`)}
-          >
+          <TitleText onClick={() => navigate(`/recipes/${review.recipe.id}`)}>
             {review.recipe.title}
           </TitleText>
           {/* 드롭다운 메뉴 영역 */}

@@ -26,7 +26,7 @@ export const BudgetRecipeSlide = ({ recipes }) => {
     >
       {shuffledRecipes.map((recipe) => (
         <SwiperSlideContainer key={recipe.id} style={{ margin: '-1px' }}>
-          <RecipeLink onClick={() => navigate(`/recipeDetail/${recipe.id}`)}>
+          <RecipeLink onClick={() => navigate(`/recipes/${recipe.id}`)}>
             <List>
               <RecipeImageBox>
                 <RecipeImage

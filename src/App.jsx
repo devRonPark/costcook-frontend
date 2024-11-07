@@ -24,11 +24,7 @@ import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
 import PageTransition from './components/common/PageTransition';
-import UserInfo from './pages/UserInfo';
-import ItemList from './pages/ItemList';
-import Activities from './pages/Activities';
 import ProfileUpdate from './pages/ProfileUpdate';
-import Review from './pages/Review';
 import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
@@ -39,162 +35,238 @@ import AdminRecipeList from './pages/admin/RecipeList';
 import AdminReviewList from './pages/admin/ReviewList';
 import MyReviewPage from './pages/MyReviewPage';
 import WeeklyDetail from './pages/WeeklyDetail';
+import PublicRoute from './components/Auth/PublicRoute';
+import UserAndGuestRoute from './components/Auth/UserAndGuestRoute';
+import AllUserRoute from './components/Auth/AllUserRoute';
+import UserRoute from './components/Auth/UserRoute';
+import AdminRoute from './components/Auth/AdminRoute';
 
 function App() {
   const location = useLocation();
   return (
     <AuthProvider>
       <ToastContainer
-        position="bottom-center" // 위치 설정
-        autoClose={1500} // 1.5초 동안 표시
-        hideProgressBar={true} // 진행 바 숨기기 (필요시 추가)
-        closeOnClick // 클릭 시 닫기
-        pauseOnHover // 호버 시 일시 정지
-        draggable // 드래그 가능
-        draggablePercent={60} // 드래그 가능한 비율
-        theme="light" // 테마 설정 (light 또는 dark)
+        position="bottom-center"
+        autoClose={1500}
+        hideProgressBar={true}
+        closeOnClick
+        pauseOnHover
+        draggable
+        draggablePercent={60}
+        theme="light"
       />
       <GlobalStyle /> {/* 전역 스타일 적용 */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          {/* 비회원, 로그인한 회원 모두 접근 가능 */}
+          {/* 비회원, 로그인한 회원(사용자, 관리자) 모두 접근 가능 */}
+          {/* 홈 화면 */}
           <Route
             path="/home"
             element={
               <PageTransition>
-                <HomePage />
+                <AllUserRoute>
+                  <HomePage />
+                </AllUserRoute>
               </PageTransition>
             }
           />
+          {/* 레시피 목록 화면 */}
           <Route
-            path="/recipe"
+            path="/recipes"
             element={
               <PageTransition>
-                <RecipePage />
+                <AllUserRoute>
+                  <RecipePage />
+                </AllUserRoute>
               </PageTransition>
             }
           />
+          {/* 레시피 상세정보 화면 */}
           <Route
-            path="/recipeDetail/:recipeId"
+            path="/recipes/:recipeId"
             element={
               <PageTransition>
-                <RecipeDetail />
+                <AllUserRoute>
+                  <RecipeDetail />
+                </AllUserRoute>
               </PageTransition>
             }
           />
+          {/* 레시피 즐겨찾기 목록 화면 */}
           <Route
-            path="/favorite"
+            path="/recipes/favorites"
             element={
               <PageTransition>
-                <FavoritePage />
+                <UserAndGuestRoute>
+                  <FavoritePage />
+                </UserAndGuestRoute>
               </PageTransition>
             }
           />
+          {/* 레시피 검색 화면 */}
           <Route
-            path="/search"
+            path="/recipes/search"
             element={
               <PageTransition>
-                <SearchPage />
+                <AllUserRoute>
+                  <SearchPage />
+                </AllUserRoute>
               </PageTransition>
             }
           />
-
+          {/* 레시피 추천 화면 */}
+          <Route
+            path="/recipes/recommend"
+            element={
+              <PageTransition>
+                <UserAndGuestRoute>
+                  <RecommendPage />
+                </UserAndGuestRoute>
+              </PageTransition>
+            }
+          />
           {/* 비회원만 접근 가능 */}
+          {/* 시작 화면 */}
           <Route
             path="/"
             element={
               <PageTransition>
-                <PreLoginPage />
+                <PublicRoute>
+                  <PreLoginPage />
+                </PublicRoute>
               </PageTransition>
             }
           />
+          {/* 로그인 화면 */}
           <Route
             path="/login"
             element={
               <PageTransition>
-                <LoginPage />
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
               </PageTransition>
             }
           />
+          {/* 소셜 로그인 진행 중 화면(이메일 인증, 인증번호 입력 포함) */}
           <Route
             path="/oauth/:provider"
             element={
               <AuthProvider>
-                <OAuthVerification />
+                <PublicRoute>
+                  <OAuthVerification />
+                </PublicRoute>
               </AuthProvider>
             }
           />
           {/* 로그인한 회원만 접근 가능 */}
-          <Route path="/profile/update" element={<ProfileUpdate />} />
-          <Route path="/signup/complete" element={<SignUpComplete />} />
+          {/* 사용자 프로필 세팅 화면 */}
           <Route
-            path="/budget"
+            path="/profile-setup"
+            element={
+              <UserRoute>
+                <ProfileUpdate />
+              </UserRoute>
+            }
+          />
+          {/* 사용자 프로필 세팅 완료 화면 */}
+          <Route
+            path="/profile-setup/complete"
+            element={
+              <UserRoute>
+                <SignUpComplete />
+              </UserRoute>
+            }
+          />
+          {/* 사용자 예산 내역 화면 */}
+          <Route
+            path="/budget-history"
             element={
               <PageTransition>
-                <BudgetPage />
+                <UserRoute>
+                  <BudgetPage />
+                </UserRoute>
               </PageTransition>
             }
           />
+          {/* 마이 페이지 화면 */}
           <Route
             path="/my"
             element={
               <PageTransition>
-                <MyPage />
+                <UserRoute>
+                  <MyPage />
+                </UserRoute>
               </PageTransition>
             }
           />
-          <Route path="/my/profile" element={<UserInfo />} />
+          {/* 내가 작성한 리뷰 내역 화면 */}
           <Route
-            path="/recommend"
+            path="/my/reviews"
             element={
-              <PageTransition>
-                <RecommendPage />
-              </PageTransition>
+              <UserRoute>
+                <MyReviewPage />
+              </UserRoute>
             }
           />
-          <Route
-            path="/activities"
-            element={
-              <PageTransition>
-                <Activities />
-              </PageTransition>
-            }
-          />
-          <Route path="/my/reviews" element={<MyReviewPage />} />
-          <Route path="/weeklyDetail" element={<WeeklyDetail />} />
+          {/* 각 주차 별 추천 및 사용한 레시피 내역 화면 */}
+          <Route path="/weekly-details" element={<WeeklyDetail />} />
 
           {/* 관리자만 접근 가능 */}
-          <Route path="/admin" element={<AdminHome />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminHome />
+              </AdminRoute>
+            }
+          />
           <Route
             path="/admin/ingredient-form"
-            element={<AdminIngredientForm />}
+            element={
+              <AdminRoute>
+                <AdminIngredientForm />
+              </AdminRoute>
+            }
           />
           <Route
             path="/admin/ingredient-list"
-            element={<AdminIngredientList />}
-          />
-          <Route path="/admin/recipe-form" element={<AdminRecipeForm />} />
-          <Route
-            path="/admin/recipe-ingredient"
-            element={<RecipeIngredientPage />}
-          />
-          <Route path="/admin/recipe-list" element={<AdminRecipeList />} />
-          <Route path="/admin/review-list" element={<AdminReviewList />} />
-          {/* 아직 명확하지 않은 페이지 */}
-          <Route
-            path="/list"
             element={
-              <PageTransition>
-                <ItemList />
-              </PageTransition>
+              <AdminRoute>
+                <AdminIngredientList />
+              </AdminRoute>
             }
           />
           <Route
-            path="/review"
+            path="/admin/recipe-form"
             element={
-              <PageTransition>
-                <Review />
-              </PageTransition>
+              <AdminRoute>
+                <AdminRecipeForm />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/recipe-ingredient"
+            element={
+              <AdminRoute>
+                <RecipeIngredientPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/recipe-list"
+            element={
+              <AdminRoute>
+                <AdminRecipeList />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/review-list"
+            element={
+              <AdminRoute>
+                <AdminReviewList />
+              </AdminRoute>
             }
           />
           {/* 에러 페이지 */}

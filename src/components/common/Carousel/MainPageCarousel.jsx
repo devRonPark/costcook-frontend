@@ -20,7 +20,7 @@ const Carousel = ({ recipes, year, week }) => {
 
   // 레시피 상세보기 클릭 이벤트
   const handleDetailClick = (recipe) => {
-    navigate(`/recipeDetail/${recipe.id}`);
+    navigate(`/recipes/${recipe.id}`);
   };
 
   const handleModifyUseRecipe = async (recipe) => {
