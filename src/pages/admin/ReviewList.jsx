@@ -6,6 +6,7 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ReviewDetailModal from '../../components/admin/ReviewDetailModal';
 import apiClient from '../../services/api';
+import AdminSearchForm from '../../components/admin/AdminSearchForm';
 
 const AdminReviewList = () => {
   // State 설정
@@ -19,7 +20,7 @@ const AdminReviewList = () => {
   const [inputKeyword, setInputKeyword] = useState(''); // 폼에 입력된 검색 키워드 상태
   const [serverKeyword, setServerKeyword] = useState(''); // 서버에 적용된 검색 키워드 상태
   const [categories] = useState(['레시피', '작성자']); // 카테고리 목록 (고정값)
-  const [inputCategory, setInputCategory] = useState(''); // 폼에 선택된 카테고리
+  const [inputCategory, setInputCategory] = useState('레시피'); // 폼에 선택된 카테고리
   const [serverCategory, setServerCategory] = useState(''); // 서버에 적용된 카테고리
   const itemsPerPage = 5; // 페이지당 항목 수
 
@@ -135,6 +136,14 @@ const AdminReviewList = () => {
     setInputCategory(e.target.value); // 선택된 카테고리 업데이트
   };
 
+  // 리뷰 상태 업데이트를 위한 콜백 함수
+  const updateReviewStatus = (reviewId, newStatus) => {
+    setReviews(prevReviews => prevReviews.map(review => {
+      if (review.id === reviewId) return {...review, status: newStatus}  
+      return review
+    }));
+  };
+
   // 로딩 상태일 때의 화면
   if (loading) {
     return (
@@ -149,6 +158,23 @@ const AdminReviewList = () => {
     return (
       <AdminLayout title="리뷰">
         <ErrorWrapper>{error}</ErrorWrapper>
+      </AdminLayout>
+    );
+  }
+
+  // 리뷰 목록이 비어있는 경우의 화면
+  if (reviews.length === 0) {
+    return (
+      <AdminLayout title="리뷰">
+        <NoReviewsWrapper>현재 조회 가능한 리뷰가 없습니다.</NoReviewsWrapper>
+        <AdminSearchForm
+          inputCategory={inputCategory}
+          handleCategoryChange={handleCategoryChange}
+          categories={categories}
+          inputKeyword={inputKeyword}
+          handleKeywordChange={handleKeywordChange}
+          handleSearchSubmit={handleSearchSubmit}
+        />
       </AdminLayout>
     );
   }
@@ -204,31 +230,22 @@ const AdminReviewList = () => {
           showLastButton
         />
       </PaginationWrapper>
-      <SearchForm onSubmit={handleSearchSubmit}>
-        {/* 카테고리 드롭다운 컴포넌트 */}
-        <CategorySelect value={inputCategory} onChange={handleCategoryChange}>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </CategorySelect>
-
-        {/* 검색창 컴포넌트 */}
-        <SearchInput
-          type="text"
-          value={inputKeyword}
-          onChange={handleKeywordChange}
-          placeholder="검색어를 입력하세요..."
-        />
-        <SearchButton type="submit">검색</SearchButton>
-      </SearchForm>
+      <AdminSearchForm
+        inputCategory={inputCategory}
+        handleCategoryChange={handleCategoryChange}
+        categories={categories}
+        inputKeyword={inputKeyword}
+        handleKeywordChange={handleKeywordChange}
+        handleSearchSubmit={handleSearchSubmit}
+      />
 
       {/* 리뷰 모달 컴포넌트 */}
       {selectedReview && (
         <ReviewDetailModal
           review={selectedReview}
+          setReviews={setReviews}
           onClose={handleCloseModal}
+          onStatusChange={updateReviewStatus}
         />
       )}
     </AdminLayout>
@@ -240,7 +257,7 @@ export default AdminReviewList;
 // 스타일 정의
 const TableWrapper = styled.div`
   overflow-x: auto;
-  margin-top: 80px;
+  margin-top: 100px;
 `;
 
 const Table = styled.table`
@@ -297,65 +314,24 @@ const PaginationWrapper = styled.div`
   justify-content: center;
 `;
 
-const SearchForm = styled.form`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 30px;
-`;
-
-const CategorySelect = styled.select`
-  padding: 10px 7px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-right: 10px;
-  width: 80px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23555"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
-  background-color: white;
-  background-size: 20px;
-`;
-
-const SearchInput = styled.input`
-  width: 260px; 
-  padding: 12px; 
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-right: 10px;
-`;
-
-const SearchButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const LoadingWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+  margin: 160px 0 80px;
   font-size: 1.2em;
-  margin-top: 80px;
+  color: ${(props) => props.color || "#333"};
 `;
 
-const ErrorWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  margin-top: 80px;
-  font-size: 1.2em;
-  color: red;
+const LoadingWrapper = styled(Wrapper)`
+  color: #333; // 기본 색상 (로딩 중일 때)
+`;
+
+const ErrorWrapper = styled(Wrapper)`
+  color: red; // 에러일 때의 색상
+`;
+
+const NoReviewsWrapper = styled(Wrapper)`
+  color: #888; // 리뷰가 없을 때의 색상
 `;

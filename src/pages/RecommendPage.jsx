@@ -21,7 +21,7 @@ const RecommendPage = () => {
     const fetchRecommendedRecipes = async () => {
       try {
         if (!state?.isAuthenticated) {
-          const storedData = sessionStorage.getItem('RecommendedRecipeList');
+          const storedData = sessionStorage.getItem('recommendedRecipeList');
           if (storedData) {
             const parsedData = JSON.parse(storedData);
 
@@ -123,7 +123,7 @@ const RecommendPage = () => {
       // 비회원
       if (!state?.isAuthenticated) {
         // 기존 레시피 삭제
-        sessionStorage.removeItem('RecommendRecipeList');
+        sessionStorage.removeItem('recommendRecipeList');
         // 추천 레시피 저장
         const isSaved = saveToSessionStorage(year, week, recommendedRecipes);
         if (isSaved) {
@@ -173,7 +173,7 @@ const RecommendPage = () => {
 
       // 세션 스토리지에 저장
       sessionStorage.setItem(
-        'RecommendedRecipeList',
+        'recommendedRecipeList',
         JSON.stringify(dataToStore)
       );
 
@@ -205,7 +205,9 @@ const RecommendPage = () => {
                 }}
               >
                 <SelectedImage
-                  src={`${import.meta.env.VITE_SERVER}${recipe.thumbnailUrl}`}
+                  src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                    recipe.thumbnailUrl
+                  }`}
                   alt={recipe.title}
                 />
 
