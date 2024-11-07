@@ -79,6 +79,7 @@ const HeaderContainer = styled.header`
   align-items: center; // 수직 중앙 정렬
   justify-content: space-between; /* 아이콘과 제목 사이에 공간 분배 */
   background-color: #f8f9fa; // 배경색
+  position: relative;
 `;
 
 const IconWrapper = styled.div`
@@ -105,10 +106,13 @@ const PageName = styled.h1`
   font-family: ${(props) =>
     props.isRecipeDetailPage ? 'Mungyeong-Gamhong-Apple' : 'STUNNING-Bd'};
   font-weight: ${(props) => (props.isRecipeDetailPage ? 100 : 'normal')};
-  flex: 1; /* 제목이 공간을 차지하게 함 */
-  text-align: center; /* 가운데 정렬 */
-  font-size: 1.5rem; /* 제목 크기 조정 */
-  color: #333; /* 제목 색상 */
+  flex: 1;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const FavoriteButton = styled.div`
