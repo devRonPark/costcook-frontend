@@ -12,7 +12,7 @@ const AdminHome = () => {
 
   return (
     <AdminLayout
-      title="관리자 홈"
+      title="관리자 대시보드"
       isRegisterEnabled={true}
       onBack={() => navigate("/")}
     >

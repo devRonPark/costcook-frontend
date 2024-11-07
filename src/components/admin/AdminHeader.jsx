@@ -5,30 +5,49 @@ import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { removeCookie } from '../../utils/cookieUtil';
+import AuthApi from '../../services/auth.api';
+import { useAuth } from '../../context/Auth/AuthContext';
 
 const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubmit }) => {
+  const { dispatch } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const timerRef = useRef(null); // 타이머를 저장하기 위한 useRef
+  const timerRef = useRef(null);
 
   const handleMouseEnter = () => {
     if (timerRef.current) {
-      clearTimeout(timerRef.current); // 타이머를 취소
+      clearTimeout(timerRef.current);
     }
     setIsDropdownOpen(true);
   };
 
   const handleMouseLeave = () => {
-    // 마우스를 뗄 때 약간의 지연을 두고 모달을 닫음
     timerRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 300); 
   };
 
-  const handleLogout = () => {
-    // 로그아웃 로직
-    localStorage.removeItem('token');
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      const res = await AuthApi.logout(); // 로그아웃 API 호출
+      if (res.status === 200) {
+        dispatch({
+          type: 'LOGOUT', // 사용자 state 제거
+        });
+
+        // accessToken 쿠키 제거
+        removeCookie('accessToken');
+
+        toast.info('로그아웃되었습니다.'); // 로그아웃 성공 메시지
+
+        navigate('/admin/login'); // 홈 화면으로 이동
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('잠시 후 다시 시도해주세요.'); // 에러 발생 시 오류 메시지 표시
+    }
   };
 
   return (
@@ -38,20 +57,10 @@ const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubm
           <MenuIconStyled />
         </IconWrapper>
         <Title>{title}</Title>
-        <ProfileThumbnail
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
+        <ProfileThumbnail onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <ThumbnailImage />
           {isDropdownOpen && (
             <DropdownMenu onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-              <MenuItem onClick={() => navigate('/admin')}>
-                <IconLabel>
-                  <HomeIconStyled fontSize="small" />
-                  <span>메인 페이지</span>
-                </IconLabel>
-                <ArrowIcon />
-              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <IconLabel>
                   <LogoutIconStyled fontSize="small" />

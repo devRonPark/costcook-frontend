@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import apiClient from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { setCookie } from "../../utils/cookieUtil";
 
 const Container = styled.div`
   position: relative;
@@ -73,13 +74,9 @@ const AdminLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      navigate("/admin/");
-    } else {
-      setLoading(false);
-    }
-  }, [navigate]);
+    // 로그인 여부를 확인할 필요가 없다면 바로 로딩 해제
+    setLoading(false);
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -94,13 +91,9 @@ const AdminLogin = () => {
         password: form.password,
       });
 
-      // 응답에서 accessToken과 refreshToken을 추출합니다.
-      const { accessToken, refreshToken } = response.data;
-
-      // accessToken을 로컬 스토리지에 저장합니다.
-      localStorage.setItem("accessToken", accessToken);
-      
-      navigate("/admin/"); // 로그인 후 관리자 페이지로 이동
+      if (response.status === 200) {
+        navigate("/admin/dashboard"); // 로그인 후 관리자 페이지로 이동
+      }
     } catch (error) {
       console.error("로그인 오류:", error);
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
@@ -114,36 +107,36 @@ const AdminLogin = () => {
   return (
     <Container>
       <FormWrapper>
-        <Title>Admin Login</Title>
+        <Title>관리자 로그인</Title>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <form style={{ marginTop: "32px" }} onSubmit={handleSubmit}>
           <FormGroup>
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">이메일</Label>
             <Input
               type="text"
               id="username"
               name="username"
               value={form.username}
               onChange={handleChange}
-              placeholder="Enter your username"
+              placeholder="이메일을 입력하세요"
               required
             />
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">비밀번호</Label>
             <Input
               type="password"
               id="password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="비밀번호를 입력하세요"
               required
             />
           </FormGroup>
 
-          <Button type="submit" style={{ marginTop: "16px" }}>Login</Button>
+          <Button type="submit" style={{ marginTop: "16px" }}>로그인</Button>
         </form>
       </FormWrapper>
     </Container>
