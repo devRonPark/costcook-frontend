@@ -23,7 +23,7 @@ const FormWrapper = styled.div`
   top: 30%;
   width: 80%;
   max-width: 400px;
-  transform: translateY(-30%); /* 정확히 30%에서 시작 */
+  transform: translateY(-30%);
 `;
 
 const Title = styled.h2`
@@ -68,16 +68,16 @@ const Button = styled.button`
 const AdminLogin = () => {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
-
+  const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       navigate("/admin/");
     } else {
-      setLoading(false); // 토큰이 없을 경우에만 로딩 완료
+      setLoading(false);
     }
   }, [navigate]);
 
@@ -87,18 +87,20 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      const response = await apiClient.post('/admin/login', {
+      const response = await apiClient.post("/admin/login", {
         username: form.username,
         password: form.password,
       });
-  
-      const token = response.data.token;
-      if (token) {
-        localStorage.setItem("token", token);
-        navigate("/admin/");
-      }
+
+      // 응답에서 accessToken과 refreshToken을 추출합니다.
+      const { accessToken, refreshToken } = response.data;
+
+      // accessToken을 로컬 스토리지에 저장합니다.
+      localStorage.setItem("accessToken", accessToken);
+      
+      navigate("/admin/"); // 로그인 후 관리자 페이지로 이동
     } catch (error) {
       console.error("로그인 오류:", error);
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
@@ -106,8 +108,7 @@ const AdminLogin = () => {
   };
 
   if (loading) {
-    // 로딩 중이면 빈 화면을 표시하거나 로딩 스피너를 보여줍니다.
-    return null; // 로딩 중인 동안 로그인 페이지가 보이지 않음
+    return null; // 로딩 중일 때는 빈 화면을 표시
   }
 
   return (
@@ -150,4 +151,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

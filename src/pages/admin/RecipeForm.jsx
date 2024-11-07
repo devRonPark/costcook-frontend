@@ -142,7 +142,6 @@ const AdminRecipeForm = () => {
         changedFields[key] = currentState[key];
       }
     });
-    console.log(changedFields);
   
     return changedFields;
   };
