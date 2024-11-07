@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
 import { useWeeklyDate } from '../hooks/useWeeklyDate';
+import { toast } from 'react-toastify';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
@@ -57,6 +58,14 @@ const WeeklyDetail = () => {
     getUsedRecipes();
     getRecommendedRecipes();
   }, [year, week]);
+
+  // 레시피 미사용시, 홈으로 보내는 버튼 클릭 시 toast 출력
+  const handleLinkCilck = () => {
+    navigate('/home');
+    toast.info('추천받은 레시피를 선택하여\n 요리해보세요!', {
+      className: 'custom-toast',
+    });
+  };
 
   return (
     <Layout
@@ -116,7 +125,7 @@ const WeeklyDetail = () => {
 
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
-                <LinkButton onClick={() => navigate('/home')}>
+                <LinkButton onClick={handleLinkCilck}>
                   <UseRecipeLinkText>
                     아직 요리한 레시피가 없네요! <br /> 요리하러 가볼까요?
                   </UseRecipeLinkText>
