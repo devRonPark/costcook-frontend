@@ -357,7 +357,7 @@ export default MyPage;
 const DateContainer = styled.div`
   height: 300px;
   width: 100%;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -369,16 +369,17 @@ const DateContainer = styled.div`
 `;
 
 const ProfileContainer = styled.div`
-  height: 290px;
+  height: 90%;
   width: 45%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  /* padding: 20px; */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 `;
 
 const ProfileNameContainer = styled.div`
@@ -406,7 +407,7 @@ const DateButtonContainer = styled.div`
 const SettingContainer = styled.div`
   height: 100px;
   width: 100%;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -416,6 +417,7 @@ const SettingContainer = styled.div`
   background-color: #fff;
   margin-top: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: 'STUNNING-Bd';
 `;
 
 const SettingButtonContainer = styled.div`
@@ -427,7 +429,7 @@ const SettingButtonContainer = styled.div`
 
 const ButtonLayoutContainer = styled.div`
   width: 100%;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -435,6 +437,9 @@ const ButtonLayoutContainer = styled.div`
   margin-top: 20px;
   padding: 10px;
   background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 20px;
+  font-family: 'STUNNING-Bd';
 `;
 
 const ButtonContainer = styled.div`
@@ -462,6 +467,7 @@ const Button = styled.button`
   border-radius: 5px;
   width: 100%;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
+  font-family: 'STUNNING-Bd';
 `;

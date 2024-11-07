@@ -475,6 +475,7 @@ const RecipeDetail = () => {
             )}
             {reviewList
               .filter((review) => myReview?.id !== review.id)
+              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // 최신 순으로 정렬
               .map((review, index) => {
                 return (
                   <RecipeReviewCard

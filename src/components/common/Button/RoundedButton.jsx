@@ -34,11 +34,13 @@ const RoundedButtonContainer = styled.button`
   font-size: 20px;
   background-color: ${(props) =>
     props.disabled ? 'lightgray' : props.backgroundColor};
-  border: ${(props) => props.border};
+  /* border: ${(props) => props.border}; */
+  border: none;
   padding: 10px;
   border-radius: 20px;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   color: ${(props) => (props.disabled ? '#666' : 'black')};
+  font-family: 'GmarketSansMedium';
 
   &:hover {
     background-color: ${(props) =>

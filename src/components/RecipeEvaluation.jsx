@@ -11,9 +11,10 @@ const EvaluationContainer = styled.div`
 
 const ReviewMessage = styled.p`
   color: gray;
-  font-size: 16px;
+  font-size: 18px;
   text-align: center;
   margin: 10px 0; /* 메시지 주변 여백 */
+  font-family: 'GangwonEdu_OTFBoldA';
 `;
 
 const StarContainer = styled.div`
@@ -29,8 +30,9 @@ const StarIcon = styled.span`
 
 const EvaluationPrompt = styled.p`
   text-align: center;
-  margin-top: 10px;
-  font-size: 16px; /* 평가 요청 메시지 크기 */
+  margin-top: 5px;
+  font-size: 18px; /* 평가 요청 메시지 크기 */
+  font-family: 'GangwonEdu_OTFBoldA';
 `;
 
 const RecipeEvaluation = ({

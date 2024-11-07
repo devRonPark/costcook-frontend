@@ -168,16 +168,20 @@ const TitleText = styled.h3`
   overflow: hidden; // 넘치면 숨김
   text-overflow: ellipsis; // 넘친 부분 ... 표시
   width: 100%;
+  font-family: 'Mungyeong-Gamhong-Apple';
+  font-weight: 100;
 `;
 
 // 가격
 const PriceText = styled.p`
-  font-size: 12px;
+  font-size: 13px;
   margin: 5px 0;
+  font-family: 'GangwonEdu_OTFBoldA';
 `;
 
 // 평점
 const StarText = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   margin: 5px 0;
+  font-family: 'RixXladywatermelonR';
 `;

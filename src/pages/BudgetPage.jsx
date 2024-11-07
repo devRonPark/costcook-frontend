@@ -105,7 +105,7 @@ const BudgetPage = () => {
   const handleModalConfirm = () => {
     console.log('모달 확인');
     setIsModalOpen(false);
-    navigate('/weeklyDetail');
+    navigate('/weekly-details');
   };
 
   return (
