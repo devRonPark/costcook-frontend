@@ -7,12 +7,12 @@ import BackButton from '../common/Button/BackButton';
 const Header = () => (
   <HeaderContainer>
     <IconWrapper>
-      <Link to="/">
+      <Link to="/home">
         <BackButton />
       </Link>
     </IconWrapper>
     <IconWrapper>
-      <Link to="/search">
+      <Link to="/recipes/search">
         <SearchIconStyled />
       </Link>
     </IconWrapper>

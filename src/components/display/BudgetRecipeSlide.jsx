@@ -29,7 +29,7 @@ export const BudgetRecipeSlide = ({ recipes }) => {
               isActive={isActive}
               isNext={isNext}
               isPrev={isPrev}
-              onClick={() => navigate(`/recipeDetail/${recipe.id}`)}
+              onClick={() => navigate(`/recipes/${recipe.id}`)}
             >
               <RecipeImage
                 src={`${import.meta.env.VITE_BASE_SERVER_URL}${

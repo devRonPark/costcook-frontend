@@ -57,7 +57,7 @@ const Header = ({
         </>
       )}
       {isSearchBtnExist && (
-        <Link to="/search">
+        <Link to="/recipes/search">
           {' '}
           {/* 검색 아이콘 클릭 시 검색 페이지로 이동 */}
           <SearchIconStyled />
