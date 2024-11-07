@@ -224,7 +224,7 @@ const FavoritePage = () => {
           style={{
             cursor: selectedRecipeIds.length > 0 ? 'pointer' : 'not-allowed',
             opacity: selectedRecipeIds.length > 0 ? 1 : 0.5,
-            position: selectedRecipeIds.length > 0 ? 'absolute' : 'static',
+            position: selectedRecipeIds.length > 0 ? 'sticky' : 'static',
             bottom: selectedRecipeIds.length > 0 ? '10px' : 0,
           }}
         />
