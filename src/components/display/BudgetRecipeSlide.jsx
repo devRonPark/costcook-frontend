@@ -20,7 +20,6 @@ export const BudgetRecipeSlide = ({ recipes }) => {
       centeredSlides={true}
       centeredSlidesBounds={true}
       spaceBetween={-50}
-      modules={[Pagination]}
     >
       {shuffledRecipes.map((recipe) => (
         <SwiperSlideContainer key={recipe.id}>
