@@ -76,47 +76,50 @@ const WeeklyDetail = () => {
           <h2 style={{ fontFamily: 'yg-jalnan' }}>
             {currentMonth} {weekNumber}주차
           </h2>
-          <ArrowButton onClick={handleIncreaseWeek}>
+          <ArrowButton
+            onClick={handleIncreaseWeek}
+            isCurrentWeek={isCurrentWeek}
+          >
             <KeyboardArrowRightIcon fontSize="large" />
           </ArrowButton>
         </SplitData>
       </DateContainer>
       <RecipeListBox>
+        <RecipeListText>추천받은 레시피</RecipeListText>
         {recommendedRecipes.length > 0 ? (
           <>
-            <RecipeListText>추천받은 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={recommendedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <RecipeListText>추천받은 레시피가 없습니다.</RecipeListText>
+            <EmptyBox></EmptyBox>
+            <NoRecipeListText>추천받은 레시피가 없습니다.</NoRecipeListText>
+            <EmptyBox></EmptyBox>
           </>
         )}
       </RecipeListBox>
-      <br />
-      <br />
-      <br />
       <RecipeListBox>
+        <RecipeListText>요리한 레시피</RecipeListText>
         {usedRecipes.length > 0 ? (
           <>
-            <RecipeListText>요리한 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={usedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
-            <br />
-            <br />
+            <EmptyBox></EmptyBox>
+            <NoRecipeListText>요리한 레시피가 없습니다.</NoRecipeListText>
+            <EmptyBox></EmptyBox>
+
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
                 <LinkButton onClick={() => navigate('/home')}>
-                  <p style={{ margin: '5px' }}>
-                    아직 요리한 레시피가 없네요! 요리하러 갈까요?
-                  </p>
+                  <UseRecipeLinkText>
+                    아직 요리한 레시피가 없네요! <br /> 요리하러 가볼까요?
+                  </UseRecipeLinkText>
                 </LinkButton>
               </LinkButtonWrapper>
             )}
@@ -148,6 +151,7 @@ const SplitData = styled.div`
 
 const ArrowButton = styled.div`
   cursor: pointer;
+  color: ${({ isCurrentWeek }) => (isCurrentWeek ? '#b0b0b0' : 'initial')};
 `;
 
 const RecipeListBox = styled.div`
@@ -155,10 +159,21 @@ const RecipeListBox = styled.div`
   margin-bottom: 10px;
   text-align: left;
 `;
+
 const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
   margin-bottom: 10px;
+`;
+
+const NoRecipeListText = styled.div`
+  font-size: 30px;
+  text-align: center;
+  color: #888888;
+  font-family: 'GangwonEduPowerExtraBoldA';
+`;
+const EmptyBox = styled.div`
+  height: 93px;
 `;
 
 const LinkButtonWrapper = styled.div`
@@ -168,21 +183,22 @@ const LinkButtonWrapper = styled.div`
 `;
 
 const LinkButton = styled.button`
-  width: 100%;
-  height: 30px;
-  display: block;
-  background-color: #e0e0e0;
+  width: 90%;
   text-align: center;
   border: 0px solid white;
-  border-radius: 10px;
-  font-size: 20px;
-  padding: 3px;
+  border-radius: 20px;
+  font-size: 32px;
+  padding: 10px;
   font-family: 'GangwonEduPowerExtraBoldA';
-  color: orange;
   overflow: hidden;
-  transition: background-color 0.3s;
-  &:hover {
-    background-color: #ffd700; // hover 시 진한 노란색
-    color: white;
-  }
+  background-color: #ffd700;
+  color: white;
+`;
+
+const UseRecipeLinkText = styled.p`
+  margin: 5px;
+  padding-top: 10px;
+  line-height: 1.5;
+  text-shadow: 1px 1px 0px #888888, /* 위쪽 */ -1px -1px 0px #888888,
+    /* 왼쪽 아래 */ 1px -1px 0px #888888, /* 오른쪽 아래 */ -1px 1px 0px #888888; /* 왼쪽 위 */
 `;
