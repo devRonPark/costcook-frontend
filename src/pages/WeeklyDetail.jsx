@@ -122,16 +122,7 @@ const WeeklyDetail = () => {
         {recommendedRecipes.length > 0 ? (
           <>
             <RecipeListText>추천받은 레시피</RecipeListText>
-            <div
-              style={{
-                padding: '10px',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                overflow: 'hidden',
-              }}
-            >
+            <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={recommendedRecipes} />
             </div>
           </>
@@ -148,7 +139,7 @@ const WeeklyDetail = () => {
         {usedRecipes.length > 0 ? (
           <>
             <RecipeListText>요리한 레시피</RecipeListText>
-            <div style={{ width: '100%' }}>
+            <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={usedRecipes} />
             </div>
           </>
