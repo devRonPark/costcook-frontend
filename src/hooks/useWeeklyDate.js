@@ -15,7 +15,7 @@ export const useWeeklyDate = () => {
   const [firstSundayDateString, setFirstSundayDateString] = useState('');
   const [isCurrentWeek, setIsCurrentWeek] = useState(true); // 현재 주차 여부
 
-  // 현재 주차와 비교하
+  // 현재 주차와 비교
   const updateCurrentWeek = (newDate) => {
     const current = getCurrentYearAndWeek(new Date());
     const { year: newYear, week: newWeek } = getCurrentYearAndWeek(newDate);
@@ -67,6 +67,7 @@ export const useWeeklyDate = () => {
     currentMonth,
     weekNumber,
     firstSundayDateString,
+    currentDate,
     handleDecreaseWeek,
     handleIncreaseWeek,
     isCurrentWeek,

@@ -166,8 +166,6 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error('JWT 파싱 오류:', error);
-          removeCookie('accessToken'); // JWT 파싱 오류 시 쿠키 삭제
-          dispatch({ type: 'LOGOUT' }); // JWT 파싱 오류 시 로그아웃
         }
       }
     };

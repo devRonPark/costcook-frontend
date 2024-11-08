@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import apiClient from "../../services/api";
+import { getCookie } from "../../utils/cookieUtil"; 
 
 const Container = styled.div`
   position: relative;
@@ -21,7 +24,7 @@ const FormWrapper = styled.div`
   top: 30%;
   width: 80%;
   max-width: 400px;
-  transform: translateY(-30%); /* 정확히 30%에서 시작 */
+  transform: translateY(-30%);
 `;
 
 const Title = styled.h2`
@@ -65,48 +68,81 @@ const Button = styled.button`
 
 const AdminLogin = () => {
   const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+  
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 로직은 여기에 추가합니다
+
+    try {
+      const response = await apiClient.post("/admin/login", {
+        username: form.username,
+        password: form.password,
+      });
+
+      if (response.status === 200) {
+        navigate("/admin/dashboard"); // 로그인 후 관리자 페이지로 이동
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      setError("로그인에 실패했습니다.\n이메일과 비밀번호를 확인하세요.");
+    }
   };
+
+  useEffect(() => {
+    // 로그인 상태 확인
+    const token = getCookie("accessToken");
+    if (token) {
+      navigate("/admin/dashboard"); // 이미 로그인된 상태라면 대시보드로 리다이렉트
+    } else {
+      setIsLoading(false); // 로그인 상태 확인이 끝나면 로딩 상태 종료
+    }
+  }, [navigate]);
+
+  // 로딩 중일 때는 아무것도 보여주지 않음
+  if (isLoading) {
+    return null; // 혹은 로딩 스피너를 추가할 수 있음
+  }
 
   return (
     <Container>
       <FormWrapper>
-        <Title>Admin Login</Title>
-        <form style={{marginTop:"32px"}} onSubmit={handleSubmit}>
+        <Title>관리자 로그인</Title>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form style={{ marginTop: "32px" }} onSubmit={handleSubmit}>
           <FormGroup>
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">이메일</Label>
             <Input
               type="text"
               id="username"
               name="username"
               value={form.username}
               onChange={handleChange}
-              placeholder="Enter your username"
+              placeholder="이메일을 입력하세요"
               required
             />
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">비밀번호</Label>
             <Input
               type="password"
               id="password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="비밀번호를 입력하세요"
               required
             />
           </FormGroup>
 
-          <Button type="submit" style={{marginTop:"16px"}}>Login</Button>
+          <Button type="submit" style={{ marginTop: "16px" }}>로그인</Button>
         </form>
       </FormWrapper>
     </Container>
@@ -114,4 +150,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

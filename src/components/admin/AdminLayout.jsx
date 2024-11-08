@@ -12,13 +12,10 @@ const AdminLayout = ({
   isRegisterEnabled,
   isModified,
   onSubmit,
-  onBack
 }) => {
-
   const navigate = useNavigate();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [pendingNavigationPath, setPendingNavigationPath] = useState(null);
 
   // 드로어 열기
@@ -42,12 +39,26 @@ const AdminLayout = ({
     }
   };
 
+  // 뒤로가기 버튼 클릭 핸들러
+  const handleBackClick = () => {
+    if (isModified) {
+      setPendingNavigationPath(-1); // 뒤로가기 요청
+      setIsModalOpen(true);
+    } else {
+      navigate(-1); // 이전 페이지로 이동
+    }
+  };
+
   // 모달에서 "예"를 클릭했을 때 동작
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    if (pendingNavigationPath) {
-      handleDrawerClose();
-      navigate(pendingNavigationPath);
+    if (pendingNavigationPath !== null) {
+      if (pendingNavigationPath === -1) {
+        navigate(-1); // 뒤로가기 처리
+      } else {
+        handleDrawerClose();
+        navigate(pendingNavigationPath);
+      }
       setPendingNavigationPath(null);
     }
   };
@@ -67,6 +78,7 @@ const AdminLayout = ({
           isRegisterEnabled={isRegisterEnabled}
           onMenuClick={handleDrawerOpen}
           onSubmit={onSubmit}
+          onBack={handleBackClick} // 뒤로 가기 핸들러 전달
         />
       </FixedHeader>
       <AdminDrawer

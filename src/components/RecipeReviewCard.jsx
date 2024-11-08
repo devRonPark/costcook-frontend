@@ -35,6 +35,7 @@ const ContentContainer = styled.div`
 const Nickname = styled.h4`
   margin: 0;
   font-size: 16px; /* 닉네임 크기 */
+  font-family: 'yg-jalnan';
 `;
 
 const RatingContainer = styled.div`
@@ -45,7 +46,9 @@ const RatingContainer = styled.div`
 
 const AverageRating = styled.span`
   margin-left: 4px; /* 평점 텍스트와 아이콘 간격 */
+  margin-top: 6px;
   font-size: 14px; /* 평점 텍스트 크기 */
+  font-family: 'GangwonEdu_OTFBoldA';
 `;
 
 const UpdatedAt = styled.p`
@@ -67,6 +70,7 @@ const Comment = styled.p`
   margin: 0; /* 기본 여백 제거 */
   font-size: 14px; /* 코멘트 크기 */
   color: #333; /* 코멘트 색상 */
+  font-family: 'GmarketSansMedium';
 `;
 
 // props 로 loginUserId 를 전달받아서, loginUserId 와 review.user.id 가 일치하면, 드롭다운 메뉴 영역이 화면에 보여진다.

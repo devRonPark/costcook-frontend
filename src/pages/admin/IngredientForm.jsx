@@ -35,8 +35,6 @@ const AdminIngredientForm = () => {
 
   const [currentState, setCurrentState] = useState(initialState);
   const [isNameUnique, setIsNameUnique] = useState(isEditingIngredient);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
-  const textRef = useRef(null);
 
   // [3] 핸들러 함수
 
@@ -63,24 +61,8 @@ const AdminIngredientForm = () => {
       setIsNameUnique(false);
     }
   };
-
-  // [4] 유틸리티 함수
-
-  const getNameById = (data, id) => {
-    const defaultName = '미선택';
-    return id !== null ? data.find((item) => item.id === id)?.name || defaultName : defaultName;
-  };
-
+  
   // [5] useEffect 
-
-  // 정보창에 글자가 너무 많아 한번에 모두 볼 수 없으면 이동 애니메이션을 부여함
-  useEffect(() => {
-    if (textRef.current) {
-      const containerWidth = textRef.current.parentElement.offsetWidth;
-      const textWidth = textRef.current.scrollWidth;
-      setShouldAnimate(textWidth > containerWidth);
-    }
-  }, [currentState]);
 
   // 수정 모드일 경우 다른 페이지에서 가져온 데이터를 초기 상태에 반영함
   useEffect(() => {
@@ -143,14 +125,6 @@ const AdminIngredientForm = () => {
       isModified={isModified} 
       onSubmit={handleSubmit}
     >
-      <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
-        {[`[재료] ${currentState.name || '미입력'} / `, 
-          `[단위] ${getNameById(unitsData, currentState.unitId)} / `, 
-          `[카테고리] ${getNameById(categoriesData, currentState.categoryId)}`]
-          .join('')
-        }
-      </InfoContainer>
-
       <ContentContainer>
         <Section style={{marginTop: '80px'}}>
           <SectionTitle>재료 이름</SectionTitle>

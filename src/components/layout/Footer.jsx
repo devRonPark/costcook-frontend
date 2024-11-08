@@ -39,7 +39,7 @@ const Footer = ({ state }) => {
     <>
       <FooterContainer>
         <IconWrapper
-          isActive={location.pathname === '/recipes'}
+          isActive={location.pathname.startsWith('/recipes')}
           onClick={() => handleNavigate('/recipes')}
         >
           <MenuBookIconStyled />

@@ -89,7 +89,6 @@ const AdminRecipeList = () => {
       rightLabel="추가"
       isRegisterEnabled={true} // 등록 버튼 활성화 조건을 항상 true로 설정
       onSubmit={handleAddRecipe} // 추가 버튼을 눌렀을 때 handleAddRecipe 호출
-      onBack={() => navigate('/admin')}
     >
       <ContentContainer>
         <ContentContainer>
@@ -98,11 +97,7 @@ const AdminRecipeList = () => {
               recipeList.map((recipe) => (
                 <RecipeCard key={recipe.id}>
                   <Thumbnail
-                    src={
-                      recipe.thumbnailUrl
-                        ? BASE_SERVER_URL + recipe.thumbnailUrl
-                        : 'https://via.placeholder.com/50'
-                    }
+                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"}
                     alt="썸네일 이미지"
                   />
                   <RecipeInfo>
@@ -118,11 +113,11 @@ const AdminRecipeList = () => {
                         <FavoriteBorder
                           style={{ fontSize: '16px', color: '#999' }}
                         />
-                        <MetricText>{recipe.bookmarkCount}</MetricText>
+                        <MetricText>{recipe.favoriteCount}</MetricText>
                       </Metric>
                       <Metric>
                         <Comment style={{ fontSize: '16px', color: '#999' }} />
-                        <MetricText>{recipe.commentCount}</MetricText>
+                        <MetricText>{recipe.reviewCount}</MetricText>
                       </Metric>
                     </RecipeMetrics>
                   </RecipeInfo>
@@ -154,6 +149,10 @@ const AdminRecipeList = () => {
               onChange={handlePageChange}
               color="primary"
               shape="rounded"
+              siblingCount={2}
+              boundaryCount={0}
+              showFirstButton
+              showLastButton
             />
           </PaginationWrapper>
         </ContentContainer>
@@ -164,6 +163,7 @@ const AdminRecipeList = () => {
 
 export default AdminRecipeList;
 
+// 스타일 컴포넌트
 const RecipeListWrapper = styled.div`
   display: flex;
   flex-direction: column;

@@ -8,7 +8,7 @@ const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpda
     (acc, ingredient) => acc + ingredient.pricePerUnit * ingredient.quantity,
     0
   );
-  const formattedTotalCost = parseFloat(totalCost.toFixed(2));
+  const formattedTotalCost = parseFloat(totalCost.toFixed(0));
 
   // totalCost 변경 시 상위 컴포넌트에 전달
   useEffect(() => {
@@ -27,7 +27,7 @@ const IngredientTable = ({ ingredientList, isEditing, onDeleteIngredient, onUpda
       <tbody>
         {ingredientList.map((ingredient) => {
           const unitName = ingredient.unitName;
-          const ingredientCost = parseFloat((ingredient.pricePerUnit * ingredient.quantity).toFixed(2));
+          const ingredientCost = parseFloat((ingredient.pricePerUnit * ingredient.quantity).toFixed(0));
           return (
             <TableRow key={ingredient.id}>
               <td>{ingredient.name}</td>

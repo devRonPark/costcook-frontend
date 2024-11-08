@@ -16,6 +16,7 @@ const IngredientContainer = styled.div`
   background-color: #f9f9f9; /* 선택 사항: 기본 배경색 설정 */
   margin: 8px; /* 아이템 간의 간격 */
   cursor: pointer; /* 클릭 가능한 아이템으로 커서 변경 */
+  font-family: 'GmarketSansMedium';
 
   /* Hover 시 효과 */
   &:hover {

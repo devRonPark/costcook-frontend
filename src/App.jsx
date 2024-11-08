@@ -29,7 +29,7 @@ import SignUpComplete from './pages/SignUpComplete';
 import RecipeIngredientPage from './pages/admin/RecipeIngredientPage';
 import AdminHome from './pages/admin/AdminHome';
 import AdminLogin from './pages/admin/AdminLogin';
-import AdminIngredientList from './pages/admin/AdminIngredientList';
+import AdminIngredientList from './pages/admin/IngredientList';
 import AdminIngredientForm from './pages/admin/IngredientForm';
 import AdminRecipeForm from './pages/admin/RecipeForm';
 import AdminRecipeList from './pages/admin/RecipeList';
@@ -215,7 +215,7 @@ function App() {
 
           {/* 관리자만 접근 가능 */}
           <Route
-            path="/admin"
+            path="/admin/dashboard"
             element={
               <AdminRoute>
                 <AdminHome />
@@ -225,9 +225,9 @@ function App() {
           <Route
             path="/admin/login"
             element={
-              <PublicRoute>
+              <AdminRoute>
                 <AdminLogin />
-              </PublicRoute>
+              </AdminRoute>
             }
           />
           <Route
