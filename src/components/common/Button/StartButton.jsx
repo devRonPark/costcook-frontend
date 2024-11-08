@@ -85,11 +85,11 @@ export const Body = styled.div`
 `;
 
 const StartButton = ({ onClick }) => {
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerHeight < 800);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerHeight < 920);
   console.log(window.innerHeight);
 
   useEffect(() => {
-    const handleResize = () => setIsSmallScreen(window.innerHeight < 800);
+    const handleResize = () => setIsSmallScreen(window.innerHeight < 920);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
