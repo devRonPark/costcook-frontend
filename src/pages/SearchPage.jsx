@@ -33,6 +33,7 @@ const SearchPage = () => {
   const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
   const [loading, setLoading] = useState(false); // 로딩 상태
   const { ref: lastRecipeElementRef, inView } = useInView(); // 마지막 레시피 카드 참조 및 뷰 상태
+  const [isKeywordEmpty, setIsKeywordEmpty] = useState(false);
 
   // 컴포넌트 마운트 시 최근 검색어 가져오기
   useEffect(() => {
@@ -55,9 +56,16 @@ const SearchPage = () => {
 
   const handleInputChange = (event) => {
     setKeyword(event.target.value); // 검색어 변경
+    setIsKeywordEmpty(false); // 검색을 했으므로, 검색어 미입력 함수를 false로 변경
   };
 
   const handleSearch = async (keyword, newPage = 1) => {
+    // 검색어가 비어있는 경우 검색을 실행하지 않음, 검색하라는 문구 표시
+    if (!keyword.trim()) {
+      setIsKeywordEmpty(true);
+      return;
+    }
+
     // 검색어가 비어있지 않을 경우 검색
     if (keyword) {
       navigate(`/recipes/search?keyword=${keyword}`);
@@ -255,12 +263,17 @@ const SearchPage = () => {
         </SearchButtonWrap>
         <SearchInput
           type="text"
-          placeholder="궁금한 레시피를 검색해 보세요!"
+          placeholder={
+            isKeywordEmpty
+              ? '검색어를 입력해주세요.'
+              : '궁금한 레시피를 검색해 보세요!'
+          }
           value={keyword}
           onChange={handleInputChange}
           onFocus={() => setIsSearchInputFocused(true)} // 입력 필드 포커스
           onBlur={() => setIsSearchInputFocused(false)} // 입력 필드 블러
           onKeyDown={handleKeyDown} // Enter 키 입력 처리
+          isKeywordEmpty={isKeywordEmpty} // 오류 상태 스타일을 위한 prop 전달
         />
         <ResetButton onClick={handleReset} show={keyword.length > 0}>
           <ClearIcon fontSize="small" />

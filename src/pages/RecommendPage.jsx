@@ -186,7 +186,11 @@ const RecommendPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout
+      pageName={`남은 금액 : ${Math.round(
+        remainingBudget
+      ).toLocaleString()} 원`}
+    >
       <SelectedContainer>
         <SelectedListContainer>
           {selectedRecipes.length === 0 ? (
