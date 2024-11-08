@@ -3,7 +3,7 @@ import { getCookie } from '../utils/cookieUtil';
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api', // 백엔드 API 기본 URL
+  baseURL: import.meta.env.VITE_REST_SERVER, // 백엔드 API 기본 URL
   withCredentials: true, // 쿠키를 포함해서 요청을 보내도록 설정
 });
 
@@ -49,7 +49,9 @@ apiClient.interceptors.response.use(
         );
         if (refreshResponse.status === 200) {
           console.log(getCookie('accessToken'));
-          originalReq.headers.Authorization = `Bearer ${getCookie('accessToken')}`;
+          originalReq.headers.Authorization = `Bearer ${getCookie(
+            'accessToken'
+          )}`;
           return apiClient.request(originalReq);
         }
       } catch (refreshError) {
