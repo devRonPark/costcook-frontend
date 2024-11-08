@@ -17,8 +17,6 @@ const BudgetPage = () => {
   const [budgetAmount, setBudgetAmount] = useState(0); // 설정한 예산
   const [useAmount, setUseAmount] = useState(0); // 사용한 예산
   const [remainingBudget, setRemainingBudget] = useState(0); // 남은 예산
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [firstSundayDateString, setFirstSundayDateString] = useState('');
   const [recipes, setRecipes] = useState([]);
   const [highestPrice, setHighestPrice] = useState(0); // 가장 비싼 레시피 가격
   const [lowestPrice, setLowestPrice] = useState(0); // 가장 저렴한 레시피 가격
@@ -33,6 +31,7 @@ const BudgetPage = () => {
   const {
     year,
     week,
+    currentDate,
     currentMonth,
     weekNumber,
     isCurrentWeek,
@@ -54,8 +53,6 @@ const BudgetPage = () => {
       setRecipes(recipes);
       resetData();
       calculatePrices(recipes); // 함수에 recipes를 보냄
-      console.log('getUsedWeeklyBudget_year : ', year);
-      console.log('getUsedWeeklyBudget_week : ', week);
     } catch (error) {
       console.error('사용 예산 데이터 출력 중 오류 발생', error);
     }
@@ -94,10 +91,6 @@ const BudgetPage = () => {
     setAveragePrice(0);
     setHighestPriceTitle('');
     setLowestPriceTitle('');
-    console.log('year: ', year);
-    console.log('week: ', week);
-    console.log('weekNumber: ', weekNumber);
-    console.log('currentMonth: ', currentMonth);
   };
 
   // 달력 클릭 시 컨펌 모달 > 주차 상세 페이지
@@ -113,9 +106,6 @@ const BudgetPage = () => {
     navigate('/weekly-details', {
       state: { year, weekNumber, week, currentMonth, isCurrentWeek },
     });
-    console.log('state_year_ : ', year);
-    console.log('state_week_ : ', week);
-    console.log('state_weekNumber_ : ', weekNumber);
   };
 
   return (
@@ -185,7 +175,7 @@ const BudgetPage = () => {
         </BudgetSettingContainer>
       </BudgetContainer>
       <CalendarContainer onClick={handleCalendarClick}>
-        <WeeklyCalendar currentDate={currentDate}>달력</WeeklyCalendar>
+        <WeeklyCalendar currentDate={currentDate} />
       </CalendarContainer>
 
       {/* 달력 클릭 모달 */}

@@ -67,6 +67,7 @@ export const useWeeklyDate = () => {
     currentMonth,
     weekNumber,
     firstSundayDateString,
+    currentDate,
     handleDecreaseWeek,
     handleIncreaseWeek,
     isCurrentWeek,

@@ -20,17 +20,6 @@ const WeeklyDetail = () => {
   const { year, week, weekNumber, currentMonth, isCurrentWeek } =
     location.state || {};
 
-  // 날짜 관리 훅 가져오기
-  const {
-    // year,
-    // weekNumber,
-    // week,
-    // currentMonth,
-    // isCurrentWeek,
-    handleDecreaseWeek,
-    handleIncreaseWeek,
-  } = useWeeklyDate();
-
   // 추천받은 레시피 정보 가져오기(is_used 무관)
   const getRecommendedRecipes = async () => {
     try {
@@ -59,10 +48,6 @@ const WeeklyDetail = () => {
   useEffect(() => {
     getUsedRecipes();
     getRecommendedRecipes();
-    console.log('year: ', year);
-    console.log('week: ', week);
-    console.log('weekNumber: ', weekNumber);
-    console.log('currentMonth: ', currentMonth);
   }, [year, week]);
 
   return (
@@ -77,18 +62,9 @@ const WeeklyDetail = () => {
     >
       <DateContainer>
         <SplitData>
-          <ArrowButton onClick={handleDecreaseWeek}>
-            <KeyboardArrowLeftIcon fontSize="large" />
-          </ArrowButton>
           <h2 style={{ fontFamily: 'yg-jalnan' }}>
             {currentMonth} {weekNumber}주차
           </h2>
-          <ArrowButton
-            onClick={handleIncreaseWeek}
-            isCurrentWeek={isCurrentWeek}
-          >
-            <KeyboardArrowRightIcon fontSize="large" />
-          </ArrowButton>
         </SplitData>
       </DateContainer>
       <RecipeListBox>
