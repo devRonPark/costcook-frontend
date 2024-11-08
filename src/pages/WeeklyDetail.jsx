@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
+import { toast } from 'react-toastify';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
@@ -46,6 +47,14 @@ const WeeklyDetail = () => {
     getUsedRecipes();
     getRecommendedRecipes();
   }, [year, week]);
+
+  // 레시피 미사용시, 홈으로 보내는 버튼 클릭 시 toast 출력
+  const handleLinkCilck = () => {
+    navigate('/home');
+    toast.info('추천받은 레시피를 선택하여\n 요리해보세요!', {
+      className: 'custom-toast',
+    });
+  };
 
   return (
     <Layout
@@ -96,7 +105,7 @@ const WeeklyDetail = () => {
             <EmptyBox></EmptyBox>
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
-                <LinkButton onClick={() => navigate('/home')}>
+                <LinkButton onClick={handleLinkCilck}>
                   <UseRecipeLinkText>
                     아직 요리한 레시피가 없네요! 요리하러 갈까요?
                   </UseRecipeLinkText>
@@ -157,23 +166,16 @@ const LinkButtonWrapper = styled.div`
 `;
 
 const LinkButton = styled.button`
-  width: 100%;
-  height: 30px;
-  display: block;
-  background-color: #e0e0e0;
+  width: 90%;
   text-align: center;
   border: 0px solid white;
-  border-radius: 10px;
-  font-size: 20px;
-  padding: 3px;
+  border-radius: 20px;
+  font-size: 32px;
+  padding: 10px;
   font-family: 'GangwonEduPowerExtraBoldA';
-  color: orange;
   overflow: hidden;
-  transition: background-color 0.3s;
-  &:hover {
-    background-color: #ffd700; // hover 시 진한 노란색
-    color: white;
-  }
+  background-color: #fef2b0;
+  color: white;
 `;
 
 const UseRecipeLinkText = styled.p`
