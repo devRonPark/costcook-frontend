@@ -162,9 +162,12 @@ export const UpcommingReceiptHeader = styled.div`
 export const ListContainer = styled.div`
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
-  overflow: hidden;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-height: 80vh;
+  overflow-y: auto;
 `;
 
 export const RightText = styled(Button)`
