@@ -8,18 +8,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import LoginModal from '../common/LoginModal';
 
-const Footer = () => {
+const Footer = ({ state }) => {
   const navigate = useNavigate(); // 페이지 전환을 위한 navigate 함수
   const location = useLocation(); // 현재 경로 정보를 가져옴
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+  const { isAuthenticated } = state;
 
   // 경로를 변경하는 핸들러 함수
   const handleNavigate = (path) => {
-    if (path === '/my') {
-      // 로그인 여부 체크 (예시)
-      const isLoggedIn = false; // 실제 로그인 상태에 맞게 수정
-
-      if (!isLoggedIn) {
+    if (path === '/my' || path === '/budget-history') {
+      if (!isAuthenticated) {
         setIsModalOpen(true); // 모달 열기
       } else {
         navigate(path); // 로그인 되어 있으면 이동
@@ -51,8 +49,11 @@ const Footer = () => {
           <Text>전체레시피</Text>
         </IconWrapper>
         <IconWrapper
-          isActive={location.pathname === '/budget'}
-          onClick={() => handleNavigate('/budget')}
+          isActive={
+            location.pathname === '/budget-history' ||
+            location.pathname.startsWith('/weekly-details')
+          }
+          onClick={() => handleNavigate('/budget-history')}
         >
           <CalculateIconStyled />
           <Text>예산관리</Text>
@@ -67,8 +68,8 @@ const Footer = () => {
         </IconWrapper>
 
         <IconWrapper
-          isActive={location.pathname === '/favorite'}
-          onClick={() => handleNavigate('/favorite')}
+          isActive={location.pathname === '/recipes/favorites'}
+          onClick={() => handleNavigate('/recipes/favorites')}
         >
           <FavoriteIconStyled />
           <Text>즐겨찾기</Text>
@@ -100,6 +101,8 @@ const FooterContainer = styled.footer`
   justify-content: space-between; /* 각 아이콘 사이의 간격을 균등하게 */
   align-items: center;
   background-color: #f8f9fa;
+  position: sticky;
+  bottom: 0;
 `;
 
 const IconWrapper = styled.div`

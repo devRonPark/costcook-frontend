@@ -8,7 +8,7 @@ const InfoContainer = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 600px;
-  z-index: 1000;
+  z-index: 500;
 
   box-sizing: border-box;
   padding: 20px;

@@ -7,54 +7,16 @@ import ProgressBar from '../components/common/ProgressBar';
 import BudgetAmountSetting from '../components/common/BudgetAmountSetting';
 import WeeklyCalendar from './WeeklyCalendar';
 import { budgetAPI } from '../services/budget.api';
-
-// 연 단위 주차 계산( 예: 45차 )
-const getCurrentYearAndWeek = (date) => {
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const diffInMilliseconds = date - startOfYear;
-  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
-  const currentWeek = Math.ceil((diffInDays + startOfYear.getDay() + 1) / 7);
-  return { year: date.getFullYear(), week: currentWeek };
-};
-
-// 캘린더 날짜 계산
-const getWeekAndFirstSundayDate = (date) => {
-  // 오늘 날짜 : date
-  const currentYear = date.getFullYear(); // 년
-  const currentMonth = date.getMonth(); // 월
-  const currentDay = date.getDate(); // 일
-  const dayOfWeek = date.getDay(); // 요일 0: 일요일, 1: 월요일, ..., 6: 토요일
-
-  // 해당 날짜의 주의 일요일을 찾는다
-  const sundayDate = new Date(date);
-  sundayDate.setDate(currentDay - dayOfWeek); // 주의 첫 날인 일요일로 이동
-
-  // 일요일 기준으로 주차 계산
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const firstSunday = new Date(firstDayOfMonth);
-  firstSunday.setDate(
-    firstDayOfMonth.getDate() + ((7 - firstDayOfMonth.getDay()) % 7)
-  );
-
-  // 일요일을 기준으로 몇 번째 주인지 계산
-  const weekOffset = Math.floor(
-    (sundayDate.getDate() + sundayDate.getDay()) / 7
-  );
-
-  return { week: weekOffset + 1, firstSundayDate: sundayDate };
-};
+import { useNavigate } from 'react-router-dom';
+import { useWeeklyDate } from '../hooks/useWeeklyDate';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 // 예산 집계
 const BudgetPage = () => {
+  const navigate = useNavigate();
   const [budgetAmount, setBudgetAmount] = useState(0); // 설정한 예산
   const [useAmount, setUseAmount] = useState(0); // 사용한 예산
   const [remainingBudget, setRemainingBudget] = useState(0); // 남은 예산
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [weekNumber, setWeekNumber] = useState(0);
-  const [firstSundayDateString, setFirstSundayDateString] = useState('');
-  const [currentMonth, setCurrentMonth] = useState('');
-  const [year, setYear] = useState(getCurrentYearAndWeek(new Date()).year);
-  const [week, setWeek] = useState(getCurrentYearAndWeek(new Date()).week);
   const [recipes, setRecipes] = useState([]);
   const [highestPrice, setHighestPrice] = useState(0); // 가장 비싼 레시피 가격
   const [lowestPrice, setLowestPrice] = useState(0); // 가장 저렴한 레시피 가격
@@ -63,6 +25,19 @@ const BudgetPage = () => {
   const [lowestPriceTitle, setLowestPriceTitle] = useState(''); // 가장 싼 레시피 제목
   const [highestRecipeId, setHighestRecipeId] = useState(null); // 가장 비싼 레시피 ID
   const [lowestRecipeId, setLowestRecipeId] = useState(null); // 가장 저렴한 레시피 ID
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 날짜 관리 훅 가져오기
+  const {
+    year,
+    week,
+    currentDate,
+    currentMonth,
+    weekNumber,
+    isCurrentWeek,
+    handleDecreaseWeek,
+    handleIncreaseWeek,
+  } = useWeeklyDate();
 
   // 사용 예산 및 레시피 정보 가져오기
   const getUsedWeeklyBudget = async () => {
@@ -76,7 +51,7 @@ const BudgetPage = () => {
       setUseAmount(usedBudget);
       setRemainingBudget(remainingBudget);
       setRecipes(recipes);
-      resetPriceData();
+      resetData();
       calculatePrices(recipes); // 함수에 recipes를 보냄
     } catch (error) {
       console.error('사용 예산 데이터 출력 중 오류 발생', error);
@@ -109,49 +84,28 @@ const BudgetPage = () => {
     getUsedWeeklyBudget();
   }, [year, week]);
 
-  useEffect(() => {
-    const { week, firstSundayDate } = getWeekAndFirstSundayDate(currentDate);
-    setWeekNumber(week);
-    setFirstSundayDateString(firstSundayDate.toLocaleDateString());
-
-    // 현재 월 설정
-    const monthNames = [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ];
-    setCurrentMonth(monthNames[firstSundayDate.getMonth()]); // 일요일 기준으로 현재 월을 설정
-  }, [currentDate]);
-
-  // 주차 변경 버튼 함수
-  const handleWeekChange = (delta) => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + delta * 7); // 1주일 더하기 또는 빼기
-    const { year: newYear, week: newWeek } = getCurrentYearAndWeek(newDate);
-    setCurrentDate(newDate);
-    setYear(newYear);
-    setWeek(newWeek);
-  };
-  // 주차 변경 버튼 클릭 핸들러
-  const handleDecreaseWeek = () => handleWeekChange(-1);
-  const handleIncreaseWeek = () => handleWeekChange(1);
-
   // 주차 변경 시 데이터 리셋
-  const resetPriceData = () => {
+  const resetData = () => {
     setHighestPrice(0);
     setLowestPrice(0);
     setAveragePrice(0);
     setHighestPriceTitle('');
     setLowestPriceTitle('');
+  };
+
+  // 달력 클릭 시 컨펌 모달 > 주차 상세 페이지
+  const handleCalendarClick = () => {
+    setIsModalOpen(true);
+  };
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+  // 모달 확인 버튼 클릭 시 처리
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+    navigate('/weekly-details', {
+      state: { year, weekNumber, week, currentMonth, isCurrentWeek },
+    });
   };
 
   return (
@@ -164,7 +118,10 @@ const BudgetPage = () => {
           <h2 style={{ fontFamily: 'yg-jalnan' }}>
             {currentMonth} {weekNumber}주차
           </h2>
-          <ArrowButton onClick={handleIncreaseWeek}>
+          <ArrowButton
+            onClick={handleIncreaseWeek}
+            isCurrentWeek={isCurrentWeek}
+          >
             <KeyboardArrowRightIcon fontSize="large" />
           </ArrowButton>
         </SplitData>
@@ -184,7 +141,11 @@ const BudgetPage = () => {
           </BudgetNumberContainer>
         </BudgetSettingContainer>
         <ProgressContainer>
-          <ProgressBar useAmount={useAmount} budgetAmount={budgetAmount} />
+          <ProgressBar
+            useAmount={useAmount}
+            budgetAmount={budgetAmount}
+            isCurrentWeek={isCurrentWeek}
+          />
         </ProgressContainer>
 
         <BudgetSettingContainer>
@@ -213,9 +174,17 @@ const BudgetPage = () => {
           </BudgetNumberContainer>
         </BudgetSettingContainer>
       </BudgetContainer>
-      <CalendarContainer>
-        <WeeklyCalendar currentDate={currentDate}>달력</WeeklyCalendar>
+      <CalendarContainer onClick={handleCalendarClick}>
+        <WeeklyCalendar currentDate={currentDate} />
       </CalendarContainer>
+
+      {/* 달력 클릭 모달 */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        message={'주간 상세 페이지로 이동합니다.'}
+      />
     </Layout>
   );
 };
@@ -298,6 +267,8 @@ const CalendarContainer = styled.div`
 
 const ArrowButton = styled.div`
   cursor: pointer;
+  color: ${({ isCurrentWeek }) =>
+    isCurrentWeek ? '#b0b0b0' : 'initial'}; // 회색으로 변경
 `;
 
 const ProgressContainer = styled.div`

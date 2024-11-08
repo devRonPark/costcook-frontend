@@ -7,12 +7,12 @@ import './carousel.css';
 import CarouselCard from './CarouselCard';
 import { recipeAPI } from '../../../services/recipe.api';
 
+// 추천 캐러셀 (블러 O)
 const Carousel = ({ budget, selectedRecipes, onSelect, remainingBudget }) => {
   const [recipes, setRecipes] = useState([]);
 
   const minBudget = budget * 0.2;
   const maxBudget = budget * 0.4;
-  // const [selectedRecipes, setSelectedRecipes] = useState([]);
 
   useEffect(() => {
     const fetchRecipesByBudget = async () => {
@@ -44,7 +44,7 @@ const Carousel = ({ budget, selectedRecipes, onSelect, remainingBudget }) => {
         (
           data // 가져온 레시피 데이터로 슬라이드 구성
         ) => (
-          <SwiperSlide key={data.id}>
+          <SwiperSlide key={data.id} className="blurEffect">
             {({ isActive, isPrev, isNext }) => (
               <CarouselCard
                 isActive={isActive}

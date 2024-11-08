@@ -98,7 +98,7 @@ const RecentKeywords = ({
 
     onKeywordClick(keyword);
     // 선택 삭제 모드가 아닌 상태
-    navigate(`/search?keyword=${keyword}`);
+    navigate(`/recipes/search?keyword=${keyword}`);
   };
 
   // useMemo로 menuItems 메모이제이션

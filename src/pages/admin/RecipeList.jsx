@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Visibility, FavoriteBorder, Comment, Edit, Delete } from '@mui/icons-material';
+import {
+  Visibility,
+  FavoriteBorder,
+  Comment,
+  Edit,
+  Delete,
+} from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -11,12 +17,10 @@ import apiClient from '../../services/api';
 const BASE_SERVER_URL = import.meta.env.VITE_BASE_SERVER_URL;
 
 const AdminRecipeList = () => {
- 
   const navigate = useNavigate();
 
-  // API 호출을 위한 useEffect
   const [recipeList, setRecipeList] = useState([]);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -37,18 +41,21 @@ const AdminRecipeList = () => {
     }
   }, [currentPage, itemsPerPage]);
 
-  const deleteRecipe = useCallback(async (recipeId) => {
-    try {
-      // 서버에 삭제 요청 보내기
-      await apiClient.delete(`/admin/recipes/${recipeId}`);
+  const deleteRecipe = useCallback(
+    async (recipeId) => {
+      try {
+        // 서버에 삭제 요청 보내기
+        await apiClient.delete(`/admin/recipes/${recipeId}`);
 
-      // 삭제 후 목록 갱신을 위해 레시피 목록 다시 가져오기
-      fetchRecipes();
-    } catch (error) {
-      console.error(`레시피 ID ${recipeId} 삭제 중 오류 발생:`, error);
-      alert('레시피를 삭제하는 중 오류가 발생했습니다.');
-    }
-  }, [fetchRecipes]);
+        // 삭제 후 목록 갱신을 위해 레시피 목록 다시 가져오기
+        fetchRecipes();
+      } catch (error) {
+        console.error(`레시피 ID ${recipeId} 삭제 중 오류 발생:`, error);
+        alert('레시피를 삭제하는 중 오류가 발생했습니다.');
+      }
+    },
+    [fetchRecipes]
+  );
 
   useEffect(() => {
     fetchRecipes();
@@ -63,12 +70,14 @@ const AdminRecipeList = () => {
   };
 
   const handleEditRecipe = (recipeId) => {
-    const editingRecipe = recipeList.find(recipe => recipe.id === recipeId);
+    const editingRecipe = recipeList.find((recipe) => recipe.id === recipeId);
     navigate(`/admin/recipe-form`, { state: { recipe: editingRecipe } });
   };
 
   const handleDeleteRecipe = (recipeId) => {
-    const isConfirmed = window.confirm(`레시피 ID: ${recipeId}를 삭제하시겠습니까?`);
+    const isConfirmed = window.confirm(
+      `레시피 ID: ${recipeId}를 삭제하시겠습니까?`
+    );
     if (isConfirmed) {
       deleteRecipe(recipeId);
     }
@@ -80,7 +89,6 @@ const AdminRecipeList = () => {
       rightLabel="추가"
       isRegisterEnabled={true} // 등록 버튼 활성화 조건을 항상 true로 설정
       onSubmit={handleAddRecipe} // 추가 버튼을 눌렀을 때 handleAddRecipe 호출
-      onBack={() => navigate("/admin")}
     >
       <ContentContainer>
         <ContentContainer>
@@ -88,24 +96,28 @@ const AdminRecipeList = () => {
             {recipeList && recipeList.length > 0 ? (
               recipeList.map((recipe) => (
                 <RecipeCard key={recipe.id}>
-                  <Thumbnail 
-                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"} 
-                    alt="썸네일 이미지" 
+                  <Thumbnail
+                    src={recipe.thumbnailUrl ? BASE_SERVER_URL + recipe.thumbnailUrl : "https://via.placeholder.com/50"}
+                    alt="썸네일 이미지"
                   />
                   <RecipeInfo>
                     <RecipeName>{recipe.title}</RecipeName>
                     <RecipeMetrics>
                       <Metric>
-                        <Visibility style={{ fontSize: '16px', color: '#999' }} />
+                        <Visibility
+                          style={{ fontSize: '16px', color: '#999' }}
+                        />
                         <MetricText>{recipe.viewCount}</MetricText>
                       </Metric>
                       <Metric>
-                        <FavoriteBorder style={{ fontSize: '16px', color: '#999' }} />
-                        <MetricText>{recipe.bookmarkCount}</MetricText>
+                        <FavoriteBorder
+                          style={{ fontSize: '16px', color: '#999' }}
+                        />
+                        <MetricText>{recipe.favoriteCount}</MetricText>
                       </Metric>
                       <Metric>
                         <Comment style={{ fontSize: '16px', color: '#999' }} />
-                        <MetricText>{recipe.commentCount}</MetricText>
+                        <MetricText>{recipe.reviewCount}</MetricText>
                       </Metric>
                     </RecipeMetrics>
                   </RecipeInfo>
@@ -117,7 +129,9 @@ const AdminRecipeList = () => {
                     </Tooltip>
                     <Tooltip title="삭제">
                       <IconButton onClick={() => handleDeleteRecipe(recipe.id)}>
-                        <Delete style={{ fontSize: '22px', color: '#f44336' }} />
+                        <Delete
+                          style={{ fontSize: '22px', color: '#f44336' }}
+                        />
                       </IconButton>
                     </Tooltip>
                   </ActionButtons>
@@ -129,13 +143,17 @@ const AdminRecipeList = () => {
           </RecipeListWrapper>
 
           <PaginationWrapper>
-          <Pagination
-            count={totalPages} 
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            shape="rounded"
-          />
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+              siblingCount={2}
+              boundaryCount={0}
+              showFirstButton
+              showLastButton
+            />
           </PaginationWrapper>
         </ContentContainer>
       </ContentContainer>
@@ -145,6 +163,7 @@ const AdminRecipeList = () => {
 
 export default AdminRecipeList;
 
+// 스타일 컴포넌트
 const RecipeListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -227,5 +246,3 @@ const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
-
-

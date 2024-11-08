@@ -1,15 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export const FilterDropdownButton = ({ handleSortChange }) => {
+export const FilterDropdownButton = ({ value, options, handleSortChange }) => {
   return (
     <DropdownContainer>
-      <StyledSelect onChange={handleSortChange}>
-        <option value="createdAt">등록일 순</option>
-        <option value="avgRatingsDesc">평점 높은 순</option>
-        <option value="avgRatingsAsc">평점 낮은 순</option>
-        <option value="viewCountDesc">조회수 높은 순</option>
-        <option value="viewCountAsc">조회수 낮은 순</option>
+      <StyledSelect onChange={handleSortChange} value={value}>
+        {options.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.name}
+          </option>
+        ))}
       </StyledSelect>
     </DropdownContainer>
   );

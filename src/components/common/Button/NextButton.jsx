@@ -11,6 +11,7 @@ const Button = styled.button`
   padding: 10px; // 패딩 추가
   font-size: 16px; // 글자 크기 설정
   transition: background-color 0.3s; // 배경색 전환 효과
+  font-family: 'GmarketSansMedium';
 
   &:hover {
     background-color: ${(props) =>

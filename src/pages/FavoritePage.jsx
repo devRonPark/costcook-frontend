@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import ImageDisplay from '../components/display/ImageDisplay';
 import { favoriteAPI } from '../services/favorite.api';
 import { useInView } from 'react-intersection-observer';
+import CardListContainer from '../components/CardListContainer';
 
 // 즐겨찾기 페이지
 const FavoritePage = () => {
@@ -171,7 +172,7 @@ const FavoritePage = () => {
           loadingText={'즐겨찾기에 추가된 레시피 불러오는 중...'}
         />
       )}
-      <DataContainer>
+      <CardListContainer layoutType="favorite">
         {favorites.length === 0 ? (
           <NoFavoritesContainer>
             <ImageDisplay
@@ -185,7 +186,7 @@ const FavoritePage = () => {
               margin="30px auto"
             />
             <NoFavoritesText>저장된 레시피가 없습니다.</NoFavoritesText>
-            <BrowseButton onClick={() => navigate('/recipe')}>
+            <BrowseButton onClick={() => navigate('/recipes')}>
               레시피 구경가기
             </BrowseButton>
           </NoFavoritesContainer>
@@ -200,6 +201,7 @@ const FavoritePage = () => {
                 />
               )}
               <RecipeCard
+                layoutType="favorite"
                 recipe={favorite.recipe}
                 onToggleFavorite={null}
                 showFavoriteIcon={false}
@@ -210,11 +212,11 @@ const FavoritePage = () => {
             </DataBoxContainer>
           ))
         )}
-      </DataContainer>
+      </CardListContainer>
       {isDeleteStatus && (
         <RoundedButton
           text="삭제하기"
-          width="500px"
+          width="calc(100% - 10px)"
           hoverBackgroundColor="none"
           backgroundColor={selectedRecipeIds.length > 0 ? 'red' : '#ccc'}
           disabled={selectedRecipeIds.length === 0}
@@ -222,7 +224,7 @@ const FavoritePage = () => {
           style={{
             cursor: selectedRecipeIds.length > 0 ? 'pointer' : 'not-allowed',
             opacity: selectedRecipeIds.length > 0 ? 1 : 0.5,
-            position: selectedRecipeIds.length > 0 ? 'absolute' : 'static',
+            position: selectedRecipeIds.length > 0 ? 'sticky' : 'static',
             bottom: selectedRecipeIds.length > 0 ? '10px' : 0,
           }}
         />
@@ -232,16 +234,6 @@ const FavoritePage = () => {
 };
 
 export default FavoritePage;
-
-// 한개라도 Data가 있으면 Height를 690으로 고정시키기
-const DataContainer = styled.div`
-  margin: 20px 0px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: space-between;
-`;
 
 const DataBoxContainer = styled.div`
   width: 100%;

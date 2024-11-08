@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
+  Typography,
 } from '@mui/material';
 import { Star, StarOutline } from '@mui/icons-material';
 
@@ -16,11 +17,35 @@ const ReviewEditModal = ({
   onSubmit,
   isEditMode,
 }) => {
+  const [error, setError] = useState({ score: false, comment: false });
+
   // 평점 설정 및 초기화
   const handleStarClick = (index) => {
     const newScore = review.score === index + 1 ? 0 : index + 1;
     onChange('score', newScore);
   };
+
+  // 유효성 검사 함수
+  const validate = () => {
+    const newError = {
+      score: review.score === 0,
+      comment: review.comment.trim().length < 3,
+    };
+    setError(newError);
+    return !newError.score && !newError.comment;
+  };
+
+  // 제출 버튼 클릭 시 유효성 검사를 수행
+  const handleSubmit = () => {
+    if (validate()) {
+      onSubmit();
+    }
+  };
+
+  // review 값이 변경될 때마다 유효성 검사를 자동으로 수행
+  useEffect(() => {
+    validate();
+  }, [review]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
@@ -55,6 +80,11 @@ const ReviewEditModal = ({
               );
             })}
         </div>
+        {error.score && (
+          <Typography color="error" variant="body2" align="center">
+            평점을 선택해주세요.
+          </Typography>
+        )}
         <textarea
           type="text"
           value={review.comment}
@@ -68,12 +98,22 @@ const ReviewEditModal = ({
           }}
           placeholder="리뷰를 작성해주세요."
         />
+        {error.comment && (
+          <Typography color="error" variant="body2">
+            리뷰는 3글자 이상 작성해주세요.
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary" variant="contained">
           취소
         </Button>
-        <Button onClick={onSubmit} color="primary" variant="contained">
+        <Button
+          onClick={handleSubmit}
+          color="primary"
+          variant="contained"
+          disabled={!review.score || review.comment.trim().length < 3}
+        >
           {isEditMode ? '수정' : '등록'}
         </Button>
       </DialogActions>

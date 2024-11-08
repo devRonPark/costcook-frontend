@@ -6,7 +6,7 @@ export const recipeAPI = {
   getRecipeById: (recipeId) => apiClient.get(`/recipes/${recipeId}`),
   // getReviewsByRecipeIdWithPagination
   getRecipeReviews: (recipeId, page) =>
-    apiClient.get(`/recipes/${recipeId}/reviews?page=${page}`),
+    apiClient.get(`/recipes/${recipeId}/reviews?page=${page}&size=6`),
   searchRecipeList: ({ keyword, page }) =>
     apiClient.get(`/recipes/search?keyword=${keyword}&page=${page}`),
   getRecipesByBudget: (minBudget, maxBudget) =>

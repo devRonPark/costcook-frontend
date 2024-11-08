@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import Layout from '../components/layout/Layout';
 import SearchButton from '../components/common/Button/SearchButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   clearAllSearchKeywords,
   deleteSearchKeyword,
@@ -18,12 +18,8 @@ import RecentKeywords from '../components/RecentKeywords';
 import LoadingComponent from '../components/common/LoadingComponent';
 import { useInView } from 'react-intersection-observer'; // Intersection Observer 훅 추가
 import { useAuth } from '../context/Auth/AuthContext';
-import {
-  addFavoriteRecipeId,
-  getFavoriteRecipeIds,
-  removeFavoriteRecipeId,
-} from '../utils/sessionStorageUtil';
-import { favoriteAPI } from '../services/favorite.api';
+import { getFavoriteRecipeIds } from '../utils/sessionStorageUtil';
+import { handleToggleFavorite } from '../utils/favoriteHandler';
 
 const SearchPage = () => {
   const navigate = useNavigate();
@@ -37,6 +33,7 @@ const SearchPage = () => {
   const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
   const [loading, setLoading] = useState(false); // 로딩 상태
   const { ref: lastRecipeElementRef, inView } = useInView(); // 마지막 레시피 카드 참조 및 뷰 상태
+  const [isKeywordEmpty, setIsKeywordEmpty] = useState(false);
 
   // 컴포넌트 마운트 시 최근 검색어 가져오기
   useEffect(() => {
@@ -59,12 +56,19 @@ const SearchPage = () => {
 
   const handleInputChange = (event) => {
     setKeyword(event.target.value); // 검색어 변경
+    setIsKeywordEmpty(false); // 검색을 했으므로, 검색어 미입력 함수를 false로 변경
   };
 
   const handleSearch = async (keyword, newPage = 1) => {
+    // 검색어가 비어있는 경우 검색을 실행하지 않음, 검색하라는 문구 표시
+    if (!keyword.trim()) {
+      setIsKeywordEmpty(true);
+      return;
+    }
+
     // 검색어가 비어있지 않을 경우 검색
     if (keyword) {
-      navigate(`/search?keyword=${keyword}`);
+      navigate(`/recipes/search?keyword=${keyword}`);
       const updatedKeywords = [...new Set([keyword, ...recentKeywords])]; // 중복 제거
       setRecentKeywords(updatedKeywords);
 
@@ -171,39 +175,6 @@ const SearchPage = () => {
     }
   }, [inView, loading, page, totalPages]); // inView와 loading 상태에 따라 의존성 변경
 
-  // @param recipe : 업데이트 대상 recipe 데이터
-  // @param favoriteToUpdate : true > 즐겨찾기 추가 요청, false > 즐겨찾기 삭제 요청
-  const handleToggleFavorite = async (recipe, favoriteToUpdate) => {
-    try {
-      if (state.isAuthenticated) {
-        if (favoriteToUpdate) {
-          // 회원 > 즐겨찾기 추가 요청
-          await favoriteAPI.addFavorite([recipe.id]);
-          addFavoriteRecipeId(recipe.id); // 세션 스토리지에 추가
-          toast.info('즐겨찾기에 성공적으로 추가되었습니다.');
-        } else {
-          // 회원 > 즐겨찾기 삭제 요청
-          await favoriteAPI.removeFavorite(recipe.id);
-          removeFavoriteRecipeId(recipe.id); // 세션 스토리지에서 제거
-          toast.info('즐겨찾기에서 성공적으로 제거되었습니다.');
-        }
-      } else {
-        if (favoriteToUpdate) {
-          addFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에 추가
-          toast.info('즐겨찾기에 추가되었습니다.');
-        } else {
-          removeFavoriteRecipeId(recipe.id); // 비회원 > 세션 스토리지에서 제거
-          toast.info('즐겨찾기에서 제거되었습니다.');
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        '즐겨찾기 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요.'
-      );
-    }
-  };
-
   const NoResultsMessage = () => (
     <div style={{ textAlign: 'center' }}>
       <img
@@ -229,6 +200,7 @@ const SearchPage = () => {
                 getFavoriteRecipeIds().includes(recipe.id);
               return (
                 <RecipeCard
+                  layoutType="search"
                   key={recipe.id}
                   recipe={{ favorite: isFavorite, ...recipe }} // isFavorite 여부를 recipe.favorite에 반영
                   ref={
@@ -237,6 +209,7 @@ const SearchPage = () => {
                       : null
                   } // 마지막 카드에 ref 설정
                   onToggleFavorite={handleToggleFavorite}
+                  isAuthenticated={state?.isAuthenticated ?? false}
                   showFavoriteIcon={true}
                 />
               );
@@ -264,13 +237,19 @@ const SearchPage = () => {
   };
 
   const handleBackBtnClick = () => {
-    navigate('/search');
+    navigate('/recipes/search');
     setSearchedRecipes(null);
     setKeyword(''); // 검색어 리셋
   };
 
   return (
-    <Layout isBackBtnExist onBackClick={handleBackBtnClick}>
+    <Layout
+      pageName={
+        searchParams.get('keyword') ? '레시피 검색 결과' : '레시피 검색'
+      }
+      isBackBtnExist
+      onBackClick={handleBackBtnClick}
+    >
       <SearchInputContainer>
         <SearchButtonWrap onClick={handleSearch}>
           <SearchButton
@@ -284,12 +263,17 @@ const SearchPage = () => {
         </SearchButtonWrap>
         <SearchInput
           type="text"
-          placeholder="궁금한 레시피를 검색해 보세요!"
+          placeholder={
+            isKeywordEmpty
+              ? '검색어를 입력해주세요.'
+              : '궁금한 레시피를 검색해 보세요!'
+          }
           value={keyword}
           onChange={handleInputChange}
           onFocus={() => setIsSearchInputFocused(true)} // 입력 필드 포커스
           onBlur={() => setIsSearchInputFocused(false)} // 입력 필드 블러
           onKeyDown={handleKeyDown} // Enter 키 입력 처리
+          isKeywordEmpty={isKeywordEmpty} // 오류 상태 스타일을 위한 prop 전달
         />
         <ResetButton onClick={handleReset} show={keyword.length > 0}>
           <ClearIcon fontSize="small" />
@@ -308,8 +292,8 @@ export default SearchPage;
 
 const SearchInputContainer = styled.div`
   width: 100%;
-  padding-bottom: 10px;
-  border-bottom: 2px solid orange; /* 주황색 테두리 */
+  padding-bottom: 5px;
+  border-bottom: 2px solid orange;
   position: relative;
   display: flex;
   align-items: center;
@@ -317,12 +301,12 @@ const SearchInputContainer = styled.div`
 
 const SearchInput = styled.input`
   flex: 1;
-  font-size: 18px;
-  padding: 10px 10px; /* 검색 버튼 공간을 감안해 왼쪽 패딩만 설정 */
+  font-size: 16px;
+  padding: 10px;
   border: none;
   outline: none;
-  border-radius: 5px; /* 모서리 둥글게 */
-  background-color: white; /* 배경색 흰색 */
+  border-radius: 5px;
+  background-color: white;
 
   @media (min-width: 600px) {
     font-size: 20px;
