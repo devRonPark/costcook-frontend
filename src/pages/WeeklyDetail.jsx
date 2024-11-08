@@ -3,12 +3,9 @@ import Layout from '../components/layout/Layout';
 import { budgetAPI } from '../services/budget.api';
 import { useAuth } from '../context/Auth/AuthContext';
 import styled from 'styled-components';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
-import { useWeeklyDate } from '../hooks/useWeeklyDate';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
@@ -63,46 +60,46 @@ const WeeklyDetail = () => {
       <DateContainer>
         <SplitData>
           <h2 style={{ fontFamily: 'yg-jalnan' }}>
-            {currentMonth} {weekNumber}주차
+            {year}년 {currentMonth} {weekNumber}주차
           </h2>
         </SplitData>
       </DateContainer>
       <RecipeListBox>
+        <RecipeListText>추천받은 레시피</RecipeListText>
         {recommendedRecipes.length > 0 ? (
           <>
-            <RecipeListText>추천받은 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={recommendedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <RecipeListText>추천받은 레시피가 없습니다.</RecipeListText>
+            <EmptyBox></EmptyBox>
+            <NoRecipeListText>추천받은 레시피가 없습니다.</NoRecipeListText>
+            <EmptyBox></EmptyBox>
           </>
         )}
       </RecipeListBox>
-      <br />
-      <br />
-      <br />
+
       <RecipeListBox>
+        <RecipeListText>요리한 레시피</RecipeListText>
         {usedRecipes.length > 0 ? (
           <>
-            <RecipeListText>요리한 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={usedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
-            <br />
-            <br />
+            <EmptyBox></EmptyBox>
+            <NoRecipeListText>요리한 레시피가 없습니다.</NoRecipeListText>
+            <EmptyBox></EmptyBox>
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
                 <LinkButton onClick={() => navigate('/home')}>
-                  <p style={{ margin: '5px' }}>
+                  <UseRecipeLinkText>
                     아직 요리한 레시피가 없네요! 요리하러 갈까요?
-                  </p>
+                  </UseRecipeLinkText>
                 </LinkButton>
               </LinkButtonWrapper>
             )}
@@ -132,12 +129,6 @@ const SplitData = styled.div`
   justify-content: center;
 `;
 
-const ArrowButton = styled.div`
-  cursor: pointer;
-  color: ${({ isCurrentWeek }) =>
-    isCurrentWeek ? '#b0b0b0' : 'initial'}; // 회색으로 변경
-`;
-
 const RecipeListBox = styled.div`
   width: 95%;
   margin-bottom: 10px;
@@ -147,6 +138,16 @@ const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
   margin-bottom: 10px;
+`;
+
+const NoRecipeListText = styled.div`
+  font-size: 30px;
+  text-align: center;
+  color: #888888;
+  font-family: 'GangwonEduPowerExtraBoldA';
+`;
+const EmptyBox = styled.div`
+  height: 93px;
 `;
 
 const LinkButtonWrapper = styled.div`
@@ -173,4 +174,12 @@ const LinkButton = styled.button`
     background-color: #ffd700; // hover 시 진한 노란색
     color: white;
   }
+`;
+
+const UseRecipeLinkText = styled.p`
+  margin: 5px;
+  padding-top: 10px;
+  line-height: 1.5;
+  text-shadow: 1px 1px 0px #888888, /* 위쪽 */ -1px -1px 0px #888888,
+    /* 왼쪽 아래 */ 1px -1px 0px #888888, /* 오른쪽 아래 */ -1px 1px 0px #888888; /* 왼쪽 위 */
 `;
