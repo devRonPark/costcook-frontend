@@ -5,11 +5,10 @@ import { useAuth } from '../context/Auth/AuthContext';
 import styled from 'styled-components';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
 import { useWeeklyDate } from '../hooks/useWeeklyDate';
-import { toast } from 'react-toastify';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
@@ -17,14 +16,17 @@ const WeeklyDetail = () => {
   const { state } = useAuth();
   const [usedRecipes, setUsedRecipes] = useState([]); // 사용 레시피
   const [recommendedRecipes, setRecommendedRecipes] = useState([]); // 추천받은 레시피
+  const location = useLocation();
+  const { year, week, weekNumber, currentMonth, isCurrentWeek } =
+    location.state || {};
 
   // 날짜 관리 훅 가져오기
   const {
-    year,
-    week,
-    currentMonth,
-    weekNumber,
-    isCurrentWeek,
+    // year,
+    // weekNumber,
+    // week,
+    // currentMonth,
+    // isCurrentWeek,
     handleDecreaseWeek,
     handleIncreaseWeek,
   } = useWeeklyDate();
@@ -57,15 +59,11 @@ const WeeklyDetail = () => {
   useEffect(() => {
     getUsedRecipes();
     getRecommendedRecipes();
+    console.log('year: ', year);
+    console.log('week: ', week);
+    console.log('weekNumber: ', weekNumber);
+    console.log('currentMonth: ', currentMonth);
   }, [year, week]);
-
-  // 레시피 미사용시, 홈으로 보내는 버튼 클릭 시 toast 출력
-  const handleLinkCilck = () => {
-    navigate('/home');
-    toast.info('추천받은 레시피를 선택하여\n 요리해보세요!', {
-      className: 'custom-toast',
-    });
-  };
 
   return (
     <Layout
@@ -94,41 +92,41 @@ const WeeklyDetail = () => {
         </SplitData>
       </DateContainer>
       <RecipeListBox>
-        <RecipeListText>추천받은 레시피</RecipeListText>
         {recommendedRecipes.length > 0 ? (
           <>
+            <RecipeListText>추천받은 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={recommendedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <EmptyBox></EmptyBox>
-            <NoRecipeListText>추천받은 레시피가 없습니다.</NoRecipeListText>
-            <EmptyBox></EmptyBox>
+            <RecipeListText>추천받은 레시피가 없습니다.</RecipeListText>
           </>
         )}
       </RecipeListBox>
+      <br />
+      <br />
+      <br />
       <RecipeListBox>
-        <RecipeListText>요리한 레시피</RecipeListText>
         {usedRecipes.length > 0 ? (
           <>
+            <RecipeListText>요리한 레시피</RecipeListText>
             <div style={{ overflow: 'hidden' }}>
               <BudgetRecipeSlide recipes={usedRecipes} />
             </div>
           </>
         ) : (
           <>
-            <EmptyBox></EmptyBox>
-            <NoRecipeListText>요리한 레시피가 없습니다.</NoRecipeListText>
-            <EmptyBox></EmptyBox>
-
+            <RecipeListText>요리한 레시피가 없습니다.</RecipeListText>
+            <br />
+            <br />
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
-                <LinkButton onClick={handleLinkCilck}>
-                  <UseRecipeLinkText>
-                    아직 요리한 레시피가 없네요! <br /> 요리하러 가볼까요?
-                  </UseRecipeLinkText>
+                <LinkButton onClick={() => navigate('/home')}>
+                  <p style={{ margin: '5px' }}>
+                    아직 요리한 레시피가 없네요! 요리하러 갈까요?
+                  </p>
                 </LinkButton>
               </LinkButtonWrapper>
             )}
@@ -160,7 +158,8 @@ const SplitData = styled.div`
 
 const ArrowButton = styled.div`
   cursor: pointer;
-  color: ${({ isCurrentWeek }) => (isCurrentWeek ? '#b0b0b0' : 'initial')};
+  color: ${({ isCurrentWeek }) =>
+    isCurrentWeek ? '#b0b0b0' : 'initial'}; // 회색으로 변경
 `;
 
 const RecipeListBox = styled.div`
@@ -168,21 +167,10 @@ const RecipeListBox = styled.div`
   margin-bottom: 10px;
   text-align: left;
 `;
-
 const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
   margin-bottom: 10px;
-`;
-
-const NoRecipeListText = styled.div`
-  font-size: 30px;
-  text-align: center;
-  color: #888888;
-  font-family: 'GangwonEduPowerExtraBoldA';
-`;
-const EmptyBox = styled.div`
-  height: 93px;
 `;
 
 const LinkButtonWrapper = styled.div`
@@ -192,22 +180,21 @@ const LinkButtonWrapper = styled.div`
 `;
 
 const LinkButton = styled.button`
-  width: 90%;
+  width: 100%;
+  height: 30px;
+  display: block;
+  background-color: #e0e0e0;
   text-align: center;
   border: 0px solid white;
-  border-radius: 20px;
-  font-size: 32px;
-  padding: 10px;
+  border-radius: 10px;
+  font-size: 20px;
+  padding: 3px;
   font-family: 'GangwonEduPowerExtraBoldA';
+  color: orange;
   overflow: hidden;
-  background-color: #fef2b0;
-  color: white;
-`;
-
-const UseRecipeLinkText = styled.p`
-  margin: 5px;
-  padding-top: 10px;
-  line-height: 1.5;
-  text-shadow: 1px 1px 0px #888888, /* 위쪽 */ -1px -1px 0px #888888,
-    /* 왼쪽 아래 */ 1px -1px 0px #888888, /* 오른쪽 아래 */ -1px 1px 0px #888888; /* 왼쪽 위 */
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ffd700; // hover 시 진한 노란색
+    color: white;
+  }
 `;

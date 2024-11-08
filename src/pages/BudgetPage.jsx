@@ -48,6 +48,8 @@ const BudgetPage = () => {
       setRecipes(recipes);
       resetData();
       calculatePrices(recipes); // 함수에 recipes를 보냄
+      console.log('getUsedWeeklyBudget_year : ', year);
+      console.log('getUsedWeeklyBudget_week : ', week);
     } catch (error) {
       console.error('사용 예산 데이터 출력 중 오류 발생', error);
     }
@@ -124,14 +126,28 @@ const BudgetPage = () => {
     setAveragePrice(0);
     setHighestPriceTitle('');
     setLowestPriceTitle('');
+    console.log('year: ', year);
+    console.log('week: ', week);
+    console.log('weekNumber: ', weekNumber);
+    console.log('currentMonth: ', currentMonth);
   };
 
   // 달력 클릭 시 주차 상세 페이지 이동
   const handleCalendarClick = () => {
-    const confirmNavigation = window.confirm('주간 상세 페이지로 이동합니다.');
-    if (confirmNavigation) {
-      navigate('/weekly-details');
-    }
+    setIsModalOpen(true);
+  };
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+  // 모달 확인 버튼 클릭 시 처리
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+    navigate('/weekly-details', {
+      state: { year, weekNumber, week, currentMonth, isCurrentWeek },
+    });
+    console.log('state_year_ : ', year);
+    console.log('state_week_ : ', week);
+    console.log('state_weekNumber_ : ', weekNumber);
   };
 
   return (
