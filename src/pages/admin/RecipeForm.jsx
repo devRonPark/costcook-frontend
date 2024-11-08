@@ -223,9 +223,20 @@ const AdminRecipeForm = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditingIngredients(false);
+
+    // 스크롤을 맨 위로 이동시키기
+    window.scrollTo(0, 0);
+  
+    // 배경 스크롤 방지
+    document.body.style.overflow = 'hidden';
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  
+    // 배경 스크롤 재활성화
+    document.body.style.overflow = 'auto';
+  };
 
   const toggleIngredientEditMode = () => setIsEditingIngredients((prev) => !prev);
 
