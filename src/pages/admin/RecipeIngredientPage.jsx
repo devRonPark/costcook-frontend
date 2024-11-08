@@ -99,7 +99,6 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
       title="재료"
       isRegisterEnabled={isRegisterEnabled} // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
       isModified={isModified} // 페이지 변경 경고 활성화 여부
-      onBack={handleBack} // 뒤로가기 버튼 클릭 시 동작
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
         {selectedIngredient

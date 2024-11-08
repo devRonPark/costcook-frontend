@@ -89,7 +89,6 @@ const AdminRecipeList = () => {
       rightLabel="추가"
       isRegisterEnabled={true} // 등록 버튼 활성화 조건을 항상 true로 설정
       onSubmit={handleAddRecipe} // 추가 버튼을 눌렀을 때 handleAddRecipe 호출
-      onBack={() => navigate('/admin/dashboard')}
     >
       <ContentContainer>
         <ContentContainer>

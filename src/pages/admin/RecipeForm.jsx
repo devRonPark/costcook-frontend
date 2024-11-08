@@ -255,7 +255,6 @@ const AdminRecipeForm = () => {
       isRegisterEnabled={isRegisterEnabled} 
       isModified={isModified}  
       onSubmit={handleSubmit} 
-      onBack={() => navigate("/admin/recipe-list")}
     >
       <ContentContainer style={{marginTop: "100px"}}>
         {/* 레시피 이름 입력 섹션 */}

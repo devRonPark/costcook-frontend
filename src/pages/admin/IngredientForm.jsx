@@ -61,14 +61,7 @@ const AdminIngredientForm = () => {
       setIsNameUnique(false);
     }
   };
-
-  // [4] 유틸리티 함수
-
-  const getNameById = (data, id) => {
-    const defaultName = '미선택';
-    return id !== null ? data.find((item) => item.id === id)?.name || defaultName : defaultName;
-  };
-
+  
   // [5] useEffect 
 
   // 수정 모드일 경우 다른 페이지에서 가져온 데이터를 초기 상태에 반영함
