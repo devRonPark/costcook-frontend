@@ -98,6 +98,8 @@ const FooterContainer = styled.footer`
   justify-content: space-between; /* 각 아이콘 사이의 간격을 균등하게 */
   align-items: center;
   background-color: #f8f9fa;
+  position: sticky;
+  bottom: 0;
 `;
 
 const IconWrapper = styled.div`
