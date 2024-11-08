@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
       try {
         // 액세스 토큰 재발급 요청
         const refreshResponse = await axios.post(
-          'http://localhost:8080/api/auth/token/refresh',
+          `${import.meta.env.VITE_BASE_SERVER_URL}/auth/token/refresh`,
           {},
           { withCredentials: true }
         );
