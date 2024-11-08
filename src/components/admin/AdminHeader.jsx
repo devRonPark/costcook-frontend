@@ -40,9 +40,9 @@ const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubm
         // accessToken 쿠키 제거
         removeCookie('accessToken');
 
-        toast.info('로그아웃되었습니다.'); // 로그아웃 성공 메시지
+        toast.info('로그아웃되었습니다.');
 
-        navigate('/admin/login'); // 홈 화면으로 이동
+        navigate('/admin/login');
       }
     } catch (error) {
       console.error(error);

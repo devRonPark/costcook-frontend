@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import apiClient from "../../services/api";
 import { useNavigate } from "react-router-dom";
-import { setCookie } from "../../utils/cookieUtil";
 
 const Container = styled.div`
   position: relative;
@@ -69,14 +68,8 @@ const Button = styled.button`
 const AdminLogin = () => {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
   
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // 로그인 여부를 확인할 필요가 없다면 바로 로딩 해제
-    setLoading(false);
-  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -99,10 +92,6 @@ const AdminLogin = () => {
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
     }
   };
-
-  if (loading) {
-    return null; // 로딩 중일 때는 빈 화면을 표시
-  }
 
   return (
     <Container>
