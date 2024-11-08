@@ -45,7 +45,7 @@ import AdminRoute from './components/Auth/AdminRoute';
 function App() {
   const location = useLocation();
   return (
-    <AuthProvider>
+    <>
       <ToastContainer
         position="bottom-center"
         autoClose={1500}
@@ -282,7 +282,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
-    </AuthProvider>
+    </>
   );
 }
 

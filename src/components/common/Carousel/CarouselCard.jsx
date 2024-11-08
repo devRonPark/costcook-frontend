@@ -61,7 +61,7 @@ const CarouselCard = ({
       }}
     >
       <Image
-        src={`http://localhost:8080${data.thumbnailUrl}`}
+        src={`${import.meta.env.VITE_BASE_SERVER_URL}${data.thumbnailUrl}`}
         alt={data.title}
       />
 
