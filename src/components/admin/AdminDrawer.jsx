@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
-import DescriptionIcon from '@mui/icons-material/Description';  // Recipe 아이콘
-import RiceBowlIcon from '@mui/icons-material/RiceBowl';  // Ingredient 아이콘
+import HomeIcon from '@mui/icons-material/Home'; // 대시보드 아이콘
+import DescriptionIcon from '@mui/icons-material/Description'; // Recipe 아이콘
+import RiceBowlIcon from '@mui/icons-material/RiceBowl'; // Ingredient 아이콘
 import CommentIcon from '@mui/icons-material/Comment'; // Review 아이콘
 import { useLocation } from 'react-router-dom';
 
 const AdminDrawer = ({ isOpen, onClose, onMenuItemClick }) => {
-
   const location = useLocation();
   const isPathActive = (path) => location.pathname === path;
 
@@ -31,12 +31,21 @@ const AdminDrawer = ({ isOpen, onClose, onMenuItemClick }) => {
       {isOpen && <Overlay onClick={onClose} />}
       <DrawerContainer isOpen={isOpen}>
         <DrawerHeader>
-          <Title onClick={() => handleMenuClick('/admin')}>COSTCOOK</Title>
+          <Title onClick={() => handleMenuClick('/admin/dashboard')}>COSTCOOK</Title>
           <CloseButton onClick={onClose}>
             <CloseIconStyled />
           </CloseButton>
         </DrawerHeader>
         <DrawerContent>
+          {/* 대시보드 메뉴 아이템 */}
+          <DashboardItem
+            onClick={() => handleMenuClick('/admin/dashboard')}
+            className={isPathActive('/admin/dashboard') ? 'active' : ''}
+          >
+            <DashboardIcon />
+            대시보드
+          </DashboardItem>
+
           <MenuItem
             onClick={() => handleMenuClick('/admin/recipe-list')}
             className={isPathActive('/admin/recipe-list') ? 'active' : ''}
@@ -79,7 +88,7 @@ const Overlay = styled.div`
 
 const DrawerContainer = styled.div`
   position: absolute;
-  top: ${(props) => window.scrollY}px;  // 현재 스크롤된 위치만큼 드로어의 위치를 동적으로 조정
+  top: ${window.scrollY}px;
   left: 0;
   height: 100vh;
   width: 350px;
@@ -101,7 +110,7 @@ const DrawerHeader = styled.div`
   background-color: #343a40;
   color: #ffffff;
   border-bottom: 1px solid #ddd;
-  position: relative; 
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -133,6 +142,37 @@ const DrawerContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+`;
+
+// 대시보드 메뉴 아이템 스타일
+const DashboardItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40; // 기본 글자 색은 검정에 가깝게
+  background-color: #e0e7ff; // 다른 메뉴와 같은 연한 파란색으로 일관성 유지
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+  border: 2px solid transparent; // 기본적으로는 테두리가 보이지 않도록
+  
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c0d3ff; // 호버 시 더 진한 파란색으로
+  }
+
+  &.active {
+    color: #007bff; // 글자도 강조하여 더 돋보이게
+  }
+`;
+
+const DashboardIcon = styled(HomeIcon)`
+  margin-right: 16px;
+  font-size: 1.8rem;
+  color: inherit;
 `;
 
 const MenuItem = styled.div`

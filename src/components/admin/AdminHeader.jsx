@@ -1,16 +1,16 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { removeCookie } from '../../utils/cookieUtil';
 import AuthApi from '../../services/auth.api';
 import { useAuth } from '../../context/Auth/AuthContext';
 
-const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubmit }) => {
+const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubmit, onBack }) => {
   const { dispatch } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubm
   const handleMouseLeave = () => {
     timerRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
-    }, 300); 
+    }, 300);
   };
 
   const handleLogout = async () => {
@@ -40,9 +40,9 @@ const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubm
         // accessToken 쿠키 제거
         removeCookie('accessToken');
 
-        toast.info('로그아웃되었습니다.'); // 로그아웃 성공 메시지
+        toast.info('로그아웃되었습니다.');
 
-        navigate('/admin/login'); // 홈 화면으로 이동
+        navigate('/admin/login');
       }
     } catch (error) {
       console.error(error);
@@ -74,6 +74,9 @@ const AdminHeader = ({ title, rightLabel, isRegisterEnabled, onMenuClick, onSubm
       </TopSection>
       {rightLabel && (
         <BottomSection>
+          <BackIconWrapper onClick={onBack}>
+            <ArrowBackIconStyled />
+          </BackIconWrapper>
           <RegisterLabel
             isEnabled={isRegisterEnabled}
             onClick={isRegisterEnabled ? onSubmit : undefined}
@@ -183,10 +186,6 @@ const IconLabel = styled.div`
   gap: 10px;
 `;
 
-const HomeIconStyled = styled(HomeIcon)`
-  color: #fff; 
-`;
-
 const LogoutIconStyled = styled(LogoutIcon)`
   color: #fff; 
 `;
@@ -202,7 +201,20 @@ const BottomSection = styled.div`
   padding: 14px 16px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between; /* 왼쪽: 뒤로가기, 오른쪽: 라벨 */
+`;
+
+const BackIconWrapper = styled.div`
+  cursor: pointer;
+  color: #ffffff;
+  &:hover {
+    color: #ffc107;
+  }
+`;
+
+const ArrowBackIconStyled = styled(ArrowBackIcon)`
+  width: 24px;
+  height: 24px;
 `;
 
 const RegisterLabel = styled.span`
@@ -210,5 +222,4 @@ const RegisterLabel = styled.span`
   color: ${(props) => (props.isEnabled ? '#007bff' : '#aaa')};
   cursor: ${(props) => (props.isEnabled ? 'pointer' : 'not-allowed')};
   font-weight: bold;
-  margin-right: 5px;
 `;

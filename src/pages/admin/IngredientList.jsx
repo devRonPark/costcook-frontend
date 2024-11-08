@@ -77,7 +77,6 @@ const AdminIngredientList = () => {
       rightLabel="추가"
       isRegisterEnabled={true}
       onSubmit={() => navigate('/admin/ingredient-form')}
-      onBack={() => navigate('/admin/dashboard')}
     >
       <ContentContainer style={{ marginTop: '100px' }}>
         <IngredientListWrapper>

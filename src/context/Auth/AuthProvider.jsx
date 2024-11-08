@@ -164,12 +164,10 @@ export const AuthProvider = ({ children }) => {
   // useEffect를 사용하여 새로 고침 시 사용자 정보를 확인하고 상태 업데이트
   useEffect(() => {
     const checkUserAuthentication = () => {
-      console.log("몇 번 호출");
       const accessToken = cookies.accessToken; // 쿠키에서 accessToken 가져오기
       if (accessToken) {
         try {
           const decodedToken = jwtDecode(accessToken);
-          console.log(decodedToken);
           const isExpired = decodedToken.exp * 1000 < Date.now(); // 만료 확인
           if (!isExpired) {
             dispatch({

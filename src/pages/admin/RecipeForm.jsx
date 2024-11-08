@@ -223,9 +223,20 @@ const AdminRecipeForm = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditingIngredients(false);
+
+    // 스크롤을 맨 위로 이동시키기
+    window.scrollTo(0, 0);
+  
+    // 배경 스크롤 방지
+    document.body.style.overflow = 'hidden';
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  
+    // 배경 스크롤 재활성화
+    document.body.style.overflow = 'auto';
+  };
 
   const toggleIngredientEditMode = () => setIsEditingIngredients((prev) => !prev);
 
@@ -244,7 +255,6 @@ const AdminRecipeForm = () => {
       isRegisterEnabled={isRegisterEnabled} 
       isModified={isModified}  
       onSubmit={handleSubmit} 
-      onBack={() => navigate("/admin/recipe-list")}
     >
       <ContentContainer style={{marginTop: "100px"}}>
         {/* 레시피 이름 입력 섹션 */}

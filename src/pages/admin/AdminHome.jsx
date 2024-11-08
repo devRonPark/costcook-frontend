@@ -14,7 +14,6 @@ const AdminHome = () => {
     <AdminLayout
       title="관리자 대시보드"
       isRegisterEnabled={true}
-      onBack={() => navigate("/")}
     >
       <BoxContainer>
         <Box onClick={() => navigate('/admin/recipe-list')}>레시피</Box>
