@@ -91,7 +91,7 @@ const AdminLogin = () => {
       }
     } catch (error) {
       console.error("로그인 오류:", error);
-      setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
+      setError("로그인에 실패했습니다.\n이메일과 비밀번호를 확인하세요.");
     }
   };
 
