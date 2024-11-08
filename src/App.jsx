@@ -225,9 +225,9 @@ function App() {
           <Route
             path="/admin/login"
             element={
-              <PublicRoute>
+              <AdminRoute>
                 <AdminLogin />
-              </PublicRoute>
+              </AdminRoute>
             }
           />
           <Route
