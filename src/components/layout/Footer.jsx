@@ -41,16 +41,11 @@ const Footer = () => {
     <>
       <FooterContainer>
         <IconWrapper
-<<<<<<< Updated upstream
-          isActive={location.pathname === '/recipe'}
-          onClick={() => handleNavigate('/recipe')}
-=======
           isActive={
             location.pathname.startsWith('/recipes') &&
             !location.pathname.includes('favorites')
           }
           onClick={() => handleNavigate('/recipes')}
->>>>>>> Stashed changes
         >
           <MenuBookIconStyled />
           <Text>전체레시피</Text>
