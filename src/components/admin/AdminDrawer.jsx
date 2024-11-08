@@ -88,7 +88,7 @@ const Overlay = styled.div`
 
 const DrawerContainer = styled.div`
   position: absolute;
-  top: ${(props) => window.scrollY}px;
+  top: ${window.scrollY}px;
   left: 0;
   height: 100vh;
   width: 350px;
