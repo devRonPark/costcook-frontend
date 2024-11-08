@@ -34,6 +34,7 @@ const AdminRecipeList = () => {
           order: 'desc',
         },
       });
+      console.log(response.data);
       setRecipeList(response.data.recipes);
       setTotalPages(response.data.totalPages);
     } catch (error) {
@@ -114,11 +115,11 @@ const AdminRecipeList = () => {
                         <FavoriteBorder
                           style={{ fontSize: '16px', color: '#999' }}
                         />
-                        <MetricText>{recipe.bookmarkCount}</MetricText>
+                        <MetricText>{recipe.favoriteCount}</MetricText>
                       </Metric>
                       <Metric>
                         <Comment style={{ fontSize: '16px', color: '#999' }} />
-                        <MetricText>{recipe.commentCount}</MetricText>
+                        <MetricText>{recipe.reviewCount}</MetricText>
                       </Metric>
                     </RecipeMetrics>
                   </RecipeInfo>
