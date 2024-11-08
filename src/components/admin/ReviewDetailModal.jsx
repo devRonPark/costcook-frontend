@@ -4,7 +4,7 @@ import { FaStar } from 'react-icons/fa';
 import { format } from 'date-fns';
 import apiClient from '../../services/api';
 
-const ReviewDetailModal = ({ review, onClose, onStatusChange  }) => {
+const ReviewDetailModal = ({ review, onClose, onStatusChange }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(review);
 
@@ -34,7 +34,9 @@ const ReviewDetailModal = ({ review, onClose, onStatusChange  }) => {
     setIsConfirmModalOpen(false); // 모달 닫기
     if (confirmed) {
       try {
-        const response = await apiClient.patch(`/admin/reviews/${currentReview.id}/status`);
+        const response = await apiClient.patch(
+          `/admin/reviews/${currentReview.id}/status`
+        );
         if (response.status === 200) {
           // 서버 응답이 성공적이면 로컬 상태 업데이트
           setCurrentReview((prevReview) => ({
@@ -42,15 +44,12 @@ const ReviewDetailModal = ({ review, onClose, onStatusChange  }) => {
             status: !prevReview.status, // 기존 상태를 반전
           }));
           onStatusChange(currentReview.id, !currentReview.status);
-
-          
         }
       } catch (error) {
         console.error('차단 상태 변경 중 오류 발생:', error);
       }
     }
   };
-  
 
   return (
     <>
@@ -89,7 +88,10 @@ const ReviewDetailModal = ({ review, onClose, onStatusChange  }) => {
           </DateContainer>
           <Divider />
           <ModalFooter>
-            <BlockButton status={currentReview.status} onClick={handleReviewBlock}>
+            <BlockButton
+              status={currentReview.status}
+              onClick={handleReviewBlock}
+            >
               {currentReview.status ? '차단 해제' : '차단하기'}
             </BlockButton>
           </ModalFooter>
@@ -101,11 +103,17 @@ const ReviewDetailModal = ({ review, onClose, onStatusChange  }) => {
         <ConfirmModalOverlay>
           <ConfirmModalContent>
             <ConfirmMessage>
-              {review.status ? '차단 해제하시겠습니까?' : '정말 차단하시겠습니까?'}
+              {review.status
+                ? '차단 해제하시겠습니까?'
+                : '정말 차단하시겠습니까?'}
             </ConfirmMessage>
             <ConfirmActions>
-              <ConfirmButton onClick={() => handleConfirm(true)}>확인</ConfirmButton>
-              <CancelButton onClick={() => handleConfirm(false)}>취소</CancelButton>
+              <ConfirmButton onClick={() => handleConfirm(true)}>
+                확인
+              </ConfirmButton>
+              <CancelButton onClick={() => handleConfirm(false)}>
+                취소
+              </CancelButton>
             </ConfirmActions>
           </ConfirmModalContent>
         </ConfirmModalOverlay>
@@ -245,21 +253,21 @@ const ConfirmModalContent = styled.div`
   background-color: white;
   padding: 40px;
   border-radius: 8px;
-  width: 320px; 
+  width: 320px;
   max-width: 80%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
 `;
 
 const ConfirmMessage = styled.p`
-  font-size: 1.2rem; 
+  font-size: 1.2rem;
   color: #333;
   margin-bottom: 32px;
 `;
 
 const ConfirmActions = styled.div`
   display: flex;
-  justify-content: space-evenly; 
+  justify-content: space-evenly;
   gap: 15px;
 `;
 
@@ -269,7 +277,7 @@ const ConfirmButton = styled.button`
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
-  font-size: 1rem; 
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
 
@@ -283,8 +291,8 @@ const CancelButton = styled.button`
   color: #333;
   border: none;
   border-radius: 4px;
-  padding: 12px 24px; 
-  font-size: 1rem; 
+  padding: 12px 24px;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
 

@@ -45,6 +45,7 @@ const ModalContent = styled.div`
 
 const Message = styled.p`
   margin-bottom: 20px; // 메시지와 버튼 간 간격 조정
+  font-family: 'GmarketSansMedium';
 `;
 
 const ButtonGroup = styled.div`

@@ -70,6 +70,7 @@ const CloseButton = styled.button`
 const Title = styled.h2`
   font-size: 18px;
   margin-bottom: 20px;
+  font-family: 'GangwonEduPowerExtraBoldA';
 `;
 
 const LinkContainer = styled.div`

@@ -50,6 +50,7 @@ export const RecipeInstructionsContainer = styled.div`
   .step_list_num {
     flex: 0 0 10%;
     font-weight: bold;
+    font-family: 'GangwonEduPowerExtraBoldA';
   }
 
   .step_list_txt_cont {
@@ -57,6 +58,10 @@ export const RecipeInstructionsContainer = styled.div`
     font-family: 'STUNNING-Bd';
     flex: 0 0 60%;
     font-size: 14px;
+  }
+
+  a {
+    display: none;
   }
 
   .step_list_txt_pic {
