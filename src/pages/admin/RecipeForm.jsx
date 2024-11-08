@@ -142,7 +142,6 @@ const AdminRecipeForm = () => {
         changedFields[key] = currentState[key];
       }
     });
-    console.log(changedFields);
   
     return changedFields;
   };
@@ -247,7 +246,7 @@ const AdminRecipeForm = () => {
       onSubmit={handleSubmit} 
       onBack={() => navigate("/admin/recipe-list")}
     >
-      <ContentContainer>
+      <ContentContainer style={{marginTop: "100px"}}>
         {/* 레시피 이름 입력 섹션 */}
         <Section>
           <SectionTitle>레시피 이름</SectionTitle>
@@ -361,7 +360,7 @@ const AdminRecipeForm = () => {
 export default AdminRecipeForm;
 
 const Section = styled.div`
-  margin-top: 24px;
+  margin-top: 30px;
 `;
 
 const SectionTitleWrapper = styled.div`

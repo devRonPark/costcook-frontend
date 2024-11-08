@@ -5,7 +5,8 @@ import { COLORS } from '../utils/constant';
 
 // 제목 스타일
 const Title = styled(Typography)`
-  font-size: 24px !important;
+  font-size: 30px !important;
+  font-family: 'RixXladywatermelonR' !important;
   font-weight: bold;
   text-align: center;
   color: ${({ step }) =>

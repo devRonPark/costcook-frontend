@@ -35,11 +35,6 @@ const WeeklyCalendar = ({ currentDate }) => {
     );
   };
 
-  // // 해당 날짜의 주의 일요일을 찾는다
-  // const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
-  // const sundayDate = new Date(date);
-  // sundayDate.setDate(currentDay - dayOfWeek); // 주의 첫 날인 일요일로 이동
-
   return (
     <div className="WeeklyCalendar">
       <StyledCalendar

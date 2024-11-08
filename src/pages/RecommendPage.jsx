@@ -5,6 +5,7 @@ import Carousel from '../components/common/Carousel/Carousel';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { recommendAPI } from '../services/recommend.api';
 import { useAuth } from '../context/Auth/AuthContext';
+import { toast } from 'react-toastify';
 
 const RecommendPage = () => {
   const { state } = useAuth();
@@ -127,10 +128,10 @@ const RecommendPage = () => {
         // 추천 레시피 저장
         const isSaved = saveToSessionStorage(year, week, recommendedRecipes);
         if (isSaved) {
-          alert('레시피가 성공적으로 추천 목록에 추가되었습니다.');
+          toast.info('레시피가 추가되었습니다.');
           navigate('/Home');
         } else {
-          alert('레시피 추가 중 오류가 발생했습니다.');
+          toast.info('오류가 발생했습니다.');
         }
       } else {
         // 기존 레시피 삭제
@@ -219,7 +220,7 @@ const RecommendPage = () => {
       </SelectedContainer>
 
       <RecommendContainer>
-        <h4>40%이내 가격의 레시피들</h4>
+        <h4>▼ 20~40% </h4>
         <RecommendListContainer>
           <Carousel
             budget={budget}
@@ -231,7 +232,7 @@ const RecommendPage = () => {
       </RecommendContainer>
 
       <RecommendContainer>
-        <h4>20%이내 가격의 레시피들</h4>
+        <h4>▼ 0~20%</h4>
         <RecommendListContainer>
           <Carousel
             budget={budget * 0.5}
@@ -243,10 +244,12 @@ const RecommendPage = () => {
       </RecommendContainer>
       <ShowBasicContainer>
         <ShowContainer>
-          남은 금액 : {Math.round(remainingBudget).toLocaleString()}원
+          <p style={{ borderBottom: '1px solid black' }}>
+            남은 금액 : {Math.round(remainingBudget).toLocaleString()}원
+          </p>
         </ShowContainer>
         <ShowContainer>
-          <button onClick={handleCompleteSelection}>선택 완료</button>
+          <Button onClick={handleCompleteSelection}>선택 완료</Button>
         </ShowContainer>
       </ShowBasicContainer>
     </Layout>
@@ -259,10 +262,10 @@ const SelectedContainer = styled.div`
   width: 100%;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px black solid;
   text-align: center;
   overflow: hidden; /* 카드 내부 내용이 넘어가는 것 방지 */
   max-height: 160px; /* 고정된 최대 높이 설정 */
+  font-family: GmarketSansMedium;
 `;
 
 const SelectedListContainer = styled.div`
@@ -271,8 +274,7 @@ const SelectedListContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
-  overflow-x: auto; /* 수평 스크롤 허용 */
+  overflow-x: hidden; /* 수평 스크롤 허용 */
   white-space: nowrap; /* 카드가 줄바꿈되지 않도록 설정 */
 `;
 
@@ -300,6 +302,8 @@ const SelectedImage = styled.img`
   height: 100px;
   width: 100px;
   object-fit: cover;
+
+  min-width: 100%;
 `;
 const SelectedText = styled.div`
   height: 20px;
@@ -327,6 +331,7 @@ const RecommendListContainer = styled.div`
   overflow: hidden;
   align-items: center;
   justify-content: center;
+  font-family: GmarketSansMedium;
   /* border: 1px solid black; */
 `;
 
@@ -334,7 +339,8 @@ const ShowBasicContainer = styled.div`
   width: 100%;
   display: flex;
   margin-top: auto;
-  border: 1px black solid;
+  /* border: 1px black solid; */
+  font-family: GmarketSansMedium;
 `;
 
 const ShowContainer = styled.div`
@@ -345,5 +351,17 @@ const ShowContainer = styled.div`
   align-items: center;
   width: 50%;
   margin-top: auto;
-  border: 1px black solid;
+  /* border: 1px black solid; */
+`;
+
+const Button = styled.button`
+  color: #bf4f74;
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid #bf4f74;
+  border-radius: 3px;
 `;

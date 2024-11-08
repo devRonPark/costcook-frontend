@@ -85,7 +85,7 @@ const CardContainer = styled.div`
       @media (max-width: 500px) {
         min-width: 200px;
         flex-direction: row;
-        width: calc(100% - 10px); // 전체 너비에서 10px을 제외한 나머지 너비를 사용
+        width: calc(100vw - 10px);
       }
 
       @media (min-width: 501px) {
@@ -168,16 +168,20 @@ const TitleText = styled.h3`
   overflow: hidden; // 넘치면 숨김
   text-overflow: ellipsis; // 넘친 부분 ... 표시
   width: 100%;
+  font-family: 'Mungyeong-Gamhong-Apple';
+  font-weight: 100;
 `;
 
 // 가격
 const PriceText = styled.p`
-  font-size: 12px;
+  font-size: 13px;
   margin: 5px 0;
+  font-family: 'GangwonEdu_OTFBoldA';
 `;
 
 // 평점
 const StarText = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   margin: 5px 0;
+  font-family: 'RixXladywatermelonR';
 `;

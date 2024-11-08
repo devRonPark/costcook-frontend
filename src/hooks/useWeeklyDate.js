@@ -22,6 +22,7 @@ export const useWeeklyDate = () => {
     setIsCurrentWeek(current.year === newYear && current.week === newWeek);
   };
 
+  // 날짜, 월, 주차 업데이트
   useEffect(() => {
     const { week, firstSundayDate } = getWeekAndFirstSundayDate(currentDate);
     setWeekNumber(week);
@@ -44,6 +45,7 @@ export const useWeeklyDate = () => {
     setCurrentMonth(monthNames[firstSundayDate.getMonth()]);
   }, [currentDate]);
 
+  // 주차 변경 함수
   const handleWeekChange = (delta) => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + delta * 7);

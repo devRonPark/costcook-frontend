@@ -12,7 +12,7 @@ const AdminHome = () => {
 
   return (
     <AdminLayout
-      title="관리자 홈"
+      title="관리자 대시보드"
       isRegisterEnabled={true}
       onBack={() => navigate("/")}
     >
@@ -20,7 +20,7 @@ const AdminHome = () => {
         <Box onClick={() => navigate('/admin/recipe-list')}>레시피</Box>
         <Box onClick={() => navigate('/admin/ingredient-list')}>재료</Box>
         <Box onClick={() => navigate('/admin/review-list')}>리뷰</Box>
-        <Box onClick={() => handleAlert("4번")}>페이지 4</Box>
+        <Box onClick={() => handleAlert("업데이트 예정")}>회원</Box>
       </BoxContainer>
     </AdminLayout>
   );
@@ -34,7 +34,7 @@ const BoxContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   padding: 16px;
-  margin-top: 50px;
+  margin-top: 87px;
 `;
 
 const Box = styled.div`
