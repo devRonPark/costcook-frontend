@@ -34,7 +34,6 @@ const AdminRecipeList = () => {
           order: 'desc',
         },
       });
-      console.log(response.data);
       setRecipeList(response.data.recipes);
       setTotalPages(response.data.totalPages);
     } catch (error) {
