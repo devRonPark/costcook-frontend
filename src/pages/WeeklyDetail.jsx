@@ -3,13 +3,9 @@ import Layout from '../components/layout/Layout';
 import { budgetAPI } from '../services/budget.api';
 import { useAuth } from '../context/Auth/AuthContext';
 import styled from 'styled-components';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BudgetRecipeSlide } from '../components/display/BudgetRecipeSlide';
 import { recommendAPI } from '../services/recommend.api';
-import { useWeeklyDate } from '../hooks/useWeeklyDate';
-import { toast } from 'react-toastify';
 
 // 날짜 계산 (헤더에 날짜 표시)
 const WeeklyDetail = () => {
@@ -17,17 +13,9 @@ const WeeklyDetail = () => {
   const { state } = useAuth();
   const [usedRecipes, setUsedRecipes] = useState([]); // 사용 레시피
   const [recommendedRecipes, setRecommendedRecipes] = useState([]); // 추천받은 레시피
-
-  // 날짜 관리 훅 가져오기
-  const {
-    year,
-    week,
-    currentMonth,
-    weekNumber,
-    isCurrentWeek,
-    handleDecreaseWeek,
-    handleIncreaseWeek,
-  } = useWeeklyDate();
+  const location = useLocation();
+  const { year, week, weekNumber, currentMonth, isCurrentWeek } =
+    location.state || {};
 
   // 추천받은 레시피 정보 가져오기(is_used 무관)
   const getRecommendedRecipes = async () => {
@@ -59,14 +47,6 @@ const WeeklyDetail = () => {
     getRecommendedRecipes();
   }, [year, week]);
 
-  // 레시피 미사용시, 홈으로 보내는 버튼 클릭 시 toast 출력
-  const handleLinkCilck = () => {
-    navigate('/home');
-    toast.info('추천받은 레시피를 선택하여\n 요리해보세요!', {
-      className: 'custom-toast',
-    });
-  };
-
   return (
     <Layout
       pageName={`${
@@ -79,18 +59,9 @@ const WeeklyDetail = () => {
     >
       <DateContainer>
         <SplitData>
-          <ArrowButton onClick={handleDecreaseWeek}>
-            <KeyboardArrowLeftIcon fontSize="large" />
-          </ArrowButton>
           <h2 style={{ fontFamily: 'yg-jalnan' }}>
-            {currentMonth} {weekNumber}주차
+            {year}년 {currentMonth} {weekNumber}주차
           </h2>
-          <ArrowButton
-            onClick={handleIncreaseWeek}
-            isCurrentWeek={isCurrentWeek}
-          >
-            <KeyboardArrowRightIcon fontSize="large" />
-          </ArrowButton>
         </SplitData>
       </DateContainer>
       <RecipeListBox>
@@ -109,6 +80,7 @@ const WeeklyDetail = () => {
           </>
         )}
       </RecipeListBox>
+
       <RecipeListBox>
         <RecipeListText>요리한 레시피</RecipeListText>
         {usedRecipes.length > 0 ? (
@@ -122,12 +94,11 @@ const WeeklyDetail = () => {
             <EmptyBox></EmptyBox>
             <NoRecipeListText>요리한 레시피가 없습니다.</NoRecipeListText>
             <EmptyBox></EmptyBox>
-
             {isCurrentWeek && ( // 현재 주차에서만 표시
               <LinkButtonWrapper>
-                <LinkButton onClick={handleLinkCilck}>
+                <LinkButton onClick={() => navigate('/home')}>
                   <UseRecipeLinkText>
-                    아직 요리한 레시피가 없네요! <br /> 요리하러 가볼까요?
+                    아직 요리한 레시피가 없네요! 요리하러 갈까요?
                   </UseRecipeLinkText>
                 </LinkButton>
               </LinkButtonWrapper>
@@ -158,17 +129,11 @@ const SplitData = styled.div`
   justify-content: center;
 `;
 
-const ArrowButton = styled.div`
-  cursor: pointer;
-  color: ${({ isCurrentWeek }) => (isCurrentWeek ? '#b0b0b0' : 'initial')};
-`;
-
 const RecipeListBox = styled.div`
   width: 95%;
   margin-bottom: 10px;
   text-align: left;
 `;
-
 const RecipeListText = styled.div`
   font-family: 'yg-jalnan';
   font-size: 18px;
@@ -192,16 +157,23 @@ const LinkButtonWrapper = styled.div`
 `;
 
 const LinkButton = styled.button`
-  width: 90%;
+  width: 100%;
+  height: 30px;
+  display: block;
+  background-color: #e0e0e0;
   text-align: center;
   border: 0px solid white;
-  border-radius: 20px;
-  font-size: 32px;
-  padding: 10px;
+  border-radius: 10px;
+  font-size: 20px;
+  padding: 3px;
   font-family: 'GangwonEduPowerExtraBoldA';
+  color: orange;
   overflow: hidden;
-  background-color: #fef2b0;
-  color: white;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ffd700; // hover 시 진한 노란색
+    color: white;
+  }
 `;
 
 const UseRecipeLinkText = styled.p`
