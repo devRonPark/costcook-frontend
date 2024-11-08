@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
@@ -24,7 +24,8 @@ export const Button = styled.button`
   font-weight: 600;
   color: #382b22;
   text-transform: uppercase;
-  padding: 4em 10em;
+  padding: ${({ isSmallScreen }) => (isSmallScreen ? '2em 5em' : '4em 10em')};
+
   background: #fff0f0;
   border: 2px solid #b18597;
   border-radius: 0.75em;
@@ -84,11 +85,24 @@ export const Body = styled.div`
 `;
 
 const StartButton = ({ onClick }) => {
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerHeight < 920);
+  console.log(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerHeight < 920);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <>
       <GlobalStyle />
       <Body>
-        <Button className="learn-more" onClick={onClick}>
+        <Button
+          className="learn-more"
+          onClick={onClick}
+          isSmallScreen={isSmallScreen}
+        >
           추천받기
         </Button>
       </Body>
