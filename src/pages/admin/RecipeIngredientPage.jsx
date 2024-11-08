@@ -54,10 +54,21 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
     setQuantity(newQuantity);
   };
 
+  // useEffect : 수량과 재료가 모두 선택되면 등록하는 로직
+  useEffect(() => {
+    if (selectedIngredient && quantity) {
+      handleSubmit();
+    }
+  }, [quantity, selectedIngredient]);
+
   // 이벤트 핸들러 : "등록" 버튼을 클릭했을 때
   const handleSubmit = () => {
     if (selectedIngredient && quantity) {
-      const newIngredient = { ...selectedIngredient, quantity };
+      const newIngredient = { 
+        ...selectedIngredient, 
+        quantity,
+        unitName: selectedIngredient.unit.name 
+      };
 
       // 재료 리스트에 새 재료 추가
       let updatedIngredientList = [...ingredientList, newIngredient];
@@ -86,10 +97,8 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
   return (
     <AdminLayout
       title="재료"
-      rightLabel="등록"
       isRegisterEnabled={isRegisterEnabled} // 재료와 수량이 모두 입력된 경우에만 등록 버튼 활성화
       isModified={isModified} // 페이지 변경 경고 활성화 여부
-      onSubmit={handleSubmit} // 등록 버튼 클릭 시 동작
       onBack={handleBack} // 뒤로가기 버튼 클릭 시 동작
     >
       <InfoContainer ref={textRef} shouldAnimate={shouldAnimate}>
@@ -108,7 +117,7 @@ const RecipeIngredientPage = ({ ingredientList, setIngredientList, onClose }) =>
         {selectedIngredient && (
           <IngredientQuantitySection
             unitName={unitName}
-            onQuantityConfirm={handleQuantityConfirm} // 확인 버튼을 눌렀을 때만 수량 업데이트
+            onQuantityConfirm={handleQuantityConfirm} // 확인 버튼을 눌렀을 때 수량 업데이트 및 등록
             selectedIngredient={selectedIngredient}
           />
         )}
