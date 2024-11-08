@@ -39,7 +39,10 @@ const Footer = ({ state }) => {
     <>
       <FooterContainer>
         <IconWrapper
-          isActive={location.pathname.startsWith('/recipes')}
+          isActive={
+            location.pathname.startsWith('/recipes') &&
+            !location.pathname.includes('favorites')
+          }
           onClick={() => handleNavigate('/recipes')}
         >
           <MenuBookIconStyled />
