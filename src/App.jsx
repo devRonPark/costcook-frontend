@@ -202,13 +202,24 @@ function App() {
           <Route
             path="/my/reviews"
             element={
-              <UserRoute>
-                <MyReviewPage />
-              </UserRoute>
+              <PageTransition>
+                <UserRoute>
+                  <MyReviewPage />
+                </UserRoute>
+              </PageTransition>
             }
           />
           {/* 각 주차 별 추천 및 사용한 레시피 내역 화면 */}
-          <Route path="/weekly-details" element={<WeeklyDetail />} />
+          <Route
+            path="/weekly-details"
+            element={
+              <PageTransition>
+                <UserRoute>
+                  <WeeklyDetail />
+                </UserRoute>
+              </PageTransition>
+            }
+          />
 
           {/* 관리자만 접근 가능 */}
           <Route

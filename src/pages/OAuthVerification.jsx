@@ -9,6 +9,8 @@ import Layout from '../components/layout/Layout';
 import LoadingComponent from '../components/common/LoadingComponent';
 import {
   clearFavoriteRecipeIds,
+  clearRecommendedRecipes,
+  clearWeeklyBudget,
   getFavoriteRecipeIds,
 } from '../utils/sessionStorageUtil';
 
@@ -87,11 +89,8 @@ const OAuthVerification = () => {
 
           if (loginRes.status === 200) {
             clearFavoriteRecipeIds();
-            // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
-            // dispatch({
-            //   type: 'LOGIN',
-            //   payload: loginRes.data,
-            // });
+            clearWeeklyBudget();
+            clearRecommendedRecipes();
 
             toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
@@ -145,10 +144,9 @@ const OAuthVerification = () => {
         if (loginRes.status === 200) {
           // 비회원 즐겨찾기 데이터 비우기
           clearFavoriteRecipeIds();
+          clearWeeklyBudget();
+          clearRecommendedRecipes();
           toast.info('로그인 성공');
-          console.log(
-            `사용자 프로필 업데이트 여부: ${loginRes.data.userProfileUpdated}`
-          );
 
           // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
           if (loginRes.data.userProfileUpdated) {

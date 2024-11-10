@@ -47,15 +47,15 @@ export const getWeeklyBudget = () => {
 
 // 예산 비우기 함수
 export const clearWeeklyBudget = () => {
-  return sessionStorage.removeItem('favoriteRecipeIds');
+  return sessionStorage.removeItem('budget');
 };
 
 // 추천받은 레시피 목록 가져오기 함수
 export const getRecommendedRecipes = () => {
-  const recommendedRecipes = sessionStorage.getItem('recommendedRecipes');
+  const recommendedRecipes = sessionStorage.getItem('recommendedRecipeList');
   return recommendedRecipes ? JSON.parse(recommendedRecipes) : null; // recommendedRecipes 가 없으면 null 반환
 };
 
 export const clearRecommendedRecipes = () => {
-  return sessionStorage.removeItem('recommendedRecipes');
+  return sessionStorage.removeItem('recommendedRecipeList');
 };
