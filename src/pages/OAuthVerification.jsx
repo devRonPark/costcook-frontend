@@ -10,8 +10,6 @@ import LoadingComponent from '../components/common/LoadingComponent';
 import {
   clearFavoriteRecipeIds,
   getFavoriteRecipeIds,
-  getRecommendedRecipes,
-  getWeeklyBudget,
 } from '../utils/sessionStorageUtil';
 
 const OAuthVerification = () => {
@@ -147,12 +145,6 @@ const OAuthVerification = () => {
           clearFavoriteRecipeIds();
           toast.info('로그인 성공');
 
-          // 로그인 성공하면 전역 상태에 로그인된 사용자 정보를 저장
-          dispatch({
-            type: 'LOGIN',
-            payload: loginRes.data,
-          });
-
           // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
           if (loginRes.data.userProfileUpdated) {
             // 로그인 성공 시 세션 스토리지에서 정보를 확인
@@ -172,18 +164,18 @@ const OAuthVerification = () => {
             // 프로필 업데이트 페이지로 이동
             navigate('/profile-setup');
           }
-        } else {
-          // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
-          dispatch({
-            type: 'SET_AUTH_DATA',
-            payload: res, // 이메일 인증 절차를 위해 필요한 데이터 저장
-          });
-
-          setLoading(false);
         }
+      } else {
+        // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
+        dispatch({
+          type: 'SET_AUTH_DATA',
+          payload: res, // 이메일 인증 절차를 위해 필요한 데이터 저장
+        });
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
