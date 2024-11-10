@@ -236,10 +236,17 @@ const SearchPage = () => {
     );
   };
 
+  // 검색 및 검색 결과 페이지 뒤로 가기 버튼 클릭 핸들러
   const handleBackBtnClick = () => {
-    navigate('/recipes/search');
-    setSearchedRecipes(null);
-    setKeyword(''); // 검색어 리셋
+    // 검색 결과 페이지 > 검색 페이지로 이동
+    if (searchParams.get('keyword')) {
+      navigate('/recipes/search');
+      setSearchedRecipes(null);
+      setKeyword(''); // 검색어 리셋
+    } else {
+      // 검색 페이지 > 홈 페이지로 이동
+      navigate('/home');
+    }
   };
 
   return (

@@ -91,6 +91,7 @@ const CardContainer = styled.div`
       @media (min-width: 501px) {
         width: calc(50% - 5px);
         flex-direction: column;
+        align-items: flex-start;
       }
     `}
 
@@ -106,6 +107,7 @@ const CardContainer = styled.div`
     `
       @media (max-width: 500px) {
         flex-direction: column;
+        align-items: flex-start;
       }
     `}
   ${({ layoutType }) =>
