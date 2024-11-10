@@ -54,7 +54,7 @@ const OAuthVerification = () => {
   const handleVerifyCode = async (inputCode) => {
     try {
       const response = await AuthApi.verifyCode({
-        email: state.user.data.email, // 사용자 이메일
+        email: state.user.email, // 사용자 이메일
         verificationCode: inputCode, // 입력한 인증 코드
       });
 
@@ -74,8 +74,8 @@ const OAuthVerification = () => {
 
           // 로그인 요청을 위한 사용자 정보 설정
           const loginData = {
-            ...state.user.data,
-            provider: state.user.data.provider.toLowerCase(),
+            ...state.user,
+            provider: state.user.provider.toLowerCase(),
             // favoriteRecipeIds가 존재하고, 빈 배열이 아닌 경우에만 loginData에 추가.
             ...(favoriteRecipeIds && favoriteRecipeIds.length > 0
               ? { favoriteRecipeIds }
@@ -88,18 +88,20 @@ const OAuthVerification = () => {
           if (loginRes.status === 200) {
             clearFavoriteRecipeIds();
             // 로그인 성공 시 전역 상태에 로그인된 사용자 정보를 저장
-            dispatch({
-              type: 'LOGIN',
-              payload: loginRes.data,
-            });
+            // dispatch({
+            //   type: 'LOGIN',
+            //   payload: loginRes.data,
+            // });
 
             toast.info('로그인 중입니다...'); // 로그인 중 메시지
 
             // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
             if (loginRes.data.userProfileUpdated) {
+              console.log('홈 화면 이동');
               // 홈 화면 이동
               navigate('/home');
             } else {
+              console.log('프로필 업데이트 페이지로 이동');
               // 프로필 업데이트 페이지로 이동
               navigate('/profile-setup');
             }
@@ -144,6 +146,9 @@ const OAuthVerification = () => {
           // 비회원 즐겨찾기 데이터 비우기
           clearFavoriteRecipeIds();
           toast.info('로그인 성공');
+          console.log(
+            `사용자 프로필 업데이트 여부: ${loginRes.data.userProfileUpdated}`
+          );
 
           // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
           if (loginRes.data.userProfileUpdated) {
@@ -166,10 +171,12 @@ const OAuthVerification = () => {
           }
         }
       } else {
+        console.log('이메일 인증이 필수!!!');
+        console.log(res.data);
         // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
         dispatch({
           type: 'SET_AUTH_DATA',
-          payload: res, // 이메일 인증 절차를 위해 필요한 데이터 저장
+          payload: res.data, // 이메일 인증 절차를 위해 필요한 데이터 저장
         });
       }
     } catch (error) {
