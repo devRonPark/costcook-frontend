@@ -257,7 +257,7 @@ const MyPage = () => {
             src={
               user?.profileUrl === null || user?.profileUrl.includes('null')
                 ? defaultImagePath
-                : `${import.meta.env.VITE_BASE_SERVER_URL}${imageUrl}`
+                : `${import.meta.env.VITE_BASE_SERVER_URL}${user?.profileUrl}`
             }
             altText={`${user?.id ?? ''} 번 회원 프로필 이미지`}
           />
