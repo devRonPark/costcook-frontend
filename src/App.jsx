@@ -20,7 +20,6 @@ import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
-import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
 import PageTransition from './components/common/PageTransition';
@@ -153,11 +152,9 @@ function App() {
           <Route
             path="/oauth/:provider"
             element={
-              <AuthProvider>
-                <PublicRoute>
-                  <OAuthVerification />
-                </PublicRoute>
-              </AuthProvider>
+              <PublicRoute>
+                <OAuthVerification />
+              </PublicRoute>
             }
           />
           {/* 로그인한 회원만 접근 가능 */}

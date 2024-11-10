@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import EditIcon from '@mui/icons-material/Edit';
+import { defaultImagePath } from '../utils/constant';
 
 const Container = styled.div`
   display: flex; /* Flexbox 활성화 */
@@ -63,14 +64,20 @@ const ProfileImageUploader = ({
   imageUrl, // 프로필 이미지 URL
   onImageChange, // 이미지 변경 핸들러
 }) => {
+  console.log(imageUrl);
   return (
     <Container>
       <ImagePreviewContainer>
-        {imageUrl ? (
-          <ProfileImage src={imageUrl} alt="Profile" />
-        ) : (
-          <Placeholder>프로필 사진 없음</Placeholder>
-        )}
+        (
+        <ProfileImage
+          src={
+            imageUrl === null || imageUrl.includes('null')
+              ? defaultImagePath
+              : `${import.meta.env.VITE_BASE_SERVER_URL}${imageUrl}`
+          }
+          alt="Profile"
+        />
+        )
       </ImagePreviewContainer>
       <EditButton>
         <EditIcon style={{ color: 'white' }} />
