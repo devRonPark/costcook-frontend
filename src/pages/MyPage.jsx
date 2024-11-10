@@ -254,7 +254,11 @@ const MyPage = () => {
             height="150px"
             border="2px solid black"
             margin="20px 0"
-            src={user?.profileUrl ?? defaultImagePath}
+            src={
+              user?.profileUrl === null || user?.profileUrl.includes('null')
+                ? defaultImagePath
+                : `${import.meta.env.VITE_BASE_SERVER_URL}${imageUrl}`
+            }
             altText={`${user?.id ?? ''} 번 회원 프로필 이미지`}
           />
           <ProfileNameContainer>{user?.nickname ?? ''}</ProfileNameContainer>
