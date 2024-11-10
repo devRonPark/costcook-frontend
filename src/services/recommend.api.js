@@ -29,10 +29,10 @@ export const recommendAPI = {
     );
   },
 
-  modifyUseRecipe: (recipe) => {
+  modifyUseRecipe: (recipeUsageRequest) => {
     return apiClient.patch(
-      `/recommendations/recipes/${recipe.recipeId}/use`,
-      recipe
+      `/recommendations/recipes/${recipeUsageRequest.recipe.id}/use`,
+      recipeUsageRequest
     );
   },
 };
