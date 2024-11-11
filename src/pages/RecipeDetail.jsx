@@ -362,8 +362,8 @@ const RecipeDetail = () => {
       <TabListContainer>
         <TabList onClick={() => handleTabClick('ingredients')}>
           {/* 탭 상태 관련 없이 항상 보여주기 */}
-          레시피 재료 ({recipe.servings}인분){' '}
-          {recipe.price ? formatPrice(recipe.price) : 0}원
+          레시피 재료 (1인분){' '}
+          {recipe.price ? formatPrice(recipe.price / recipe.servings) : 0}원
           {activeTabs.includes('ingredients')}
           {activeTabs.includes('ingredients') ? (
             <KeyboardArrowUpIcon />

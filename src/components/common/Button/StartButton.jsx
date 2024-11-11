@@ -86,7 +86,6 @@ export const Body = styled.div`
 
 const StartButton = ({ onClick }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerHeight < 920);
-  console.log(window.innerHeight);
 
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerHeight < 920);

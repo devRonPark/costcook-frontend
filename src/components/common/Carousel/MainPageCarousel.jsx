@@ -71,7 +71,6 @@ const Carousel = ({ recipes, year, week }) => {
             )
           );
         }, 400);
-        console.log('레시피 사용 상태 변경 성공:', response.data);
       }
     } catch (error) {
       console.error('레시피 사용 상태 변경 실패:', error);

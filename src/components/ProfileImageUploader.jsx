@@ -16,8 +16,8 @@ const Container = styled.div`
 // 이미지 미리보기 컴포넌트
 const ImagePreviewContainer = styled.div`
   position: relative; /* 상대 위치 설정 */
-  width: 300px; /* 모바일 화면 기준으로 크기 조정 */
-  height: 300px; /* 이미지 높이 */
+  width: 100%; /* 모바일 화면 기준으로 크기 조정 */
+  height: 100%; /* 이미지 높이 */
   border-radius: 50%; /* 둥근 이미지 */
   overflow: hidden; /* 내용이 넘칠 경우 잘리게 함 */
   border: 2px solid #ddd; /* 테두리 추가 */
@@ -67,16 +67,14 @@ const ProfileImageUploader = ({
   return (
     <Container>
       <ImagePreviewContainer>
-        (
         <ProfileImage
           src={
             imageUrl === null || imageUrl.includes('null')
               ? defaultImagePath
-              : `${import.meta.env.VITE_BASE_SERVER_URL}${imageUrl}`
+              : `${imageUrl}`
           }
           alt="Profile"
         />
-        )
       </ImagePreviewContainer>
       <EditButton>
         <EditIcon style={{ color: 'white' }} />
