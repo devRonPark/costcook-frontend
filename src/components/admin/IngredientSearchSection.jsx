@@ -178,7 +178,7 @@ const IngredientSearchSection = ({ onSearchIngredient, onSelectIngredient, exist
       )}
 
       {/* 재료 추가 페이지로 이동하는 링크 */}
-      <AddIngredientLink to="/admin/ingredient">
+      <AddIngredientLink to="/admin/ingredient-form">
         {linkText}
       </AddIngredientLink>
     </Section>
