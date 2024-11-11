@@ -148,7 +148,9 @@ const ThumbnailImage = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: #aaa;
+  background-image: url('/admin.svg');
+  background-size: cover;
+  background-position: center;
 `;
 
 const DropdownMenu = styled.div`
