@@ -343,7 +343,8 @@ const HomePage = () => {
             slidesPerView={3}
             centeredSlides={true}
             centeredSlidesBounds={true}
-            spaceBetween={0}
+            spaceBetween={30}
+            style={{ marginTop: '10px' }}
           >
             {recipeList.map((recipe) => (
               <SwiperSlideContainer key={recipe.id}>

@@ -141,7 +141,7 @@ const RecommendPage = () => {
           recommendedRecipes
         );
         if (response.status === 201) {
-          alert('레시피가 성공적으로 추천 목록에 추가되었습니다.');
+          toast.info('레시피가 성공적으로 추천 목록에 추가되었습니다.');
           navigate('/Home');
         } else {
           alert('레시피 추가 중 오류가 발생했습니다.');
