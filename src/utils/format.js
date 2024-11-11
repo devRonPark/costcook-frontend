@@ -20,8 +20,8 @@ export const formatNumberWithCommas = (num) => {
   if (typeof num !== 'number') {
     throw new Error('입력값은 숫자여야 합니다.');
   }
-
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const intNum = Math.round(num);
+  return intNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 export const formatCreationDate = (date) => {

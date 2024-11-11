@@ -20,7 +20,6 @@ import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
 import PreLoginPage from './pages/PreLoginPage';
 import OAuthVerification from './pages/OAuthVerification';
-import { AuthProvider } from './context/Auth/AuthProvider';
 import RecommendPage from './pages/RecommendPage';
 import RecipeDetail from './pages/RecipeDetail';
 import PageTransition from './components/common/PageTransition';
@@ -45,7 +44,7 @@ import AdminRoute from './components/Auth/AdminRoute';
 function App() {
   const location = useLocation();
   return (
-    <AuthProvider>
+    <>
       <ToastContainer
         position="bottom-center"
         autoClose={1500}
@@ -153,11 +152,9 @@ function App() {
           <Route
             path="/oauth/:provider"
             element={
-              <AuthProvider>
-                <PublicRoute>
-                  <OAuthVerification />
-                </PublicRoute>
-              </AuthProvider>
+              <PublicRoute>
+                <OAuthVerification />
+              </PublicRoute>
             }
           />
           {/* 로그인한 회원만 접근 가능 */}
@@ -205,13 +202,24 @@ function App() {
           <Route
             path="/my/reviews"
             element={
-              <UserRoute>
-                <MyReviewPage />
-              </UserRoute>
+              <PageTransition>
+                <UserRoute>
+                  <MyReviewPage />
+                </UserRoute>
+              </PageTransition>
             }
           />
           {/* 각 주차 별 추천 및 사용한 레시피 내역 화면 */}
-          <Route path="/weekly-details" element={<WeeklyDetail />} />
+          <Route
+            path="/weekly-details"
+            element={
+              <PageTransition>
+                <UserRoute>
+                  <WeeklyDetail />
+                </UserRoute>
+              </PageTransition>
+            }
+          />
 
           {/* 관리자만 접근 가능 */}
           <Route
@@ -282,7 +290,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
-    </AuthProvider>
+    </>
   );
 }
 

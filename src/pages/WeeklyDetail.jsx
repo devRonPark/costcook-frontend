@@ -28,7 +28,7 @@ const WeeklyDetail = () => {
       const recommendedRecipes = recommendedRes.data.recipes || [];
       setRecommendedRecipes(recommendedRecipes);
     } catch (error) {
-      console.log('비 로그인 상태');
+      console.error('비 로그인 상태', error);
     }
   };
 
@@ -39,7 +39,7 @@ const WeeklyDetail = () => {
       const usedRecipes = usedRes.data.recipes || [];
       setUsedRecipes(usedRecipes);
     } catch (error) {
-      console.log('데이터를 불러올 수 없음');
+      console.error('데이터를 불러올 수 없음', error);
     }
   };
 

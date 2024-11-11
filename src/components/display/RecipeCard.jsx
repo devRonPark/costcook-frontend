@@ -5,6 +5,7 @@ import { forwardRef, useState } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { StarRating } from '../StarRating';
+import { formatPrice } from '../../utils/formatData';
 
 const RecipeCard = forwardRef(
   (
@@ -52,11 +53,12 @@ const RecipeCard = forwardRef(
         <TextContainer>
           <TitleText>{recipe.title}</TitleText>
           <PriceText>
-            {formatNumberWithCommas(recipe.price)}원 (1인분)
+            {formatNumberWithCommas(recipe.price / recipe.servings)}원 (1인분)
           </PriceText>
           <StarText>
             <StarRating ratings={recipe.avgRatings} /> ({recipe.avgRatings})
           </StarText>
+          <ViewCountText>조회수 {recipe.viewCount}</ViewCountText>
         </TextContainer>
       </CardContainer>
     );
@@ -91,6 +93,7 @@ const CardContainer = styled.div`
       @media (min-width: 501px) {
         width: calc(50% - 5px);
         flex-direction: column;
+        align-items: flex-start;
       }
     `}
 
@@ -106,6 +109,7 @@ const CardContainer = styled.div`
     `
       @media (max-width: 500px) {
         flex-direction: column;
+        align-items: flex-start;
       }
     `}
   ${({ layoutType }) =>
@@ -184,4 +188,11 @@ const StarText = styled.p`
   font-size: 14px;
   margin: 5px 0;
   font-family: 'RixXladywatermelonR';
+`;
+
+// 조회수
+const ViewCountText = styled.p`
+  font-size: 12px;
+  color: gray;
+  font-family: 'GangwonEdu_OTFBoldA';
 `;

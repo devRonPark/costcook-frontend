@@ -3,6 +3,7 @@ import { AuthContext } from './AuthContext';
 import { defaultImagePath } from '../../utils/constant';
 import { jwtDecode } from 'jwt-decode';
 import { useCookies } from 'react-cookie';
+import AuthApi from '../../services/auth.api';
 
 // 초기 상태
 const initialState = {
@@ -18,12 +19,6 @@ const authReducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          ...action.payload,
-          preferredIngredients: [],
-          dislikedIngredients: [],
-          nickname: '',
-          profileFile: null,
-          profileUrl: defaultImagePath,
         },
         isAuthenticated: true,
       };
@@ -38,10 +33,7 @@ const authReducer = (state, action) => {
         ...state,
         user: {
           ...state.user, // 기존 user 상태를 유지
-          data: {
-            ...state.user.data,
-            email: action.payload, // 새로운 이메일로 업데이트
-          },
+          email: action.payload, // 새로운 이메일로 업데이트
         },
       };
     case 'SET_MY_INFO':
@@ -49,20 +41,7 @@ const authReducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          id: action.payload.id,
-          email: action.payload.sub,
-          role: action.payload.role,
-          preferredIngredients:
-            action.payload.preferredIngredients?.length > 0
-              ? action.payload.preferredIngredients
-              : [],
-          dislikedIngredients:
-            action.payload.dislikedIngredients?.length > 0
-              ? action.payload.dislikedIngredients
-              : [],
-          nickname: action.payload.nickname ?? '',
-          profileFile: action.payload.profileFile ?? null,
-          profileUrl: action.payload.profileUrl ?? defaultImagePath,
+          ...action.payload,
         },
         isAuthenticated: true,
       };
@@ -156,30 +135,35 @@ const authReducer = (state, action) => {
   }
 };
 
+// 초기 상태를 설정하는 함수
+const getInitialState = () => {
+  return initialState;
+};
+
 // Provider 생성
 export const AuthProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [state, dispatch] = useReducer(authReducer, undefined, getInitialState);
   const [cookies, , removeCookie] = useCookies(['accessToken']); // 쿠키 가져오기 및 삭제 함수 추가
 
   // useEffect를 사용하여 새로 고침 시 사용자 정보를 확인하고 상태 업데이트
   useEffect(() => {
-    const checkUserAuthentication = () => {
+    const checkUserAuthentication = async () => {
       const accessToken = cookies.accessToken; // 쿠키에서 accessToken 가져오기
       if (accessToken) {
         try {
           const decodedToken = jwtDecode(accessToken);
+
           const isExpired = decodedToken.exp * 1000 < Date.now(); // 만료 확인
           if (!isExpired) {
+            const res = await AuthApi.getMyInfo();
             dispatch({
               type: 'SET_MY_INFO',
-              payload: decodedToken, // JWT에서 사용자 정보 추출
+              payload: res.data, // JWT에서 사용자 정보 추출
             });
           }
         } catch (error) {
           console.error('JWT 파싱 오류:', error);
         }
-      } else {
-        dispatch({ type: 'LOGOUT' }); // 토큰이 없으면 로그아웃
       }
     };
 

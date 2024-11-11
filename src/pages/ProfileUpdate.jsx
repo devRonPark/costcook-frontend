@@ -34,7 +34,6 @@ const ProfileUpdate = () => {
   // 닉네임 상태 관리
   useEffect(() => {
     if (user && !user?.nickname && !hasUserChanged.current) {
-      console.log('랜덤 닉네임 생성');
       dispatch({
         type: 'UPDATE_MY_INFO',
         payload: { field: 'nickname', value: generateRandomNickname() },
@@ -85,7 +84,7 @@ const ProfileUpdate = () => {
     const formData = new FormData();
     formData.append('nickname', nickname);
     if (profileFile) {
-      formData.append('profileImage', profileFile);
+      formData.append('profileImage', profileFile ?? null);
     }
     formData.append('preferredIngredients', preferredIngredients);
     formData.append('dislikedIngredients', dislikedIngredients);
@@ -153,10 +152,7 @@ const ProfileUpdate = () => {
         <UserProfile
           nickname={user?.nickname}
           handleChange={handleChange}
-          profileUrl={
-            user?.profileUrl ??
-            `${import.meta.env.VITE_PUBLIC_URL}/default_user_profile.png`
-          }
+          profileUrl={user?.profileUrl}
           handleFileChange={handleFileChange}
           onClick={handleOpen}
         />

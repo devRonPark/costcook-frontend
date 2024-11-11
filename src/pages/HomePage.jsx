@@ -18,8 +18,8 @@ import {
   ListContainer,
   List,
   RightText,
-  RecipeImage,
-  RecipeImageBox,
+  // RecipeImage,
+  // RecipeImageBox,
   RowTextContainer,
   TitleText,
   PriceText,
@@ -30,6 +30,7 @@ import { recommendAPI } from '../services/recommend.api';
 import Carousel from '../components/common/Carousel/MainPageCarousel';
 import StartButton from '../components/common/Button/StartButton';
 import styled from 'styled-components';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 // 년도 계산하는 부분
 const getCurrentYearAndWeek = (date) => {
@@ -195,7 +196,6 @@ const HomePage = () => {
           weekNumber: week,
           amount: budget,
         };
-        console.log(budgetData);
         sessionStorage.setItem('budget', JSON.stringify(budgetData));
         closeModal();
         return;
@@ -230,7 +230,6 @@ const HomePage = () => {
     try {
       const res = await recipeAPI.getMoreRecipeList(3);
       if (res.data.recipes.length === 0) {
-        console.log('레시피가 존재하지 않습니다.');
         return;
       }
       setRecipeList(res.data.recipes);
@@ -337,30 +336,42 @@ const HomePage = () => {
           <h3>인기레시피</h3>
           <RightText onClick={handleMoreClick}>더보기</RightText>
         </UpcommingReceiptHeader>
-        <ListContainer>
-          <ListRowContainer>
+
+        <div style={{ width: '100%' }}>
+          <Swiper
+            loop={false}
+            slidesPerView={3}
+            centeredSlides={true}
+            centeredSlidesBounds={true}
+            spaceBetween={0}
+          >
             {recipeList.map((recipe) => (
-              <List key={recipe.id}>
-                <Link to={`/recipes/${recipe.id}`}>
-                  <RecipeImageBox>
-                    <RecipeImage
-                      alt={recipe.title}
-                      src={`${import.meta.env.VITE_BASE_SERVER_URL}${
-                        recipe.thumbnailUrl
-                      }`}
-                    />
-                  </RecipeImageBox>
-                </Link>
-                <TitleText>{recipe.title}</TitleText>
-                <PriceText>{formatPrice(recipe.price)}원 (1인분)</PriceText>
-                <StarText>
-                  <StarRating ratings={recipe.avgRatings} /> (
-                  {recipe.avgRatings})
-                </StarText>
-              </List>
+              <SwiperSlideContainer key={recipe.id}>
+                <CardContainer
+                  recipesLength={recipes.length}
+                  onClick={() => navigate(`/recipes/${recipe.id}`)}
+                >
+                  <RecipeImage
+                    src={`${import.meta.env.VITE_BASE_SERVER_URL}${
+                      recipe.thumbnailUrl
+                    }`}
+                    alt={recipe.title}
+                  />
+                  <RecipeInfoContainer>
+                    <TitleText>{recipe.title}</TitleText>
+                    <PriceText>
+                      {formatPrice(recipe.price / recipe.servings)}원 (1인분)
+                    </PriceText>
+                    <StarText>
+                      <StarRating ratings={recipe.avgRatings} /> (
+                      {recipe.avgRatings})
+                    </StarText>
+                  </RecipeInfoContainer>
+                </CardContainer>
+              </SwiperSlideContainer>
             ))}
-          </ListRowContainer>
-        </ListContainer>
+          </Swiper>
+        </div>
       </UpcommingReceiptContainer>
     </Layout>
   );
@@ -440,4 +451,31 @@ const ColorBox = styled.div`
   height: 20px;
   background-color: ${({ color }) => color};
   border-radius: 3px;
+`;
+
+/// 스와이퍼
+const SwiperSlideContainer = styled(SwiperSlide)`
+  display: flex;
+  justify-content: center;
+`;
+
+const RecipeInfoContainer = styled.div`
+  text-align: center;
+  overflow: hidden;
+`;
+
+const CardContainer = styled.div`
+  width: 200px;
+  height: 220px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+`;
+
+const RecipeImage = styled.img`
+  width: 100%;
+  height: 70%;
+  object-fit: cover;
 `;

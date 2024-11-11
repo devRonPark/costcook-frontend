@@ -3,7 +3,7 @@ import { getCookie } from '../utils/cookieUtil';
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api', // 백엔드 API 기본 URL
+  baseURL: import.meta.env.VITE_REST_SERVER, // 백엔드 API 기본 URL
   withCredentials: true, // 쿠키를 포함해서 요청을 보내도록 설정
 });
 
@@ -12,8 +12,6 @@ apiClient.interceptors.request.use(
   (config) => {
     const refreshToken = getCookie('refreshToken');
     const accessToken = getCookie('accessToken'); // accessToken 쿠키에서 가져오기
-    console.log(refreshToken, accessToken);
-
     // 새로운 config 객체 생성
     const newConfig = {
       ...config, // 기존 config 속성을 복사
@@ -43,13 +41,14 @@ apiClient.interceptors.response.use(
       try {
         // 액세스 토큰 재발급 요청
         const refreshResponse = await axios.post(
-          'http://localhost:8080/api/auth/token/refresh',
+          `${import.meta.env.VITE_BASE_SERVER_URL}/auth/token/refresh`,
           {},
           { withCredentials: true }
         );
         if (refreshResponse.status === 200) {
-          console.log(getCookie('accessToken'));
-          originalReq.headers.Authorization = `Bearer ${getCookie('accessToken')}`;
+          originalReq.headers.Authorization = `Bearer ${getCookie(
+            'accessToken'
+          )}`;
           return apiClient.request(originalReq);
         }
       } catch (refreshError) {

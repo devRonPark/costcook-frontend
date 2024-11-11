@@ -27,25 +27,6 @@ const MyPage = () => {
   const preferredIngredientsCopy = useRef(null);
   const dislikedIngredientsCopy = useRef(null);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await AuthApi.getMyInfo(); // 인증 상태를 확인하는 API 호출
-        if (res.status === 200) {
-          console.log(res.data);
-          dispatch({
-            type: 'GET_MY_INFO',
-            payload: res.data, // 서버에서 받은 사용자 정보
-          });
-        }
-      } catch (error) {
-        console.error('내 정보 조회 실패:', error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
   const handleChange = (field, value) =>
     dispatch({ type: 'UPDATE_MY_INFO', payload: { field, value } });
 
@@ -273,7 +254,11 @@ const MyPage = () => {
             height="150px"
             border="2px solid black"
             margin="20px 0"
-            src={user?.profileUrl ?? defaultImagePath}
+            src={
+              user?.profileUrl === null || user?.profileUrl.includes('null')
+                ? defaultImagePath
+                : `${import.meta.env.VITE_BASE_SERVER_URL}${user?.profileUrl}`
+            }
             altText={`${user?.id ?? ''} 번 회원 프로필 이미지`}
           />
           <ProfileNameContainer>{user?.nickname ?? ''}</ProfileNameContainer>

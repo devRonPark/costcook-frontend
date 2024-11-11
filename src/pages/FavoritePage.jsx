@@ -70,9 +70,11 @@ const FavoritePage = () => {
       recipe: {
         id: recipe.id,
         title: recipe.title,
-        price: recipe.price,
+        price: recipe.price / recipe.servings,
+        servings: recipe.servings,
         avgRatings: recipe.avgRatings,
         thumbnailUrl: recipe.thumbnailUrl,
+        viewCount: recipe.viewCount,
       },
     }));
   };
@@ -92,15 +94,18 @@ const FavoritePage = () => {
       }
     } catch (error) {
       toast.error('즐겨찾기 레시피를 불러오는 데 실패했습니다.');
-      console.error('Failed to fetch favorite recipes:', error);
+      console.error('즐겨찾기 레시피를 불러오는 데 실패:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  // 헤더 쓰레기통 클릭 핸들러
   const toggleDeleteStatus = () => {
     setIsDeleteStatus((prev) => !prev);
     if (!isDeleteStatus) {
+      setSelectedRecipeIds(favorites.map((e) => e.id.recipeId));
+    } else {
       setSelectedRecipeIds([]);
     }
   };
@@ -163,7 +168,7 @@ const FavoritePage = () => {
     <Layout
       isBackBtnExist
       pageName="즐겨찾기"
-      isFavoritePage
+      isFavoritePage={favorites.length > 0 ? true : false}
       onDeleteClick={toggleDeleteStatus}
     >
       {loading && (
