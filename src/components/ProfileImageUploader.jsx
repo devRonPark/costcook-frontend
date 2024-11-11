@@ -64,7 +64,6 @@ const ProfileImageUploader = ({
   imageUrl, // 프로필 이미지 URL
   onImageChange, // 이미지 변경 핸들러
 }) => {
-  console.log(imageUrl);
   return (
     <Container>
       <ImagePreviewContainer>

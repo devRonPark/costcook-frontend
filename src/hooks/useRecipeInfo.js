@@ -25,7 +25,7 @@ const useRecipeData = (recipeId) => {
       setIngredientData(formattedIngredients);
       setIsRecipeLoaded(true);
     } catch (error) {
-      console.log('레시피를 불러올 수 없음', error);
+      console.error('레시피를 불러올 수 없음', error);
     }
   };
 

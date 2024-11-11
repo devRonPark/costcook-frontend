@@ -26,7 +26,6 @@ const LoginPage = () => {
       redirect_uri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
       client_id: import.meta.env.VITE_KAKAO_CLIENT_ID,
     });
-    console.log(import.meta.env.VITE_KAKAO_REDIRECT_URI);
     const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
 
     window.location.href = KAKAO_URL; // 카카오 OAuth 로그인 페이지로 이동

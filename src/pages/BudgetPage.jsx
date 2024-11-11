@@ -60,7 +60,6 @@ const BudgetPage = () => {
   // 레시피 가격 통계
   const calculatePrices = (recipes) => {
     if (recipes.length === 0) {
-      console.log('레시피 정보 없음');
       return;
     }
     const prices = recipes.map((recipe) => recipe.price);

@@ -11,7 +11,7 @@ const DropdownMenuStyled = styled.ul`
   padding: 10px;
   margin: 0;
   z-index: 100; // 다른 요소 위에 표시
-  width: 100px; // 드롭다운 너비 조정
+  width: 120px; // 드롭다운 너비 조정
   font-family: 'STUNNING-Bd';
 
   @media (max-width: 768px) {

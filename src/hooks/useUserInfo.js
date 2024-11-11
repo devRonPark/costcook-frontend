@@ -12,8 +12,6 @@ const useUserInfo = (initialData) => {
   });
 
   const handleUserInfoChange = (field, value) => {
-    console.log(`${field}: ${value}`);
-
     if (field === 'nickname') {
       setUserInfo((prev) => ({
         ...prev,

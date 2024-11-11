@@ -165,7 +165,6 @@ const SearchPage = () => {
     // 인피니트 스크롤 로직
     // 마지막 레시피 카드가 보이고, 로딩 중이 아닐 때 다음 페이지 검색
     if (inView && !loading && page < totalPages) {
-      console.log('다음 페이지 요청');
       setLoading(true); // 로딩 시작
       setPage((prevPage) => {
         const nextPage = prevPage + 1;
