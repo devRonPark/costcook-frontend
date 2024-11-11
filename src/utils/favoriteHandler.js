@@ -12,7 +12,6 @@ export const handleToggleFavorite = async (
   favoriteToUpdate,
   isAuthenticated
 ) => {
-  console.log(isAuthenticated);
   try {
     if (isAuthenticated) {
       if (favoriteToUpdate) {

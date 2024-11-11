@@ -196,7 +196,6 @@ const HomePage = () => {
           weekNumber: week,
           amount: budget,
         };
-        console.log(budgetData);
         sessionStorage.setItem('budget', JSON.stringify(budgetData));
         closeModal();
         return;
@@ -231,7 +230,6 @@ const HomePage = () => {
     try {
       const res = await recipeAPI.getMoreRecipeList(3);
       if (res.data.recipes.length === 0) {
-        console.log('레시피가 존재하지 않습니다.');
         return;
       }
       setRecipeList(res.data.recipes);

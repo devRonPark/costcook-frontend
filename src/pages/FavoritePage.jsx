@@ -70,9 +70,11 @@ const FavoritePage = () => {
       recipe: {
         id: recipe.id,
         title: recipe.title,
-        price: recipe.price,
+        price: recipe.price / recipe.servings,
+        servings: recipe.servings,
         avgRatings: recipe.avgRatings,
         thumbnailUrl: recipe.thumbnailUrl,
+        viewCount: recipe.viewCount,
       },
     }));
   };

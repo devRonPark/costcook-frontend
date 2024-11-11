@@ -96,11 +96,9 @@ const OAuthVerification = () => {
 
             // 사용자 프로필 정보 조회해서 이 데이터가 있냐 없냐에 따라서 어느 페이지로 이동시킬지가 결정되잖아요.
             if (loginRes.data.userProfileUpdated) {
-              console.log('홈 화면 이동');
               // 홈 화면 이동
               navigate('/home');
             } else {
-              console.log('프로필 업데이트 페이지로 이동');
               // 프로필 업데이트 페이지로 이동
               navigate('/profile-setup');
             }
@@ -169,8 +167,6 @@ const OAuthVerification = () => {
           }
         }
       } else {
-        console.log('이메일 인증이 필수!!!');
-        console.log(res.data);
         // ableToLogin이 false인 경우 전역 상태에 사용자 정보 저장
         dispatch({
           type: 'SET_AUTH_DATA',

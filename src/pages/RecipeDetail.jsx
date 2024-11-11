@@ -249,7 +249,6 @@ const RecipeDetail = () => {
 
       try {
         const res = await ReviewApi.updateReview(reviewToUpdate);
-        console.log(res.data);
         if (res.status === 200) {
           const updatedReviews = reviewList.map((review) =>
             review.id === myReview.id

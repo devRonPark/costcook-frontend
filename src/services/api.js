@@ -12,8 +12,6 @@ apiClient.interceptors.request.use(
   (config) => {
     const refreshToken = getCookie('refreshToken');
     const accessToken = getCookie('accessToken'); // accessToken 쿠키에서 가져오기
-    console.log(refreshToken, accessToken);
-
     // 새로운 config 객체 생성
     const newConfig = {
       ...config, // 기존 config 속성을 복사
@@ -48,7 +46,6 @@ apiClient.interceptors.response.use(
           { withCredentials: true }
         );
         if (refreshResponse.status === 200) {
-          console.log(getCookie('accessToken'));
           originalReq.headers.Authorization = `Bearer ${getCookie(
             'accessToken'
           )}`;
