@@ -51,27 +51,26 @@ const Carousel = ({ recipes, year, week }) => {
             );
 
             setFlippedRecipe(null);
-            setTimeout(() => {
-              setUpdatedRecipes((prevRecipes) =>
-                prevRecipes.map((r) =>
-                  r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
-                )
-              );
-            }, 400); // 카드 회전 애니메이션 시간과 맞추기 위해 0.8초 지연
+            // setTimeout(() => {
+            setUpdatedRecipes((prevRecipes) =>
+              prevRecipes.map((r) =>
+                r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
+              )
+            );
+            // }, 400); // 카드 회전 애니메이션 시간과 맞추기 위해 0.8초 지연
           }
         }
       } else {
         const response = await recommendAPI.modifyUseRecipe(recipeUsageRequest);
 
         setFlippedRecipe(null);
-        setTimeout(() => {
-          setUpdatedRecipes((prevRecipes) =>
-            prevRecipes.map((r) =>
-              r.id === recipe.id ? { ...r, used: !r.used } : r
-            )
-          );
-        }, 400);
-        console.log('레시피 사용 상태 변경 성공:', response.data);
+        // setTimeout(() => {
+        setUpdatedRecipes((prevRecipes) =>
+          prevRecipes.map((r) =>
+            r.id === recipe.id ? { ...r, used: !r.used } : r
+          )
+        );
+        // }, 400);
       }
     } catch (error) {
       console.error('레시피 사용 상태 변경 실패:', error);
@@ -83,9 +82,10 @@ const Carousel = ({ recipes, year, week }) => {
     setIsFlipping(true);
     setFlippedRecipe(flippedRecipe === recipe.id ? null : recipe.id);
 
-    setTimeout(() => {
-      setIsFlipping(false);
-    }, 500); // 회전 애니메이션 시간과 동일
+    // setTimeout(() => {
+    setIsFlipping(false);
+
+    // }, 500); // 회전 애니메이션 시간과 동일
   };
 
   // 사용되지 않은 레시피와 사용된 레시피를 분리

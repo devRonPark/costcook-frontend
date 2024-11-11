@@ -12,7 +12,6 @@ const RecipeInstructions = ({ rcpSno }) => {
         const response = await apiClient.get(
           `${import.meta.env.VITE_REST_SERVER}/recipes/test?number=${rcpSno}`
         ); // 만개의 레시피 API 엔드포인트
-        console.log(response);
         const data = response.data; // HTML 형식으로 응답을 받는 경우
 
         // DOMPurify로 HTML을 안전하게 정화

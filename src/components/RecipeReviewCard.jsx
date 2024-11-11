@@ -112,6 +112,7 @@ const RecipeReviewCard = forwardRef(
         onClick: handleDeleteClick,
       },
     ];
+
     return (
       <CardContainer ref={ref}>
         <div
