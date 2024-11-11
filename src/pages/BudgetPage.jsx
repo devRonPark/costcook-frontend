@@ -44,9 +44,14 @@ const BudgetPage = () => {
     try {
       const res = await budgetAPI.getUsedWeeklyBudget(year, week);
       const weeklyBudget = res.data.weeklyBudget || 0; // 설정 예산
-      const usedBudget = res.data.usedBudget || 0; // 사용 예산
-      const remainingBudget = weeklyBudget - usedBudget; // 남은 예산
       const recipes = res.data.recipes || []; // 레시피 정보
+      // 사용 예산(1인분 기준 계산)
+      const usedBudget = recipes.reduce((acc, recipe) => {
+        const perServingPrice = recipe.price / recipe.servings;
+        return acc + perServingPrice;
+      }, 0);
+      const remainingBudget = weeklyBudget - usedBudget; // 남은 예산
+
       setBudgetAmount(weeklyBudget);
       setUseAmount(usedBudget);
       setRemainingBudget(remainingBudget);
@@ -62,7 +67,7 @@ const BudgetPage = () => {
     if (recipes.length === 0) {
       return;
     }
-    const prices = recipes.map((recipe) => recipe.price);
+    const prices = recipes.map((recipe) => recipe.price / recipe.servings);
     const highest = Math.max(...prices);
     const lowest = Math.min(...prices);
     const average =
@@ -71,8 +76,12 @@ const BudgetPage = () => {
     setHighestPrice(highest);
     setLowestPrice(lowest);
     setAveragePrice(average);
-    const highestRecipe = recipes.find((recipe) => recipe.price === highest); // 가장 비싼 레시피이름
-    const lowestRecipe = recipes.find((recipe) => recipe.price === lowest); // 가장 싼 레시피 이름
+    const highestRecipe = recipes.find(
+      (recipe) => recipe.price / recipe.servings === highest
+    ); // 가장 비싼 레시피이름
+    const lowestRecipe = recipes.find(
+      (recipe) => recipe.price / recipe.servings === lowest
+    ); // 가장 싼 레시피 이름
     setHighestPriceTitle(highestRecipe ? highestRecipe.title : '');
     setLowestPriceTitle(lowestRecipe ? lowestRecipe.title : '');
     setHighestRecipeId(highestRecipe.id); // 가장 비싼 레시피 ID
