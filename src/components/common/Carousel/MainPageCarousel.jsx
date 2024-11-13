@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { recommendAPI } from '../../../services/recommend.api';
 import { formatPrice } from '../../../utils/formatData';
 import { StarRating } from '../../StarRating';
 import { useAuth } from '../../../context/Auth/AuthContext';
@@ -51,26 +50,20 @@ const Carousel = ({ recipes, year, week }) => {
             );
 
             setFlippedRecipe(null);
-            // setTimeout(() => {
             setUpdatedRecipes((prevRecipes) =>
               prevRecipes.map((r) =>
                 r.id === recipe.id ? { ...r, used: recipeToUpdate.used } : r
               )
             );
-            // }, 400); // 카드 회전 애니메이션 시간과 맞추기 위해 0.8초 지연
           }
         }
       } else {
-        const response = await recommendAPI.modifyUseRecipe(recipeUsageRequest);
-
         setFlippedRecipe(null);
-        // setTimeout(() => {
         setUpdatedRecipes((prevRecipes) =>
           prevRecipes.map((r) =>
             r.id === recipe.id ? { ...r, used: !r.used } : r
           )
         );
-        // }, 400);
       }
     } catch (error) {
       console.error('레시피 사용 상태 변경 실패:', error);
@@ -82,14 +75,10 @@ const Carousel = ({ recipes, year, week }) => {
     setIsFlipping(true);
     setFlippedRecipe(flippedRecipe === recipe.id ? null : recipe.id);
 
-    // setTimeout(() => {
     setIsFlipping(false);
-
-    // }, 500); // 회전 애니메이션 시간과 동일
   };
 
   // 사용되지 않은 레시피와 사용된 레시피를 분리
-
   const unusedRecipes = updatedRecipes.filter((recipe) => recipe.used);
   const usedRecipes = updatedRecipes.filter((recipe) => !recipe.used);
 
@@ -161,8 +150,6 @@ const Carousel = ({ recipes, year, week }) => {
 
 export default Carousel;
 
-// 메인 페이지 캐러셀
-
 const FlipCard = styled.div`
   position: relative;
   width: 200px;
@@ -171,6 +158,7 @@ const FlipCard = styled.div`
   transform-style: preserve-3d;
   transform: ${({ isFlipped }) =>
     isFlipped ? 'rotateY(180deg)' : 'rotateY(0)'};
+  cursor: pointer;
 `;
 
 const FrontCard = styled.div`
@@ -178,6 +166,7 @@ const FrontCard = styled.div`
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  z-index: 2; // 앞면이 항상 위에 보이도록 설정
 `;
 
 const BackCard = styled.div`
@@ -192,6 +181,7 @@ const BackCard = styled.div`
   align-items: center;
   background-color: #dcdcdc;
   border-radius: 10px;
+  z-index: 1; // 버튼이 앞에 오도록 설정
 `;
 
 const OptionButton = styled.button`
