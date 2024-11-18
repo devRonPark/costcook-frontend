@@ -1,7 +1,8 @@
 # 코스트쿡 시연
 
 ## 레시피 추천
-https://github.com/user-attachments/assets/9b590049-5a36-4920-a29c-6850b85b2c4f
+![레시피추천](https://github.com/user-attachments/assets/67df869e-bd70-47cf-9b54-8263b3cdf3ee)
+
 - 메인 페이지에서 예산 설정 후 추천받기 버튼을 누르면, 설정된 예산 금액에 맞는 가격대의 모든 레시피 목록이 나타납니다.
 - 레시피 카드를 선택하면 차감된 예산으로 적용되고, 선택하기를 누르면 추천 레시피 명단에 반영되어 메인 페이지에 표시됩니다..
 - 추천 레시피 카드를 누르면 "먹었어요", "상세정보" 버튼이 나타나며, "먹었어요" 클릭 시 해당 레시피를 요리한 것으로 적용됩니다.
@@ -9,7 +10,8 @@ https://github.com/user-attachments/assets/9b590049-5a36-4920-a29c-6850b85b2c4f
 - 요리한 레시피 카드를 클릭 후 "안먹었어요"를 클릭하면 요리하지 않은 것으로 적용됩니다.
 
 ## 레시피 검색
-https://github.com/user-attachments/assets/5be4cd77-c25b-403b-b11a-30a9b628f7d3
+![검색](https://github.com/user-attachments/assets/0bfdcd9c-97b2-4a9d-bcc3-0e15c4546503)
+
 - 헤더 우측에 있는 돋보기 아이콘을 클릭하면 레시피 검색 페이지로 이동합니다.
 - 검색어 입력시, 검색어를 포함하는 레시피와, 검색어를 포함하는 재료를 가진 레시피가 검색 결과에 나타납니다.
 - 검색 결과에 있는 레시피 카드를 클릭하면 레시피 상세정보로 이동하고, 하트 아이콘을 누르면 즐겨찾기가 적용됩니다.
@@ -17,7 +19,8 @@ https://github.com/user-attachments/assets/5be4cd77-c25b-403b-b11a-30a9b628f7d3
 - 최근 검색어 우측의 메뉴를 클릭하면 최근 검색어를 삭제할 수 있습니다.
 
 ## 레시피 즐겨찾기
-https://github.com/user-attachments/assets/d35faa6d-fa68-44ea-acc7-b49455d4e8be
+![즐겨찾기](https://github.com/user-attachments/assets/dc8aeb48-df1d-497b-a9b5-3940253ba8e3)
+
 - 푸터의 즐겨찾기 아이콘을 클릭하면 레시피 즐겨찾기 페이지로 이동합니다.
 - 즐겨찾기한 레시피가 없는 경우 "레시피 구경가기" 버튼이 나타나며, 클릭 시 전체 레시피 페이지로 이동합니다.
 - 전체 레시피 페이지에서 레시피 카드의 하트 아이콘을 클릭하여 즐겨찾기를 추가 또는 제거할 수 있습니다.
@@ -25,7 +28,8 @@ https://github.com/user-attachments/assets/d35faa6d-fa68-44ea-acc7-b49455d4e8be
 - 즐겨찾기 페이지에서 즐겨찾기한 레시피 목록이 표시되며, 즐겨찾기에서 제거할 수 있습니다.
 
 ## 레시피 리뷰
-https://github.com/user-attachments/assets/65c756b8-71df-40a5-b5f0-aabe8acb9f14
+![리뷰](https://github.com/user-attachments/assets/3b8b2156-b140-4926-a470-757777fce074)
+
 - 레시피 상세 페이지에서 "리뷰보기" 버튼 클릭 시, 레시피 리뷰 목록으로 스크롤됩니다.
 - 레시피 평가하기에서 별 아이콘 클릭 시, 로그인한 유저만 리뷰를 작성할 수 있습니다.
 - 자신이 작성한 리뷰는 리뷰 목록에서 최상단에 표시됩니다.
@@ -33,7 +37,8 @@ https://github.com/user-attachments/assets/65c756b8-71df-40a5-b5f0-aabe8acb9f14
 - 자신이 작성한 리뷰 우측 메뉴에서 리뷰를 수정 또는 삭제할 수 있습니다.
 
 ## 예산관리
-https://github.com/user-attachments/assets/564f0c5f-8f9c-4d73-afa5-28951b1074e4
+![예산관리](https://github.com/user-attachments/assets/c3ee68f9-2bc9-47f0-944a-3848c745bd4c)
+
 - 푸터의 예산관리 아이콘을 클릭하면 예산관리 페이지로 이동합니다.
 - 로그인한 유저만 예산관리 페이지를 이용할 수 있습니다.
 - 날짜 좌우의 화살표를 클릭하여 주차를 변경할 수 있습니다. 최신 주차에서는 이후 주차로 이동할 수 없습니다.
@@ -44,7 +49,8 @@ https://github.com/user-attachments/assets/564f0c5f-8f9c-4d73-afa5-28951b1074e4
 
 # 관리자 페이지
 ## 레시피 등록
-https://github.com/user-attachments/assets/9a1032e7-f797-43fb-bdc6-560bf2fe7110
+![레시피등록](https://github.com/user-attachments/assets/139c0807-5832-44b1-a71e-c5461f392d38)
+
 - 레시피 페이지에서 우측 상단의 추가 버튼을 클릭 시, 신규 레시피를 등록합니다.
 - 이름, 만개의 레시피 고유번호, 설명, 카테고리, 식사량, 재료, 이미지를 입력할 수 있습니다.
 - 레시피 이름 작성 후, "중복 확인" 버튼을 클릭하여 레시피가 이미 존재하는지 확인합니다.
@@ -54,7 +60,8 @@ https://github.com/user-attachments/assets/9a1032e7-f797-43fb-bdc6-560bf2fe7110
 
 
 ## 레시피 수정, 삭제
-https://github.com/user-attachments/assets/44054193-7be6-4320-bbc5-1ac197a19bef
+![레시피수정,삭제](https://github.com/user-attachments/assets/ede7a643-1ba5-4c3b-a8c5-1c921199c91d)
+
 - 레시피 카드 우측의 연필 아이콘을 클릭하면 레시피를 수정할 수 있습니다. 양식은 등록과 같습니다.
 - 레시피 카드 우측의 휴지통 아이콘을 클릭하면 레시피를 삭제할 수 있습니다.
 
