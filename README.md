@@ -1,8 +1,20 @@
-# React + Vite
+# 코스트쿡 시연
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 레시피 추천
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+https://github.com/user-attachments/assets/9b590049-5a36-4920-a29c-6850b85b2c4f
+
+
+
+## 레시피 검색
+
+## 레시피 즐겨찾기
+
+## 레시피 리뷰
+
+## 예산관리
+
+## 레시피 등록(관리자)
+
+## 레시피 수정, 삭제(관리자)
