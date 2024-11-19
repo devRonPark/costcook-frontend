@@ -1,7 +1,6 @@
 # 코스트쿡 시연
 
 ## 레시피 추천
-![레시피추천](https://github.com/user-attachments/assets/67df869e-bd70-47cf-9b54-8263b3cdf3ee)
 
 - 메인 페이지에서 예산 설정 후 추천받기 버튼을 누르면, 설정된 예산 금액에 맞는 가격대의 모든 레시피 목록이 나타납니다.
 - 레시피 카드를 선택하면 차감된 예산으로 적용되고, 선택하기를 누르면 추천 레시피 명단에 반영되어 메인 페이지에 표시됩니다..
@@ -10,7 +9,7 @@
 - 요리한 레시피 카드를 클릭 후 "안먹었어요"를 클릭하면 요리하지 않은 것으로 적용됩니다.
 
 ## 레시피 검색
-![검색](https://github.com/user-attachments/assets/0bfdcd9c-97b2-4a9d-bcc3-0e15c4546503)
+![검색_with_progress](https://github.com/user-attachments/assets/512f53c2-0dcc-412b-8b86-d764c67a4ef5)
 
 - 헤더 우측에 있는 돋보기 아이콘을 클릭하면 레시피 검색 페이지로 이동합니다.
 - 검색어 입력시, 검색어를 포함하는 레시피와, 검색어를 포함하는 재료를 가진 레시피가 검색 결과에 나타납니다.
@@ -19,7 +18,7 @@
 - 최근 검색어 우측의 메뉴를 클릭하면 최근 검색어를 삭제할 수 있습니다.
 
 ## 레시피 즐겨찾기
-![즐겨찾기](https://github.com/user-attachments/assets/dc8aeb48-df1d-497b-a9b5-3940253ba8e3)
+![즐겨찾기_with_progress](https://github.com/user-attachments/assets/c3edf919-b10d-4584-94f0-1a3bf652eec9)
 
 - 푸터의 즐겨찾기 아이콘을 클릭하면 레시피 즐겨찾기 페이지로 이동합니다.
 - 즐겨찾기한 레시피가 없는 경우 "레시피 구경가기" 버튼이 나타나며, 클릭 시 전체 레시피 페이지로 이동합니다.
@@ -28,7 +27,7 @@
 - 즐겨찾기 페이지에서 즐겨찾기한 레시피 목록이 표시되며, 즐겨찾기에서 제거할 수 있습니다.
 
 ## 레시피 리뷰
-![리뷰](https://github.com/user-attachments/assets/3b8b2156-b140-4926-a470-757777fce074)
+![리뷰_with_progress](https://github.com/user-attachments/assets/320c2fae-56cf-433c-b129-926b673b9d85)
 
 - 레시피 상세 페이지에서 "리뷰보기" 버튼 클릭 시, 레시피 리뷰 목록으로 스크롤됩니다.
 - 레시피 평가하기에서 별 아이콘 클릭 시, 로그인한 유저만 리뷰를 작성할 수 있습니다.
@@ -37,7 +36,7 @@
 - 자신이 작성한 리뷰 우측 메뉴에서 리뷰를 수정 또는 삭제할 수 있습니다.
 
 ## 예산관리
-![예산관리](https://github.com/user-attachments/assets/c3ee68f9-2bc9-47f0-944a-3848c745bd4c)
+![예산관리_with_progress](https://github.com/user-attachments/assets/3ae8151b-3dc9-4a69-99ba-0f07bc996eda)
 
 - 푸터의 예산관리 아이콘을 클릭하면 예산관리 페이지로 이동합니다.
 - 로그인한 유저만 예산관리 페이지를 이용할 수 있습니다.
@@ -49,7 +48,7 @@
 
 # 관리자 페이지
 ## 레시피 등록
-![레시피등록](https://github.com/user-attachments/assets/139c0807-5832-44b1-a71e-c5461f392d38)
+![관리자_레시피등록_with_progress](https://github.com/user-attachments/assets/5b82173b-119a-48e3-8c1d-1085bc166197)
 
 - 레시피 페이지에서 우측 상단의 추가 버튼을 클릭 시, 신규 레시피를 등록합니다.
 - 이름, 만개의 레시피 고유번호, 설명, 카테고리, 식사량, 재료, 이미지를 입력할 수 있습니다.
@@ -60,7 +59,7 @@
 
 
 ## 레시피 수정, 삭제
-![레시피수정,삭제](https://github.com/user-attachments/assets/ede7a643-1ba5-4c3b-a8c5-1c921199c91d)
+![관리자_레시피수정,삭제_with_progress](https://github.com/user-attachments/assets/1851a2e0-1608-4576-b20e-80eac8df06a0)
 
 - 레시피 카드 우측의 연필 아이콘을 클릭하면 레시피를 수정할 수 있습니다. 양식은 등록과 같습니다.
 - 레시피 카드 우측의 휴지통 아이콘을 클릭하면 레시피를 삭제할 수 있습니다.
