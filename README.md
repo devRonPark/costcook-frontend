@@ -1,7 +1,13 @@
 # 코스트쿡 시연
 
+## 레시피 목록 및 상세 정보
+![레시피 목록, 상세](https://github.com/user-attachments/assets/9674ed97-5825-4a6e-a293-9a0e4bd3b39b)
+- 메인 페이지에서 푸터의 전체 레시피 아이콘 클릭 시 레시피 목록 페이지로 이동합니다.
+- 첫 페이지에 6개의 레시피 카드를 표시하고, 스크롤을 내리면 DB에서 추가 레시피 6개를 불러오는 무한 스크롤이 기능합니다.
+- 각 레시피 카드를 클릭하면 해당 레시피 상세 페이지로 이동합니다.
+
 ## 레시피 추천
-![Honeycam 2024-12-04 14-59-19](https://github.com/user-attachments/assets/a316cd8e-279e-4719-bfc2-e2c18f7ce945)
+![레시피 추천](https://github.com/user-attachments/assets/f1467554-045e-4b6b-880d-a72d48af4180)
 
 
 - 메인 페이지에서 예산 설정 후 추천받기 버튼을 누르면, 설정된 예산 금액에 맞는 가격대의 모든 레시피 목록이 나타납니다.
@@ -11,7 +17,7 @@
 - 요리한 레시피 카드를 클릭 후 "안먹었어요"를 클릭하면 요리하지 않은 것으로 적용됩니다.
 
 ## 레시피 검색
-![검색_with_progress](https://github.com/user-attachments/assets/512f53c2-0dcc-412b-8b86-d764c67a4ef5)
+![레시피 검색](https://github.com/user-attachments/assets/1c5656d2-b058-49e0-8c67-88d894aaa091)
 
 - 헤더 우측에 있는 돋보기 아이콘을 클릭하면 레시피 검색 페이지로 이동합니다.
 - 검색어 입력시, 검색어를 포함하는 레시피와, 검색어를 포함하는 재료를 가진 레시피가 검색 결과에 나타납니다.
@@ -20,7 +26,7 @@
 - 최근 검색어 우측의 메뉴를 클릭하면 최근 검색어를 삭제할 수 있습니다.
 
 ## 레시피 즐겨찾기
-![즐겨찾기_with_progress](https://github.com/user-attachments/assets/c3edf919-b10d-4584-94f0-1a3bf652eec9)
+![즐겨찾기](https://github.com/user-attachments/assets/2fb66339-8426-47b8-8615-d67d4a09f069)
 
 - 푸터의 즐겨찾기 아이콘을 클릭하면 레시피 즐겨찾기 페이지로 이동합니다.
 - 즐겨찾기한 레시피가 없는 경우 "레시피 구경가기" 버튼이 나타나며, 클릭 시 전체 레시피 페이지로 이동합니다.
@@ -29,7 +35,7 @@
 - 즐겨찾기 페이지에서 즐겨찾기한 레시피 목록이 표시되며, 즐겨찾기에서 제거할 수 있습니다.
 
 ## 레시피 리뷰
-![리뷰_with_progress](https://github.com/user-attachments/assets/320c2fae-56cf-433c-b129-926b673b9d85)
+![리뷰](https://github.com/user-attachments/assets/8d203189-daf1-4efb-af36-3deeb53f7922)
 
 - 레시피 상세 페이지에서 "리뷰보기" 버튼 클릭 시, 레시피 리뷰 목록으로 스크롤됩니다.
 - 레시피 평가하기에서 별 아이콘 클릭 시, 로그인한 유저만 리뷰를 작성할 수 있습니다.
@@ -38,7 +44,7 @@
 - 자신이 작성한 리뷰 우측 메뉴에서 리뷰를 수정 또는 삭제할 수 있습니다.
 
 ## 예산관리
-![예산관리_with_progress](https://github.com/user-attachments/assets/3ae8151b-3dc9-4a69-99ba-0f07bc996eda)
+![예산 관리](https://github.com/user-attachments/assets/b669f81d-fe2f-44f5-9007-cb0399092e12)
 
 - 푸터의 예산관리 아이콘을 클릭하면 예산관리 페이지로 이동합니다.
 - 로그인한 유저만 예산관리 페이지를 이용할 수 있습니다.
@@ -50,7 +56,7 @@
 
 # 관리자 페이지
 ## 레시피 등록
-![관리자_레시피등록_with_progress](https://github.com/user-attachments/assets/5b82173b-119a-48e3-8c1d-1085bc166197)
+![관리자 레시피 등록](https://github.com/user-attachments/assets/9b68b93c-dec7-43b1-a84d-2eaefbbde12b)
 
 - 레시피 페이지에서 우측 상단의 추가 버튼을 클릭 시, 신규 레시피를 등록합니다.
 - 이름, 만개의 레시피 고유번호, 설명, 카테고리, 식사량, 재료, 이미지를 입력할 수 있습니다.
@@ -61,10 +67,7 @@
 
 
 ## 레시피 수정, 삭제
-![관리자_레시피수정,삭제_with_progress](https://github.com/user-attachments/assets/1851a2e0-1608-4576-b20e-80eac8df06a0)
+![관리자 레시피 수정, 삭제](https://github.com/user-attachments/assets/8f5bc5ef-82a8-4f0c-8688-461471d3f95d)
 
 - 레시피 카드 우측의 연필 아이콘을 클릭하면 레시피를 수정할 수 있습니다. 양식은 등록과 같습니다.
 - 레시피 카드 우측의 휴지통 아이콘을 클릭하면 레시피를 삭제할 수 있습니다.
-
-
-
